@@ -1,0 +1,11 @@
+{
+  "extends": "@jameslnewell/eslint-config",
+  "env": {
+    "es6": true,
+    "jest": true,
+    "browser": true
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
