@@ -27,10 +27,10 @@ function Profile({username}) {
       return <>loading 🔄</>;
 
     case 'loaded':
-      return <>loaded ✅: ${JSON.stringify(data)}</>;
+      return <>loaded ✅: <pre>{JSON.stringify(data)}</pre></>;
 
     case 'errored':
-      return <>errored ❌: ${String(error)}</>;
+      return <>errored ❌: <pre>{String(error)}</pre></>;
 
     default:
       return <>?</>;
