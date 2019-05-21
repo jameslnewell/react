@@ -1,9 +1,9 @@
 {
   "name": "@jameslnewell/react-promise",
   "version": "1.0.0",
-  "description": "React hook for working with promises.",
+  "description": "A react hook for working with promises.",
   "keywords": [
-    "react", "hooks", "react-hook", "promise", "react-promise", "promises", "resolve", "reject"
+    "react", "hooks", "react-hook", "promise", "react-promise", "promises", "resolve", "reject", "jameslnewell"
   ],
   "files": [
     "lib"

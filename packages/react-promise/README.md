@@ -1,6 +1,6 @@
 # @jameslnewell/react-promise
 
-React hook for working with promises.
+A react hook for working with promises.
 
 ## Installation
 
