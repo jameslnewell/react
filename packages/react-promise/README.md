@@ -20,22 +20,29 @@ async function getProfile(username) {
 }
 
 function Profile({username}) {
-  const [status, error, data] = usePromise(() => getProfile(username), [username]);
+  const [status, error, data] = usePromise(() => getProfile(username), [
+    username,
+  ]);
   switch (status) {
-    
     case 'loading':
       return <>loading 🔄</>;
 
     case 'loaded':
-      return <>loaded ✅: <pre>{JSON.stringify(data)}</pre></>;
+      return (
+        <>
+          loaded ✅: <pre>{JSON.stringify(data)}</pre>
+        </>
+      );
 
     case 'errored':
-      return <>errored ❌: <pre>{String(error)}</pre></>;
+      return (
+        <>
+          errored ❌: <pre>{String(error)}</pre>
+        </>
+      );
 
     default:
       return <>?</>;
-      
   }
 }
-
 ```

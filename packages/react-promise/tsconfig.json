@@ -5,7 +5,10 @@
     "esModuleInterop": true,
     "noEmit": true,
     "jsx": "react",
-    "lib": ["dom", "esnext"]
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["lib"]
 }
