@@ -1,5 +1,5 @@
 import {useReducer, useEffect, Reducer} from 'react';
-import {Dependencies} from './types';
+import {Dependencies, Factory} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
@@ -9,17 +9,17 @@ import {isPromise} from './utils/isPromise';
 import {track} from './utils/track';
 import {getOutput, Output} from './utils/getOutput';
 
-export function useInvokablePromise<T>(
-  fn: (...args: any[]) => Promise<T> | undefined,
+export function useInvokablePromise<T, P extends any[]>(
+  fn: Factory<T, P>,
   deps: Dependencies = [],
-): Output<T> & {invoke: (...args: any[]) => Promise<void>} {
+): Output<T> & {invoke: (...args: P) => Promise<void>} {
   const isMounted = useMounted();
   const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(
     reducer,
     initialState,
   );
 
-  const invoke = async (...args: any[]) => {
+  const invoke = async (...args: P) => {
     // execute and track the promise state
     const promise = fn(...args);
     if (isPromise(promise)) {

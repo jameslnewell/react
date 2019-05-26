@@ -6,8 +6,8 @@ export enum Status {
   Rejected = 'rejected',
 }
 
-export interface Factory<T> {
-  (): Promise<T> | undefined;
+export interface Factory<T, P extends any[]> {
+  (...args: P): Promise<T> | undefined;
 }
 
 export type Dependencies = DependencyList;

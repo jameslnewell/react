@@ -10,7 +10,7 @@ import {track} from './utils/track';
 import {getOutput, Output} from './utils/getOutput';
 
 export function usePromise<T>(
-  fn: Factory<T>,
+  fn: Factory<T, []>,
   deps: Dependencies = [],
 ): Output<T> {
   const isMounted = useMounted();
