@@ -1,6 +1,6 @@
 # @jameslnewell/react-promise
 
-A react hook for working with promises.
+React hooks for working with promises.
 
 ## Installation
 
@@ -11,38 +11,67 @@ yarn add @jameslnewell/react-promise
 ## Usage
 
 ```js
-import usePromise from '@jameslnewell/react-promise';
+import React, {useState, useEffect} from 'react';
+import {usePromise, useInvokablePromise} from '@jameslnewell/react-promise';
 
-async function getProfile(username) {
-  const res = await fetch(`/profile/${username}`);
-  const data = res.json();
-  return data;
+async function getUsername(id) {
+  const res = await fetch(`/user/${id}`, {method: 'GET'});
+  const data = awaut res.json();
+  return data.username;
 }
 
-function Profile({username}) {
-  const [status, error, data] = usePromise(() => getProfile(username), [
-    username,
+async function putUsername(id, username) {
+  await fetch(`/user/${id}`, {method: 'POST', body: JSON.stringify({username})});
+}
+
+const Username = ({id}) => {
+  const [username, setUsername] = useState('');
+  const [isEdited, setEdited] = useState(false);
+
+  const load = usePromise(() => getUsername(id), [
+    id,
   ]);
-  switch (status) {
-    case 'loading':
-      return <>loading 🔄</>;
 
-    case 'loaded':
-      return (
-        <>
-          loaded ✅: <pre>{JSON.stringify(data)}</pre>
-        </>
-      );
+  const save = useInvokablePromise(() => putUsername(id, username), [
+    id, username,
+  ]);
 
-    case 'errored':
-      return (
-        <>
-          errored ❌: <pre>{String(error)}</pre>
-        </>
-      );
+  // reset the username when it loads
+  useEffect(() => {
+    setUsername(load.data || '');
+    setEdited(false);
+  }, [loading.data]);
 
-    default:
-      return <>?</>;
+  const isLoading = load.isPending;
+  const isLoadingError = load.isRejected;
+  const isSaving = save.isPending;
+  const canEdit = !isLoading && !isLoadingError && !isSaving;
+  const canSave = !isLoading && !isLoadingError && !isSaving && isEdited;
+  const isSaved = save.isFulfilled && !isEdited;
+  const error = load.error || save.error;
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEdited(true);
+    setUsername(event.target.value);
   }
-}
+
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await save.invoke(id, username);
+    setEdited(false);
+  }
+
+  return (
+    <form onSubmit={handleSave}>
+      <input disabled={!canEdit} value={username} onChange={handleChange}/>
+      {isEdited && '📝'}
+      {isLoading || isSaving && '🔄'}
+      {isSaved && '✅'}
+      {error && <span style={{color: 'red'}}>❌ {error}</span>}
+      <br/>
+      <button disabled={!canSave}>Save</button>
+    </form>
+  );
+};
+
 ```

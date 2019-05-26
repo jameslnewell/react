@@ -1,4 +1,3 @@
+export * from './types';
 export * from './usePromise';
-import usePromise from './usePromise';
-
-export {usePromise};
+export * from './useInvokablePromise';
