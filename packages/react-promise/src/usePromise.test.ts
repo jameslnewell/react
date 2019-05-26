@@ -21,66 +21,80 @@ describe('usePromise()', () => {
     return runHook(() => usePromise(fn));
   }
 
+  function delay<T>(promise: Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) =>
+      setTimeout(async () => {
+        try {
+          resolve(await promise);
+        } catch (error) {
+          reject(error);
+        }
+      }, 100),
+    );
+  }
+
   it('should be unknown when no promise is returned', async () => {
     const {result} = runUsePromiseHook(() => undefined);
     expect(result.current).toEqual(
       expect.objectContaining({
         status: undefined,
         error: undefined,
-        data: undefined,
+        value: undefined,
       }),
     );
   });
 
   it('should be resolving when a promise is returned and is resolving', async () => {
-    const {result} = runUsePromiseHook(() => Promise.resolve({foo: 'bar'}));
+    const {result} = runUsePromiseHook(() =>
+      delay(Promise.resolve({foo: 'bar'})),
+    );
     expect(result.current).toEqual(
       expect.objectContaining({
         status: Status.Pending,
         error: undefined,
-        data: undefined,
+        value: undefined,
       }),
     );
   });
 
   it('should be resolved when a promise is returned and is resolved', async () => {
     const {result, waitForNextUpdate} = runUsePromiseHook(() =>
-      Promise.resolve({foo: 'bar'}),
+      delay(Promise.resolve({foo: 'bar'})),
     );
     await waitForNextUpdate();
     expect(result.current).toEqual(
       expect.objectContaining({
         status: Status.Fulfilled,
         error: undefined,
-        data: {bar: 'foo'},
+        value: {foo: 'bar'},
       }),
     );
   });
 
   it('should be rejected when a promise is returned and is rejected', async () => {
     const {result, waitForNextUpdate} = runUsePromiseHook(() =>
-      Promise.reject(new Error('This is a test error!')),
+      delay(Promise.reject(new Error('This is a test error!'))),
     );
     await waitForNextUpdate();
     expect(result.current).toEqual(
       expect.objectContaining({
         status: Status.Rejected,
         error: new Error('This is a test error!'),
-        data: undefined,
+        value: undefined,
       }),
     );
   });
 
   it('should remain resolving when a promise is return and is resolving and the component is unmounted', async () => {
     const {result, unmount} = runUsePromiseHook(() =>
-      Promise.resolve({foo: 'bar'}),
+      delay(Promise.resolve({foo: 'bar'})),
     );
     unmount();
     expect(result.current).toEqual(
       expect.objectContaining({
         status: Status.Pending,
         error: undefined,
-        data: undefined,
+        value: undefined,
       }),
     );
   });
@@ -89,7 +103,7 @@ describe('usePromise()', () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
         usePromise(
-          () => (step === 0 ? Promise.resolve({foo: 'bar'}) : undefined),
+          () => (step === 0 ? delay(Promise.resolve({foo: 'bar'})) : undefined),
           [step],
         ),
       {initialProps: {step: 0}},
@@ -100,7 +114,7 @@ describe('usePromise()', () => {
       expect.objectContaining({
         status: undefined,
         error: undefined,
-        data: undefined,
+        value: undefined,
       }),
     );
   });
@@ -109,7 +123,8 @@ describe('usePromise()', () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
         usePromise(
-          () => Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'}),
+          () =>
+            delay(Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'})),
           [step],
         ),
       {initialProps: {step: 0}},
@@ -120,7 +135,7 @@ describe('usePromise()', () => {
       expect.objectContaining({
         status: Status.Pending,
         error: undefined,
-        data: undefined,
+        value: undefined,
       }),
     );
   });
@@ -129,7 +144,8 @@ describe('usePromise()', () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
         usePromise(
-          () => Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'}),
+          () =>
+            delay(Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'})),
           [step],
         ),
       {initialProps: {step: 0}},
@@ -141,7 +157,7 @@ describe('usePromise()', () => {
       expect.objectContaining({
         status: Status.Fulfilled,
         error: undefined,
-        data: {bar: 'foo'},
+        value: {bar: 'foo'},
       }),
     );
   });

@@ -1,29 +1,30 @@
 import {reducer} from './reducer';
 import {Status} from '../types';
+import {State} from './State';
 import {reset, resolving, resolved, rejected} from './Action';
 
-const resetState = {
+const resetState: State<any> = {
   status: undefined,
   error: undefined,
-  data: undefined,
+  value: undefined,
 };
 
-const resolvingState = {
+const resolvingState: State<any> = {
   status: Status.Pending,
   error: undefined,
-  data: undefined,
+  value: undefined,
 };
 
-const resolvedState = {
+const resolvedState: State<any> = {
   status: Status.Fulfilled,
   error: undefined,
-  data: {foo: 'bar'},
+  value: {foo: 'bar'},
 };
 
-const rejectedState = {
+const rejectedState: State<any> = {
   status: Status.Rejected,
   error: 'Uh oh!',
-  data: undefined,
+  value: undefined,
 };
 
 describe('reducer()', () => {
