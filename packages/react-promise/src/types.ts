@@ -6,7 +6,7 @@ export enum Status {
   Rejected = 'rejected',
 }
 
-export interface Factory<T, P extends any[]> {
+export interface Factory<T, P extends any[] = []> {
   (...args: P): Promise<T> | undefined;
 }
 

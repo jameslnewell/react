@@ -46,7 +46,7 @@ const Example: React.FC<{id: string}> = ({id}) => {
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await save.invoke(id, username);
+    await save.invoke();
     setEdited(false);
   };
 
