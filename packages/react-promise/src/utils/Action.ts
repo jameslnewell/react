@@ -15,6 +15,7 @@ export interface ResolvedAction<T> {
 
 export interface RejectedAction {
   type: Status.Rejected;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any | undefined;
 }
 
@@ -36,6 +37,7 @@ export function resolved<T>(data: T | undefined): ResolvedAction<T> {
   return {type: Status.Fulfilled, data};
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function rejected(error: any | undefined): RejectedAction {
   return {type: Status.Rejected, error};
 }

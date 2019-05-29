@@ -2,8 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
+    "emitDeclarationOnly": true,
     "isolatedModules": false,
-    "outDir": "lib"
+    "noEmit": false,
+    "outDir": "types"
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"]

@@ -275,7 +275,7 @@
     "@babel/helper-create-class-features-plugin" "^7.3.0"
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-proposal-class-properties@^7.1.0", "@babel/plugin-proposal-class-properties@^7.3.0":
+"@babel/plugin-proposal-class-properties@^7.3.0", "@babel/plugin-proposal-class-properties@^7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.4.4.tgz#93a6486eed86d53452ab9bab35e368e9461198ce"
   integrity sha512-WjKTI8g8d5w1Bc9zgwSz2nfrsNQsXcCf9J9cdCvrJV6RF56yztwm4TmJC0MgJ9tvwO9gUA/mcYe89bLdGfiXFg==
@@ -308,7 +308,7 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-object-rest-spread" "^7.2.0"
 
-"@babel/plugin-proposal-object-rest-spread@^7.0.0", "@babel/plugin-proposal-object-rest-spread@^7.3.1", "@babel/plugin-proposal-object-rest-spread@^7.3.2", "@babel/plugin-proposal-object-rest-spread@^7.4.4":
+"@babel/plugin-proposal-object-rest-spread@^7.3.1", "@babel/plugin-proposal-object-rest-spread@^7.3.2", "@babel/plugin-proposal-object-rest-spread@^7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.4.4.tgz#1ef173fcf24b3e2df92a678f027673b55e7e3005"
   integrity sha512-dMBG6cSPBbHeEBdFXeQ2QLc5gUpg4Vkaz8octD4aoW/ISO+jBOcsuxYL7bsb5WSu8RLP6boxrBIALEHgoHtO9g==
@@ -783,7 +783,7 @@
     js-levenshtein "^1.1.3"
     semver "^5.3.0"
 
-"@babel/preset-env@^7.1.5", "@babel/preset-env@^7.4.1", "@babel/preset-env@^7.4.3":
+"@babel/preset-env@^7.4.1", "@babel/preset-env@^7.4.3", "@babel/preset-env@^7.4.5":
   version "7.4.5"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.4.5.tgz#2fad7f62983d5af563b5f3139242755884998a58"
   integrity sha512-f2yNVXM+FsR5V8UwcFeIHzHWgnhXg3NpRmy0ADvALpnhB0SLbCvrCRr4BLOUYbQNLS+Z0Yer46x9dJXpXewI7w==
@@ -864,7 +864,7 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-transform-typescript" "^7.1.0"
 
-"@babel/preset-typescript@^7.1.0":
+"@babel/preset-typescript@^7.3.3":
   version "7.3.3"
   resolved "https://registry.yarnpkg.com/@babel/preset-typescript/-/preset-typescript-7.3.3.tgz#88669911053fa16b2b276ea2ede2ca603b3f307a"
   integrity sha512-mzMVuIP4lqtn4du2ynEfdO0+RYcslwrZiJHXu4MGaC1ctJiW2fyaeDrtjJGs7R/KebZ1sgowcIoWf4uRpEfKEg==
@@ -1028,56 +1028,56 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.2.tgz#63985d3d8b02530e0869962f4da09142ee8e200e"
   integrity sha512-n/VQ4mbfr81aqkx/XmVicOLjviMuy02eenSdJY33SVA7S2J42EU0P1H0mOogfYedb3wXA0d/LVtBrgTSm04WEA==
 
-"@jameslnewell/babel-preset@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/babel-preset/-/babel-preset-1.0.1.tgz#e6155918ae3525823c3bd717b443df5aa0df252b"
-  integrity sha512-vwmE32ZkfGY1JMT+TOr8sgPw+bNmnlJIhOfpnq0imG5st4OurffbvsgihMUJKCsYCv0kZMIK0l3Yg2pL/XshfQ==
+"@jameslnewell/babel-preset@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/babel-preset/-/babel-preset-1.1.0.tgz#6b955a5b014be49f01ace610543bc1faec33f812"
+  integrity sha512-jMf5moCDwex7uv5XoPyr22FpvyJ5mNE9wFd/ycpkSC20NaoH6GjmGipgcxBvgeySR1m6aQ6Go42r6lQ5vi0IMg==
   dependencies:
-    "@babel/plugin-proposal-class-properties" "^7.1.0"
-    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
-    "@babel/preset-env" "^7.1.5"
+    "@babel/plugin-proposal-class-properties" "^7.4.4"
+    "@babel/plugin-proposal-object-rest-spread" "^7.4.4"
+    "@babel/preset-env" "^7.4.5"
     "@babel/preset-react" "^7.0.0"
-    "@babel/preset-typescript" "^7.1.0"
+    "@babel/preset-typescript" "^7.3.3"
 
 "@jameslnewell/editor-config@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@jameslnewell/editor-config/-/editor-config-1.0.1.tgz#0179d976be2761c8b377dd78ecd3fa05bb0d8484"
   integrity sha512-r/xskk9ysRt69cAwBCdLLR3rLwXKtbULA+1S+tIttPlh9cS+W35r0DM/XdrDjiK5mYmUvUyH4giZa0dDi57T2A==
 
-"@jameslnewell/eslint-config@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.3.0.tgz#8dba46768e01dc0d05d24beee8dd7c310dc8fe7d"
-  integrity sha512-71+bJG4wUiqpbkdFEJUCXEZ0pfGK+rLtxOgtSHUGPufjhiuIUDIORd9hy7P6mwGCw5i26nO15qDRzAQT18w75A==
+"@jameslnewell/eslint-config@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.4.0.tgz#79187ca050d55e8a54cdc6eccdf86d153507ad46"
+  integrity sha512-Y5P1zKfMAJQ4EI2LPohgM0KFhtpUgm3bJrkrg1oYKxfV/MURHe6/GZejB0bV+8rsZ4NzXU6x2c8aIVWL+YtzJg==
   dependencies:
-    "@typescript-eslint/eslint-plugin" "^1.4.2"
-    "@typescript-eslint/parser" "^1.4.2"
-    eslint-config-prettier "^4.1.0"
-    eslint-plugin-prettier "^3.0.1"
+    "@typescript-eslint/eslint-plugin" "^1.9.0"
+    "@typescript-eslint/parser" "^1.9.0"
+    eslint-config-prettier "^4.3.0"
+    eslint-plugin-prettier "^3.1.0"
+    eslint-plugin-react "^7.13.0"
 
-"@jameslnewell/jest-preset-lint@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-lint/-/jest-preset-lint-1.0.0.tgz#8b98700ac78d36ef128a2b345f1caec7c56dca77"
-  integrity sha512-dICoUC07/BSjhnfsIPRhF4n1gAJxjcjGRFuLYCBllkcwIlZgZxaYIGfINY98NU+/K0mQr7uMou8fVmz6pSRULA==
+"@jameslnewell/jest-preset-lint@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-lint/-/jest-preset-lint-1.0.1.tgz#c73481eed2ff919a10774e0d8e10b90763d27ace"
+  integrity sha512-k7p9yMt5N9Vg/5GVBQa7qV6kJH12s/mgQhanVGConL/7dOQkR62/EAQuaHKCwNkye4fO7RYAmxgXpi4eduMZRg==
   dependencies:
-    jest-config "^24.1.0"
+    jest-config "^24.8.0"
     jest-runner-eslint "^0.7.3"
 
-"@jameslnewell/jest-preset-test@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-test/-/jest-preset-test-1.0.0.tgz#990e44e049a74ada678aafda35b0186950c9a486"
-  integrity sha512-qDFsD6VTGmOYs2El+tgDTf3VrtTpgnM9WVaWoFA8Yg7i96DMyLVubfvGwuxrle8oi7nSYFssuQKMZ3z7rwvF1A==
+"@jameslnewell/jest-preset-test@^1.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-test/-/jest-preset-test-2.0.1.tgz#98d546bc16998bcf99053717509480f5972173fa"
+  integrity sha512-Vo/r14tfIy4JZvponC2BSB3KA7IgLCdZS6eGefNTsN2y86et1bu2nPt7C935g8TJKgwDeEu/6rJb7M6pERfTEA==
   dependencies:
-    babel-core "^7.0.0-bridge.0"
-    babel-jest "^24.1.0"
-    jest-config "^24.1.0"
+    babel-jest "^24.8.0"
+    jest-config "^24.8.0"
 
-"@jameslnewell/jest-preset-type@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-type/-/jest-preset-type-1.0.0.tgz#a492cd7c19df0d8312292f480e67a6b671cdd649"
-  integrity sha512-/iP/LwP4cDaP7pc9VbK/Jp6tSyaMVoCrEEmrHZU1BFPjl4IXUKTikuLQstTEfWHGx4RcnBCcv0fKOxbQAMP78A==
+"@jameslnewell/jest-preset-type@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/jest-preset-type/-/jest-preset-type-1.0.1.tgz#4476c087c6c9327b007768c78b114ed97879cc77"
+  integrity sha512-F5XdalPYCGhUPJZyXtNBkjXksbUCfZRW/NqUhSRX3clNyFwrwx49cmm3J+6AvRKIijwjqjzdoOEd+dYAwcmrnA==
   dependencies:
-    jest-config "^24.1.0"
-    jest-runner-tsc "^1.4.0"
+    jest-config "^24.8.0"
+    jest-runner-tsc "^1.5.1"
 
 "@jameslnewell/prettier-config@^1.0.1":
   version "1.0.1"
@@ -1834,7 +1834,7 @@
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
   integrity sha512-SOhuU4wNBxhhTHxYaiG5NY4HBhDIDnJF60GU+2LqHAdKKer86//e4yg69aENCtQ04n0ovz+tq2YPME5t5yp4pw==
 
-"@typescript-eslint/eslint-plugin@^1.4.2":
+"@typescript-eslint/eslint-plugin@^1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-1.9.0.tgz#29d73006811bf2563b88891ceeff1c5ea9c8d9c6"
   integrity sha512-FOgfBorxjlBGpDIw+0LaZIXRX6GEEUfzj8LXwaQIUCp+gDOvkI+1WgugJ7SmWiISqK9Vj5r8S7NDKO/LB+6X9A==
@@ -1854,7 +1854,7 @@
   dependencies:
     "@typescript-eslint/typescript-estree" "1.9.0"
 
-"@typescript-eslint/parser@1.9.0", "@typescript-eslint/parser@^1.4.2":
+"@typescript-eslint/parser@1.9.0", "@typescript-eslint/parser@^1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-1.9.0.tgz#5796cbfcb9a3a5757aeb671c1ac88d7a94a95962"
   integrity sha512-CWgC1XrQ34H/+LwAU7vY5xteZDkNqeAkeidEpJnJgkKu0yqQ3ZhQ7S+dI6MX4vmmM1TKRbOrKuXc6W0fIHhdbA==
@@ -2424,11 +2424,6 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
   integrity sha512-ReZxvNHIOv88FlT7rxcXIIC0fPt4KZqZbOlivyWtXLt8ESx84zd3kMC6iK5jVeS2qt+g7ftS7ye4fi06X5rtRQ==
 
-babel-core@^7.0.0-bridge.0:
-  version "7.0.0-bridge.0"
-  resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-7.0.0-bridge.0.tgz#95a492ddd90f9b4e9a4a1da14eb335b87b634ece"
-  integrity sha512-poPX9mZH/5CSanm50Q+1toVci6pv5KSRv/5TWCwtzQS5XEwn40BcCrgIeMFWP9CKKIniKXNxoIOnOq4VVlGXhg==
-
 babel-helper-evaluate-path@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/babel-helper-evaluate-path/-/babel-helper-evaluate-path-0.5.0.tgz#a62fa9c4e64ff7ea5cea9353174ef023a900a67c"
@@ -2464,7 +2459,7 @@ babel-helper-to-multiple-sequence-expressions@^0.5.0:
   resolved "https://registry.yarnpkg.com/babel-helper-to-multiple-sequence-expressions/-/babel-helper-to-multiple-sequence-expressions-0.5.0.tgz#a3f924e3561882d42fcf48907aa98f7979a4588d"
   integrity sha512-m2CvfDW4+1qfDdsrtf4dwOslQC3yhbgyBFptncp4wvtdrDHqueW7slsYv4gArie056phvQFhT2nRcGS4bnm6mA==
 
-babel-jest@^24.1.0, babel-jest@^24.8.0:
+babel-jest@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-24.8.0.tgz#5c15ff2b28e20b0f45df43fe6b7f2aae93dba589"
   integrity sha512-+5/kaZt4I9efoXzPlZASyK/lN9qdRKmmUav9smVc0ruPQD7IsfucQ87gpOE8mn2jbDuS6M/YOW6n3v9ZoIfgnw==
@@ -3955,7 +3950,7 @@ dir-glob@2.0.0:
     arrify "^1.0.1"
     path-type "^3.0.0"
 
-doctrine@^2.0.0:
+doctrine@^2.0.0, doctrine@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-2.1.0.tgz#5cd01fc101621b42c4cd7f5d1a66243716d3f39d"
   integrity sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==
@@ -4264,19 +4259,32 @@ escodegen@^1.9.1:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-prettier@^4.1.0:
+eslint-config-prettier@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-4.3.0.tgz#c55c1fcac8ce4518aeb77906984e134d9eb5a4f0"
   integrity sha512-sZwhSTHVVz78+kYD3t5pCWSYEdVSBR0PXnwjDRsUs8ytIrK8PLXw+6FKp8r3Z7rx4ZszdetWlXYKOHoUrrwPlA==
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-plugin-prettier@^3.0.1:
+eslint-plugin-prettier@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.1.0.tgz#8695188f95daa93b0dc54b249347ca3b79c4686d"
   integrity sha512-XWX2yVuwVNLOUhQijAkXz+rMPPoCr7WFiAl8ig6I7Xn+pPVhDhzg4DxHpmbeb0iqjO9UronEA3Tb09ChnFVHHA==
   dependencies:
     prettier-linter-helpers "^1.0.0"
+
+eslint-plugin-react@^7.13.0:
+  version "7.13.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.13.0.tgz#bc13fd7101de67996ea51b33873cd9dc2b7e5758"
+  integrity sha512-uA5LrHylu8lW/eAH3bEQe9YdzpPaFd9yAJTwTi/i/BKTD7j6aQMKVAdGM/ML72zD6womuSK7EiGtMKuK06lWjQ==
+  dependencies:
+    array-includes "^3.0.3"
+    doctrine "^2.1.0"
+    has "^1.0.3"
+    jsx-ast-utils "^2.1.0"
+    object.fromentries "^2.0.0"
+    prop-types "^15.7.2"
+    resolve "^1.10.1"
 
 eslint-scope@^4.0.0, eslint-scope@^4.0.3:
   version "4.0.3"
@@ -4296,7 +4304,7 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-eslint@^5.15.0, eslint@^5.6.0:
+eslint@^5.16.0, eslint@^5.6.0:
   version "5.16.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.16.0.tgz#a1e3ac1aae4a3fbd8296fcf8f7ab7314cbb6abea"
   integrity sha512-S3Rz11i7c8AA5JPv7xAH+dOyq/Cu/VXHiHXBPOU1k/JAM5dXqQPt3qcrhpHSorXmrpu2g0gkIBVXAqCpzfoZIg==
@@ -5950,7 +5958,7 @@ jest-cli@^24.8.0:
     realpath-native "^1.1.0"
     yargs "^12.0.2"
 
-jest-config@^24.1.0, jest-config@^24.8.0:
+jest-config@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/jest-config/-/jest-config-24.8.0.tgz#77db3d265a6f726294687cbbccc36f8a76ee0f4f"
   integrity sha512-Czl3Nn2uEzVGsOeaewGWoDPD8GStxCpAe0zOYs2x2l0fZAgPbCr3uwUkgNKV3LwE13VXythM946cd5rdGkkBZw==
@@ -6148,7 +6156,7 @@ jest-runner-eslint@^0.7.3:
     create-jest-runner "^0.4.1"
     eslint "^5.6.0"
 
-jest-runner-tsc@^1.4.0:
+jest-runner-tsc@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/jest-runner-tsc/-/jest-runner-tsc-1.5.1.tgz#0a3b99b2cc2d55364544508c77c7dfc949df486a"
   integrity sha512-1gsyVnJZDZfdMjIhTDMkhCbc6TcGou/71j5JJBvn6IK9H4mDccUossSk1Kqr9X/lvnZ40W+LWIXvwZ7jpOxCRg==
@@ -6452,6 +6460,13 @@ jsprim@^1.2.2:
     extsprintf "1.3.0"
     json-schema "0.2.3"
     verror "1.10.0"
+
+jsx-ast-utils@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-2.1.0.tgz#0ee4e2c971fb9601c67b5641b71be80faecf0b36"
+  integrity sha512-yDGDG2DS4JcqhA6blsuYbtsT09xL8AoLuUR2Gb5exrw7UEM19sBcOTq+YBBhrNbl0PUC4R4LnFu+dHg2HKeVvA==
+  dependencies:
+    array-includes "^3.0.3"
 
 keycode@^2.2.0:
   version "2.2.0"
@@ -7438,7 +7453,7 @@ object.entries@^1.1.0:
     function-bind "^1.1.1"
     has "^1.0.3"
 
-"object.fromentries@^2.0.0 || ^1.0.0":
+object.fromentries@^2.0.0, "object.fromentries@^2.0.0 || ^1.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/object.fromentries/-/object.fromentries-2.0.0.tgz#49a543d92151f8277b3ac9600f1e930b189d30ab"
   integrity sha512-9iLiI6H083uiqUuvzyY6qrlmc/Gz8hLQFOcb/Ri/0xXFkSNS3ctV+CbE6yM2+AnkYfOB3dGjdzC0wrMLIhQICA==
@@ -8064,7 +8079,7 @@ prompts@^2.0.1:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==

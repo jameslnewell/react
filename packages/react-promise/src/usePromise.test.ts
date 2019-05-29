@@ -11,12 +11,14 @@ describe('usePromise()', () => {
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function runHook<P, R>(callback: (props: P) => R) {
     const ret = renderHook(callback);
     globalUnmount = ret.unmount;
     return ret;
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function runUsePromiseHook<T>(fn: Factory<T>) {
     return runHook(() => usePromise(fn));
   }

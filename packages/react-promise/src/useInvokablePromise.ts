@@ -9,6 +9,7 @@ import {isPromise} from './utils/isPromise';
 import {track} from './utils/track';
 import {getOutput, Output} from './utils/getOutput';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokablePromise<T, P extends any[]>(
   fn: Factory<T, P>,
   deps: Dependencies = [],
@@ -19,7 +20,7 @@ export function useInvokablePromise<T, P extends any[]>(
     initialState,
   );
 
-  const invoke = async (...args: P) => {
+  const invoke = async (...args: P): Promise<void> => {
     // execute and track the promise state
     const promise = fn(...args);
     if (isPromise(promise)) {

@@ -6,6 +6,7 @@ export enum Status {
   Rejected = 'rejected',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Factory<T, P extends any[] = []> {
   (...args: P): Promise<T> | undefined;
 }

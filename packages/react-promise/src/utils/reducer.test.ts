@@ -3,24 +3,28 @@ import {Status} from '../types';
 import {State} from './State';
 import {reset, resolving, resolved, rejected} from './Action';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const resetState: State<any> = {
   status: undefined,
   error: undefined,
   value: undefined,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const resolvingState: State<any> = {
   status: Status.Pending,
   error: undefined,
   value: undefined,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const resolvedState: State<any> = {
   status: Status.Fulfilled,
   error: undefined,
   value: {foo: 'bar'},
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rejectedState: State<any> = {
   status: Status.Rejected,
   error: 'Uh oh!',
