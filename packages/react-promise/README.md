@@ -10,6 +10,8 @@ yarn add @jameslnewell/react-promise
 
 ## Usage
 
+> <a href="https://codesandbox.io/embed/jameslnewellreactpromise-xe0om?fontsize=14">Live Example</a>
+
 ```js
 import React, {useState, useEffect} from 'react';
 import {usePromise, useInvokablePromise} from '@jameslnewell/react-promise';
