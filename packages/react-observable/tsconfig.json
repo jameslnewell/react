@@ -1,0 +1,14 @@
+{
+  "extends": "./node_modules/@jameslnewell/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node"
+  },
+  "include": ["src"],
+  "exclude": ["lib"]
+}
