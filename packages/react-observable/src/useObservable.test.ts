@@ -1,11 +1,11 @@
 import {renderHook} from 'react-hooks-testing-library';
 import {Status, Factory, useObservable} from '.';
-import {of, throwError, Observable} from 'rxjs';
+import {of, throwError, Observable, Subject} from 'rxjs';
 
 // waiting, received, completed errored
 const waiting = (): Observable<number> => Observable.create(() => {});
 const received = (): Observable<number> =>
-  Observable.create(subject => subject.next(1));
+  Observable.create((subject: Subject<number>) => subject.next(1));
 const completed = (): Observable<number> => of(1, 2, 3);
 
 describe('useObservable()', () => {
