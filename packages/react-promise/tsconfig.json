@@ -1,13 +1,15 @@
 {
   "extends": "./node_modules/@jameslnewell/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "noEmit": true,
     "jsx": "react",
     "lib": ["dom", "esnext"],
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "target": "esnext"
   },
   "include": ["src"],
   "exclude": ["lib"]
