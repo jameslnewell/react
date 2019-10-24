@@ -1,22 +1,22 @@
 import {useReducer, useEffect, Reducer, useRef} from 'react';
 import {Subscription} from '@jameslnewell/observable';
-import {Factory, Dependencies} from './types';
+import {Factory, Dependencies, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
 import {reducer} from './utils/reducer';
 import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
-import {getOutput, Output} from './utils/getOutput';
+import {getMetadata} from './utils/getMetadata';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useInvokableObservable<T, P extends any[]>(
+export function useInvokableObservable<T, E, P extends any[]>(
   fn: Factory<T, P> | undefined,
   deps: Dependencies = [],
-): Output<T> & {invoke: (...args: P) => void} {
-  const mounted = useMounted();
+): [(...args: P) => void, T | undefined, Metadata<E>] {
+  const isMounted = useMounted();
   const subscription = useRef<Subscription | undefined>(undefined);
-  const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(
+  const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
     reducer,
     initialState,
   );
@@ -32,12 +32,13 @@ export function useInvokableObservable<T, P extends any[]>(
     };
   }, deps);
 
-  return {
-    ...getOutput(state),
-    invoke: (...args: P) => {
+  return [
+    (...args: P) => {
       if (fn) {
-        subscription.current = invoke<T, P>({fn, dispatch, mounted}, args);
+        subscription.current = invoke<T, E, P>({fn, dispatch, isMounted}, args);
       }
     },
-  };
+    state.value,
+    getMetadata(state),
+  ];
 }

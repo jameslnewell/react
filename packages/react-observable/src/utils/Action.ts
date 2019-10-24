@@ -17,18 +17,18 @@ export interface CompletedAction {
   type: Status.Completed;
 }
 
-export interface ErroredAction {
+export interface ErroredAction<E> {
   type: Status.Errored;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any | undefined;
+  error: E | undefined;
 }
 
-export type Action<T> =
+export type Action<T, E> =
   | ResetAction
   | ObservingAction
   | ObservedAction<T>
   | CompletedAction
-  | ErroredAction;
+  | ErroredAction<E>;
 
 export function reset(): ResetAction {
   return {type: 'reset'};
@@ -47,6 +47,6 @@ export function completed(): CompletedAction {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function errored(error: any | undefined): ErroredAction {
+export function errored<E>(error: E | undefined): ErroredAction<E> {
   return {type: Status.Errored, error};
 }

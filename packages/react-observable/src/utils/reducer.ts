@@ -3,7 +3,10 @@ import {Action} from './Action';
 import {initialState} from './initialState';
 import {Status} from '../types';
 
-export function reducer<T>(state: State<T>, action: Action<T>): State<T> {
+export function reducer<T, E>(
+  state: State<T, E>,
+  action: Action<T, E>,
+): State<T, E> {
   switch (action.type) {
     case 'reset':
       return initialState;

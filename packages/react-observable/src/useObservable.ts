@@ -1,28 +1,28 @@
 import {useReducer, useEffect, Reducer, useRef} from 'react';
 import {Subscription} from '@jameslnewell/observable';
-import {Factory, Dependencies} from './types';
+import {Factory, Dependencies, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
 import {reducer} from './utils/reducer';
 import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
-import {getOutput, Output} from './utils/getOutput';
+import {getMetadata} from './utils/getMetadata';
 
-export function useObservable<T>(
+export function useObservable<T, E>(
   fn: Factory<T, []> | undefined,
   deps: Dependencies = [],
-): Output<T> {
+): [T | undefined, Metadata<E>] {
+  const isMounted = useMounted();
   const subscription = useRef<Subscription | undefined>(undefined);
-  const mounted = useMounted();
-  const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(
+  const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
     reducer,
     initialState,
   );
 
   useEffect(() => {
     if (fn) {
-      subscription.current = invoke({fn, dispatch, mounted}, []);
+      subscription.current = invoke({fn, dispatch, isMounted}, []);
     } else {
       dispatch(reset());
     }
@@ -34,5 +34,5 @@ export function useObservable<T>(
     };
   }, deps);
 
-  return getOutput(state);
+  return [state.value, getMetadata(state)];
 }

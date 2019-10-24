@@ -1,16 +1,10 @@
-import {Status} from '../types';
+import {Status, Metadata} from '../types';
 import {State} from './State';
 
-export interface Output<T> extends State<T> {
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
-}
-
-export function getOutput<T>(state: State<T>): Output<T> {
+export function getMetadata<T, E>(state: State<T, E>): Metadata<E> {
   return {
-    ...state,
+    status: state.status,
+    error: state.error,
     isWaiting: state.status === Status.Waiting,
     isReceived: state.status === Status.Receieved,
     isCompleted: state.status === Status.Completed,

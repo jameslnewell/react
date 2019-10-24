@@ -4,35 +4,38 @@ import {State} from './State';
 import {reset, observing, observed, errored, completed} from './Action';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const resetState: State<any> = {
+type TestState = State<any, any>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const resetState: TestState = {
   status: undefined,
   error: undefined,
   value: undefined,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const observingState: State<any> = {
+const observingState: TestState = {
   status: Status.Waiting,
   error: undefined,
   value: undefined,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const observedState: State<any> = {
+const observedState: TestState = {
   status: Status.Receieved,
   error: undefined,
   value: {foo: 'bar'},
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const completedState: State<any> = {
+const completedState: TestState = {
   status: Status.Completed,
   error: undefined,
   value: undefined,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const erroredState: State<any> = {
+const erroredState: TestState = {
   status: Status.Errored,
   error: 'Uh oh!',
   value: undefined,

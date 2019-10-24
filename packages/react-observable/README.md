@@ -43,14 +43,15 @@ const getUsername = async id => {
 };
 
 const UserProfile = ({id}) => {
-  const {status, value, error} = useInvokableObservable(() => getUsername(id), [
-    id,
-  ]);
+  const [username, {status, error}] = useInvokableObservable(
+    () => getUsername(id),
+    [id],
+  );
   return (
     <>
       {status === 'waiting' && '⏳ Waiting...'}
-      {status === 'received' && `⏺ Recieved ${value}`}
-      {status === 'completed' && `🏁 Completed ${value}`}
+      {status === 'received' && `⏺ Recieved ${username}`}
+      {status === 'completed' && `🏁 Completed ${username}`}
       {status === 'errored' && `❌ ${String(error)}`}
     </>
   );
@@ -75,14 +76,14 @@ function putUsername(id, username) {
 
 const UserProfile = ({id}) => {
   const input = React.useRef(null);
-  const {status, value, error, invoke} = useInvokableObservable(
+  const [save, value, {status, error}] = useInvokableObservable(
     username => putUsername(id, username),
     [id],
   );
   return (
     <>
       <input ref={input} />
-      <button onClick={() => invoke(input.current.value)}>Update</button>
+      <button onClick={() => save(input.current.value)}>Update</button>
       <hr />
       {status === 'waiting' && '⏳ Waiting...'}
       {status === 'received' && `⏺ Recieved ${value}`}
@@ -106,13 +107,13 @@ Immediately subscribes to an observable.
 
 #### Returns:
 
-- `status` - Whether the observable is waiting, recieved, completed or errored.
-- `value` - The value observed from the observable.
-- `error` - The error observed from the observable.
-- `isWaiting` - Whether we're waiting on a value from the observable.
-- `isReceieved` - Whether we've recevied a value from the observable.
-- `isCompleted`- Whether the observable has completed.
-- `isErrored`- Whether the observable has errored.
+- `[0]` - The value observed from the observable.
+- `[1].status` - Whether the observable is waiting, recieved, completed or errored.
+- `[1].error` - The error observed from the observable.
+- `[1].isWaiting` - Whether we're waiting on a value from the observable.
+- `[1].isReceieved` - Whether we've recevied a value from the observable.
+- `[1].isCompleted`- Whether the observable has completed.
+- `[1].isErrored`- Whether the observable has errored.
 
 ### useInvokableObservable()
 
@@ -125,11 +126,11 @@ Subscribes to an observable when the `invoke` method is called.
 
 #### Returns:
 
-- `invoke` - A function to invoke the observable.
-- `status` - Whether the observable is waiting, recieved, completed or errored.
-- `value` - The value observed from the observable.
-- `error` - The error observed from the observable.
-- `isWaiting` - Whether we're waiting on a value from the observable.
-- `isReceieved` - Whether we've recevied a value from the observable.
-- `isCompleted`- Whether the observable has completed.
-- `isErrored`- Whether the observable has errored.
+- `[0]` - A function to invoke the observable.
+- `[1]` - The value observed from the observable.
+- `[2].status` - Whether the observable is waiting, recieved, completed or errored.
+- `[2].error` - The error observed from the observable.
+- `[2].isWaiting` - Whether we're waiting on a value from the observable.
+- `[2].isReceieved` - Whether we've recevied a value from the observable.
+- `[2].isCompleted`- Whether the observable has completed.
+- `[2].isErrored`- Whether the observable has errored.

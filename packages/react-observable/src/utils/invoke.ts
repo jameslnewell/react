@@ -4,15 +4,15 @@ import {Factory} from '../types';
 import {Action, observing, observed, errored, completed} from './Action';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function invoke<T, P extends any[]>(
+export function invoke<T, E, P extends any[]>(
   {
     fn,
     dispatch,
-    mounted,
+    isMounted,
   }: {
     fn: Factory<T, P>;
-    dispatch: Dispatch<Action<T>>;
-    mounted: RefObject<boolean>;
+    dispatch: Dispatch<Action<T, E>>;
+    isMounted: RefObject<boolean>;
   },
   args: P,
 ): Subscription {
@@ -20,17 +20,17 @@ export function invoke<T, P extends any[]>(
   const observable = fn(...args);
   return observable.subscribe({
     next: value => {
-      if (mounted.current) {
+      if (isMounted.current) {
         dispatch(observed(value));
       }
     },
     error: error => {
-      if (mounted.current) {
-        dispatch(errored(error));
+      if (isMounted.current) {
+        dispatch(errored<E>(error));
       }
     },
     complete: () => {
-      if (mounted.current) {
+      if (isMounted.current) {
         dispatch(completed());
       }
     },
