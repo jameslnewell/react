@@ -14,12 +14,11 @@
   ],
   "repository": "jameslnewell/react-observable",
   "files": [
-    "lib",
-    "types"
+    "dist"
   ],
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "types": "types/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@jameslnewell/observable": "^1.1.0"
   },
