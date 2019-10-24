@@ -1055,10 +1055,10 @@
   resolved "https://registry.yarnpkg.com/@jameslnewell/editor-config/-/editor-config-1.0.1.tgz#0179d976be2761c8b377dd78ecd3fa05bb0d8484"
   integrity sha512-r/xskk9ysRt69cAwBCdLLR3rLwXKtbULA+1S+tIttPlh9cS+W35r0DM/XdrDjiK5mYmUvUyH4giZa0dDi57T2A==
 
-"@jameslnewell/eslint-config@^0.13.3":
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.13.3.tgz#c69029f0a64d8aa5b251c5c8e2260586fc6f7ba6"
-  integrity sha512-/uAiSoBrtahSa6oDJYqg+1+TUXj/QaZWiMYOFo/k+lLF80fZ1rNnZRoUlP+1+s2ihosL2y8QhW6+Keb/WRKASw==
+"@jameslnewell/eslint-config@^0.13.5":
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.13.5.tgz#43f87abcaa3e66218da2b75f4eaf37727fd3509c"
+  integrity sha512-p86XHCtzb6BGAdPX5ePGzhz3kV3Qdn8t5XV0k/D+/CLkTwxJ13z5V2nW/nlBXVm/WH3avJyYJsAXjdX0DPts/A==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^2.3.3"
     "@typescript-eslint/parser" "^2.3.3"

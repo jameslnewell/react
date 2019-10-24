@@ -31,7 +31,7 @@
     "@babel/core": "^7.4.5",
     "@jameslnewell/babel-preset": "^2.0.0",
     "@jameslnewell/editor-config": "^1.0.1",
-    "@jameslnewell/eslint-config": "^0.13.3",
+    "@jameslnewell/eslint-config": "^0.13.5",
     "@jameslnewell/jest-preset-test": "^5.0.0",
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
