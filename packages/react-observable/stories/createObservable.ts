@@ -1,4 +1,4 @@
-import {Observable, Subject} from 'rxjs';
+import {Observable, create} from '@jameslnewell/observable';
 
 export enum ObservableType {
   None = 'none',
@@ -11,25 +11,32 @@ export enum ObservableType {
 export function createObservable(
   type: ObservableType,
   delay: number,
-): Observable<number> | undefined {
+): undefined | (() => Observable<number>) {
   if (type === ObservableType.None) {
     return undefined;
   }
-  return Observable.create((subject: Subject<number>) => {
-    switch (type) {
-      case ObservableType.Waiting:
-        return;
-      case ObservableType.Completed:
-        subject.complete();
-        return;
-      case ObservableType.Errored:
-        subject.error(new Error('Errored!'));
-        return;
-    }
-    let count = 0;
-    const interval = setInterval(() => {
-      subject.next(++count);
-    }, delay);
-    return () => clearInterval(interval);
-  });
+  return () => {
+    return create(subject => {
+      switch (type) {
+        case ObservableType.Waiting: {
+          return;
+        }
+        case ObservableType.Completed: {
+          subject.complete();
+          return;
+        }
+        case ObservableType.Errored: {
+          subject.error(new Error('Errored!'));
+          return;
+        }
+        default: {
+          let count = 0;
+          const interval = setInterval(() => {
+            subject.next(++count);
+          }, delay);
+          return () => clearInterval(interval);
+        }
+      }
+    });
+  };
 }

@@ -1,5 +1,5 @@
 import {DependencyList} from 'react';
-import {Observable} from 'rxjs';
+import {Observable} from '@jameslnewell/observable';
 
 export enum Status {
   Waiting = 'waiting',
@@ -10,7 +10,7 @@ export enum Status {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Factory<T, P extends any[] = []> {
-  (...args: P): Observable<T> | undefined;
+  (...args: P): Observable<T>;
 }
 
 export type Dependencies = DependencyList;

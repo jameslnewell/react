@@ -1,4 +1,4 @@
-lib
-types
+dist
 node_modules
 yarn-error.log
+.rts2_cache_*

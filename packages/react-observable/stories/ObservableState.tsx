@@ -14,7 +14,7 @@ export const ObservableState: React.FunctionComponent<ObservableStateProps> = ({
 }) => {
   switch (status) {
     case Status.Waiting:
-      return <>{status} 🔄</>;
+      return <>{status} ⏳</>;
 
     case Status.Receieved:
       return (
@@ -38,6 +38,6 @@ export const ObservableState: React.FunctionComponent<ObservableStateProps> = ({
       );
 
     default:
-      return <>unknown ?</>;
+      return <>unknown 🤷‍♂️</>;
   }
 };
