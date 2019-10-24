@@ -9,7 +9,7 @@ import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
-export function useObservable<T, E>(
+export function useObservable<T, E = any>(
   fn: Factory<T, []> | undefined,
   deps: Dependencies = [],
 ): [T | undefined, Metadata<E>] {

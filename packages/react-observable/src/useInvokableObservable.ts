@@ -10,7 +10,7 @@ import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useInvokableObservable<T, E, P extends any[]>(
+export function useInvokableObservable<T, E = any, P extends any[] = any[]>(
   fn: Factory<T, P> | undefined,
   deps: Dependencies = [],
 ): [(...args: P) => void, T | undefined, Metadata<E>] {
