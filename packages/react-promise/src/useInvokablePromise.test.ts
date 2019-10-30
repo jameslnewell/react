@@ -7,7 +7,7 @@ describe('useInvokablePromise()', () => {
   function renderUseInvokablePromiseHook<T, P extends any[] = []>(
     fn: Factory<T, P> | undefined,
   ) {
-    return renderHook(() => useInvokablePromise(fn));
+    return renderHook(() => useInvokablePromise(fn, []));
   }
 
   function delay<T>(fn: () => Promise<T>, ms = 100): Promise<T> {

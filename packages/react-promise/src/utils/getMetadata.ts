@@ -1,13 +1,5 @@
 import {State} from './State';
-import {Status} from '../types';
-
-export interface Metadata<E> {
-  status: Status | undefined;
-  error?: E;
-  isPending: boolean;
-  isFulfilled: boolean;
-  isRejected: boolean;
-}
+import {Status, Metadata} from '../types';
 
 export function getMetadata<T, E>(state: State<T, E>): Metadata<E> {
   return {

@@ -4,7 +4,7 @@ import {Status, Factory, usePromise} from '.';
 describe('usePromise()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function renderUsePromiseHook<T>(fn: Factory<T> | undefined) {
-    return renderHook(() => usePromise(fn));
+    return renderHook(() => usePromise(fn, []));
   }
 
   function delay<T>(fn: () => Promise<T>, ms = 100): Promise<T> {

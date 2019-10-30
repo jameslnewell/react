@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {useReducer, useEffect, Reducer, useRef} from 'react';
-import {Factory, Dependencies} from './types';
+import {Factory, Dependencies, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
 import {reducer} from './utils/reducer';
 import {initialState} from './utils/initialState';
 import {execute} from './utils/execute';
-import {getMetadata, Metadata} from './utils/getMetadata';
+import {getMetadata} from './utils/getMetadata';
 
 export function usePromise<T, E = any>(
   fn: Factory<T, []> | undefined,
-  deps: Dependencies = [],
+  deps: Dependencies,
 ): [T | undefined, Metadata<E>] {
   const current = useRef<Promise<any> | undefined>(undefined);
   const isMounted = useMounted();

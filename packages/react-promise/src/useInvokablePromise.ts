@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {useReducer, useEffect, Reducer, useRef} from 'react';
-import {Dependencies, Factory} from './types';
+import {Dependencies, Factory, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
 import {reducer} from './utils/reducer';
 import {initialState} from './utils/initialState';
 import {execute} from './utils/execute';
-import {getMetadata, Metadata} from './utils/getMetadata';
+import {getMetadata} from './utils/getMetadata';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokablePromise<T, P extends any[], E = any>(
   fn: Factory<T, P> | undefined,
-  deps: Dependencies = [],
+  deps: Dependencies,
 ): [() => void, T | undefined, Metadata<E>] {
   const current = useRef<Promise<any> | undefined>(undefined);
   const isMounted = useMounted();
