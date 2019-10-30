@@ -4,11 +4,11 @@ export interface ResetAction {
   type: 'reset';
 }
 
-export interface ResolvingAction {
+export interface PendingAction {
   type: Status.Pending;
 }
 
-export interface ResolvedAction<T> {
+export interface FulfilledAction<T> {
   type: Status.Fulfilled;
   data: T | undefined;
 }
@@ -21,19 +21,19 @@ export interface RejectedAction<E> {
 
 export type Action<T, E> =
   | ResetAction
-  | ResolvingAction
-  | ResolvedAction<T>
+  | PendingAction
+  | FulfilledAction<T>
   | RejectedAction<E>;
 
 export function reset(): ResetAction {
   return {type: 'reset'};
 }
 
-export function resolving(): ResolvingAction {
+export function pending(): PendingAction {
   return {type: Status.Pending};
 }
 
-export function resolved<T>(data: T | undefined): ResolvedAction<T> {
+export function fulfilled<T>(data: T | undefined): FulfilledAction<T> {
   return {type: Status.Fulfilled, data};
 }
 

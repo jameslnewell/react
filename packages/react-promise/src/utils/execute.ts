@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Dispatch, RefObject, MutableRefObject} from 'react';
 import {Factory} from '../types';
-import {Action, resolving, resolved, rejected} from './Action';
+import {Action, pending, fulfilled, rejected} from './Action';
 
 export interface ExecuteOptions<T, E, P extends any[]> {
   fn: Factory<T, P>;
@@ -11,7 +11,7 @@ export interface ExecuteOptions<T, E, P extends any[]> {
 }
 
 export async function execute<T, E, P extends any[]>(
-  {fn, dispatch, isMounted, current}: ExecuteOptions<T, E, P>,
+  {fn, disppendingounted, current}: ExecuteOptions<T, E, P>,
   args: P,
 ): Promise<void> {
   dispatch(resolving());
@@ -20,7 +20,7 @@ export async function execute<T, E, P extends any[]>(
     const data = await promise;
     // only handle if we're not mounted or this is a previous promise resolving
     if (isMounted.current && current.current === promise) {
-      dispatch(resolved(data));
+      dispatch(fulfilled(data));
     }
   } catch (error) {
     // only handle if we're not mounted or this is a previous promise rejecting
