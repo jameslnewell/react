@@ -4,6 +4,14 @@
 
 ## Installation
 
+NPM:
+
+```bash
+npm install @jameslnewell/react-promise
+```
+
+Yarn:
+
 ```bash
 yarn add @jameslnewell/react-promise
 ```
