@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-promise",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "React hooks for working with promises.",
   "keywords": [
     "react",
@@ -18,12 +18,11 @@
     "jameslnewell"
   ],
   "files": [
-    "lib",
-    "types"
+    "dist"
   ],
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "types": "types/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "peerDependencies": {
     "@types/react": "^16.9.11",
     "react": "^16.11.0"

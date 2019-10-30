@@ -11,10 +11,10 @@ export interface ExecuteOptions<T, E, P extends any[]> {
 }
 
 export async function execute<T, E, P extends any[]>(
-  {fn, disppendingounted, current}: ExecuteOptions<T, E, P>,
+  {fn, dispatch, isMounted, current}: ExecuteOptions<T, E, P>,
   args: P,
 ): Promise<void> {
-  dispatch(resolving());
+  dispatch(pending());
   const promise = (current.current = fn(...args));
   try {
     const data = await promise;
