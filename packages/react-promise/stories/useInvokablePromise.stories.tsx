@@ -9,8 +9,8 @@ import './styles.css';
 const Example: React.FunctionComponent = () => {
   const [type, setType] = React.useState<PromiseType>('resolve');
   const [delay, setDelay] = React.useState(1000);
-  const {status, error, value, invoke} = useInvokablePromise(
-    () => createPromise(type, delay),
+  const [invoke, value, {status, error}] = useInvokablePromise(
+    createPromise(type, delay),
     [type, delay],
   );
 

@@ -13,17 +13,17 @@ export interface ResolvedAction<T> {
   data: T | undefined;
 }
 
-export interface RejectedAction {
+export interface RejectedAction<E> {
   type: Status.Rejected;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any | undefined;
+  error: E | undefined;
 }
 
-export type Action<T> =
+export type Action<T, E> =
   | ResetAction
   | ResolvingAction
   | ResolvedAction<T>
-  | RejectedAction;
+  | RejectedAction<E>;
 
 export function reset(): ResetAction {
   return {type: 'reset'};
@@ -38,6 +38,6 @@ export function resolved<T>(data: T | undefined): ResolvedAction<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function rejected(error: any | undefined): RejectedAction {
+export function rejected<E>(error: E | undefined): RejectedAction<E> {
   return {type: Status.Rejected, error};
 }

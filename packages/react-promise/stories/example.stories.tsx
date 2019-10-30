@@ -4,55 +4,54 @@ import {storiesOf} from '@storybook/react';
 import {usePromise, useInvokablePromise} from '../src';
 import './styles.css';
 
-async function getUsername(id: string): Promise<string> {
-  console.log(`getUsername(${id})`);
-  return new Promise(resolve => setTimeout(() => resolve('LunaticClaw'), 1000));
+async function getUser(id: string): Promise<{name: string}> {
+  console.log(`getUser(${id})`);
+  return new Promise(resolve =>
+    setTimeout(() => resolve({name: 'LunaticClaw'}), 1000),
+  );
 }
 
-async function putUsername(id: string, username: string): Promise<void> {
-  console.log(`putUsername(${id}. ${username})`);
+async function putUser(id: string, data: {name: string}): Promise<void> {
+  console.log(`putUser(${id}, ${data})`);
   return new Promise(resolve => setTimeout(() => resolve(), 1000));
 }
 
 const Example: React.FC<{id: string}> = ({id}) => {
-  const [username, setUsername] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [isEdited, setEdited] = useState<boolean>(false);
-
-  const load = usePromise(() => getUsername(id), [id]);
-
-  const save = useInvokablePromise(() => putUsername(id, username), [
+  const [user, loading] = usePromise(() => getUser(id), [id]);
+  const [save, , saving] = useInvokablePromise(name => putUser(id, {name}), [
     id,
-    username,
   ]);
 
-  // reset the username when it loads
+  // reset the name when the name loads from the server
   useEffect(() => {
-    setUsername(load.value || '');
+    setName((user && user.name) || '');
     setEdited(false);
-  }, [load.value]);
+  }, [user && user.name]);
 
-  const isLoading = load.isPending;
-  const isLoadingError = load.isRejected;
-  const isSaving = save.isPending;
+  const isLoading = loading.isPending;
+  const isLoadingError = loading.isRejected;
+  const isSaving = saving.isPending;
   const canEdit = !isLoading && !isLoadingError && !isSaving;
   const canSave = !isLoading && !isLoadingError && !isSaving && isEdited;
-  const isSaved = save.isFulfilled && !isEdited;
-  const error = load.error || save.error;
+  const isSaved = saving.isFulfilled && !isEdited;
+  const error = loading.error || saving.error;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEdited(true);
-    setUsername(event.target.value);
+    setName(event.target.value);
   };
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await save.invoke();
+    await save();
     setEdited(false);
   };
 
   return (
     <form onSubmit={handleSave}>
-      <input disabled={!canEdit} value={username} onChange={handleChange} />
+      <input disabled={!canEdit} value={name} onChange={handleChange} />
       {isEdited && '📝'}
       {(isLoading || isSaving) && '🔄'}
       {isSaved && '✅'}

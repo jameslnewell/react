@@ -1,15 +1,18 @@
 import {State} from './State';
 import {Status} from '../types';
 
-export interface Output<T> extends State<T> {
+export interface Metadata<E> {
+  status: Status | undefined;
+  error?: E;
   isPending: boolean;
   isFulfilled: boolean;
   isRejected: boolean;
 }
 
-export function getOutput<T>(state: State<T>): Output<T> {
+export function getMetadata<T, E>(state: State<T, E>): Metadata<E> {
   return {
-    ...state,
+    status: state.status,
+    error: state.error,
     isPending: state.status === Status.Pending,
     isFulfilled: state.status === Status.Fulfilled,
     isRejected: state.status === Status.Rejected,
