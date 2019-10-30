@@ -1,5 +1,9 @@
 # @jameslnewell/react-promise
 
+![npm (scoped)](https://img.shields.io/npm/v/@jameslnewell/react-promise.svg)
+[![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-promise)](https://bundlephobia.com/result?p=@jameslnewell/react-promise)
+[![Actions Status](https://github.com/jameslnewell/react-promise/workflows/main/badge.svg)](https://github.com/jameslnewell/react-promise/actions)
+
 🎣 React hooks for working with promises.
 
 ## Installation
