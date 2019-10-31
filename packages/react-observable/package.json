@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-observable",
-  "version": "2.0.0-preview.7",
+  "version": "2.0.0-preview.8",
   "description": "🎣 React hooks for working with observables.",
   "keywords": [
     "react",
@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "dependencies": {
-    "@jameslnewell/observable": "^1.2.3"
+    "@jameslnewell/observable": "^1.2.4"
   },
   "peerDependencies": {
     "@types/react": "^16.9.11",
