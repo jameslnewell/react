@@ -1,6 +1,7 @@
 # @jameslnewell/react-observable
 
 ![npm (scoped)](https://img.shields.io/npm/v/@jameslnewell/react-observable.svg)
+[![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-observable)](https://bundlephobia.com/result?p=@jameslnewell/react-observable)
 [![Actions Status](https://github.com/jameslnewell/react-observable/workflows/main/badge.svg)](https://github.com/jameslnewell/react-observable/actions)
 
 🎣 React hooks for working with observables.
@@ -27,7 +28,7 @@ yarn add @jameslnewell/react-observable
 
 ### useObservable()
 
-Start observing the observable immediately to request data from a server.
+Start observing an observable immediately e.g. fetch data from the server when a component is mounted
 
 ```js
 import React from 'react';
@@ -35,7 +36,7 @@ import {fromFetch} from 'rxjs/fetch';
 import {switchMap, map} from 'rxjs/operators';
 import {useObservable} from '@jameslnewell/react-observable';
 
-const getUsername = async id => {
+const getUser = async id => {
   return fromFetch(`https://jsonplaceholder.typicode.com/users/${id}`).pipe(
     switchMap(response => response.json()),
     map(data => data.username),
@@ -43,52 +44,59 @@ const getUsername = async id => {
 };
 
 const UserProfile = ({id}) => {
-  const [username, {status, error}] = useInvokableObservable(
-    () => getUsername(id),
+  const [user, {status, error}] = useInvokableObservable(
+    () => getUser(id),
     [id],
   );
-  return (
-    <>
-      {status === 'waiting' && '⏳ Waiting...'}
-      {status === 'received' && `⏺ Recieved ${username}`}
-      {status === 'completed' && `🏁 Completed ${username}`}
-      {status === 'errored' && `❌ ${String(error)}`}
-    </>
-  );
+  switch (status) {
+    case 'recieving':
+      return <>Loading...</>;
+    case 'recieved':
+    case 'completed':
+      return (
+        <>
+          Hello <strong>{user.name}</strong>!
+        </>
+      );
+    case 'errored':
+      return (
+        <>
+          Sorry, we couldn't find that user.
+        <>
+      );
+  }
 };
 ```
 
 ### useInvokableObservable()
 
-Start observing the observable on interaction to send data from a server.
+Start observing an observable when triggered e.g. change data on the server after the user clicks a button
 
 ```js
 import * as React from 'react';
 import {fromFetch} from 'rxjs/fetch';
 import {useInvokableObservable} from '@jameslnewell/react-observable';
 
-function putUsername(id, username) {
+const putUser = (id, data) => {
   return fromFetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
     method: 'POST',
-    body: JSON.stringify({username}),
+    body: JSON.stringify(data),
   });
-}
+};
 
-const UserProfile = ({id}) => {
+const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
-  const [save, value, {status, error}] = useInvokableObservable(
-    username => putUsername(id, username),
+  const [save, , {isReceiving}] = useInvokableObservable(
+    data => putUser(id, data),
     [id],
   );
+  const handleSave = async event => save(id, {name: input.current.value});
   return (
     <>
       <input ref={input} />
-      <button onClick={() => save(input.current.value)}>Update</button>
-      <hr />
-      {status === 'waiting' && '⏳ Waiting...'}
-      {status === 'received' && `⏺ Recieved ${value}`}
-      {status === 'completed' && `🏁 Completed ${value}`}
-      {status === 'errored' && `❌ ${String(error)}`}
+      <button disabled={isReceiving} onClick={handleSave}>
+        Save
+      </button>
     </>
   );
 };

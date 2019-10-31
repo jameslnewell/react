@@ -1,16 +1,44 @@
 import {renderHook, act} from '@testing-library/react-hooks';
-import {Status, Factory, useInvokableObservable} from '.';
 import {
   Observable,
   create,
   fromArray,
   fromError,
 } from '@jameslnewell/observable';
+import {Status, Factory, useInvokableObservable} from '.';
 
 // waiting, received, completed errored
 const waiting = (): Observable<number> => create(() => {});
-const received = (): Observable<number> => create(observer => observer.next(1));
+const received = (x = 1): Observable<number> =>
+  create(observer => observer.next(x));
 const completed = (): Observable<number> => fromArray([1, 2, 3]);
+const errored = (e?: any): Observable<number> => fromError(e);
+
+const delay = <T, E = any>(
+  observable: Observable<T, E>,
+  ms = 100,
+): Observable<T, E> => {
+  return create(observer => {
+    const subscription = observable.subscribe({
+      next: data => setTimeout(() => observer.next(data), ms),
+      complete: () => setTimeout(() => observer.complete(), ms),
+      error: error => setTimeout(() => observer.error(error), ms),
+    });
+    return subscription.unsubscribe;
+  });
+};
+
+function wait<T>(fn: () => Promise<T>, ms = 100): Promise<T> {
+  return new Promise((resolve, reject) =>
+    setTimeout(async () => {
+      try {
+        resolve(fn());
+      } catch (error) {
+        reject(error);
+      }
+    }, ms),
+  );
+}
 
 describe('useInvokableObservable()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -168,5 +196,51 @@ describe('useInvokableObservable()', () => {
         error: undefined,
       }),
     ]);
+  });
+
+  it('should not update state with the result of an old observable when an old observable publishes a value after the current observable', async () => {
+    const {result, waitForNextUpdate, rerender} = renderHook(
+      ({ms}: {ms: number}) =>
+        useInvokableObservable(() => delay(received(ms), ms), [ms]),
+      {initialProps: {ms: 100}},
+    );
+    act(() => result.current[0]());
+    expect(result.current[2].isWaiting).toBeTruthy();
+    rerender({ms: 10});
+    act(() => result.current[0]());
+    await waitForNextUpdate();
+    await wait(async () => {
+      expect(result.current).toEqual([
+        expect.any(Function),
+        10,
+        expect.objectContaining({
+          status: Status.Receieved,
+          error: undefined,
+        }),
+      ]);
+    }, 100);
+  });
+
+  it('should not update state with the result of an old observable when an old observable errored after the current observable', async () => {
+    const {result, waitForNextUpdate, rerender} = renderHook(
+      ({ms}: {ms: number}) =>
+        useInvokableObservable(() => delay(errored(ms), ms), [ms]),
+      {initialProps: {ms: 100}},
+    );
+    act(() => result.current[0]());
+    expect(result.current[2].isWaiting).toBeTruthy();
+    rerender({ms: 10});
+    act(() => result.current[0]());
+    await waitForNextUpdate();
+    await wait(async () => {
+      expect(result.current).toEqual([
+        expect.any(Function),
+        undefined,
+        expect.objectContaining({
+          status: Status.Errored,
+          error: 10,
+        }),
+      ]);
+    }, 100);
   });
 });

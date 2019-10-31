@@ -1076,10 +1076,10 @@
   dependencies:
     babel-jest "^24.9.0"
 
-"@jameslnewell/observable@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.1.0.tgz#8a74201aa7ed2bf2f1a78299d20bd687578e386d"
-  integrity sha512-K8FnRKSGUiNvj+Z7f1iyo8VLBuUUnKQU8wxMk6lKBqHlXQuWElipv4e9FY/Bxo/Xi9tb1xE8vPmSig6uTEG2Og==
+"@jameslnewell/observable@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.2.3.tgz#82b1d1b6034db94f8c4e39263e4c40e2b218361c"
+  integrity sha512-IDhAYS00hkxv95KU4imGGt4ObuZuAhkvx/eVdhRCuSLRe3SeJQE0DWaU2ecqmzTrjAQzpMI7+g51Ws0HQUDr8A==
 
 "@jameslnewell/prettier-config@^1.0.1":
   version "1.0.1"

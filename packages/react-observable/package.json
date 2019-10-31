@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-observable",
-  "version": "2.0.0-preview.5",
+  "version": "2.0.0-preview.6",
   "description": "🎣 React hooks for working with observables.",
   "keywords": [
     "react",
@@ -16,15 +16,16 @@
   "files": [
     "dist"
   ],
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "dependencies": {
-    "@jameslnewell/observable": "^1.1.0"
+    "@jameslnewell/observable": "^1.2.3"
   },
   "peerDependencies": {
-    "@types/react": "^16.8.18",
-    "react": "^16.8.6"
+    "@types/react": "^16.9.11",
+    "react": "^16.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
