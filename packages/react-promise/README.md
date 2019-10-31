@@ -6,6 +6,8 @@
 
 🎣 React hooks for working with promises.
 
+> If you need to work with promises, try [`@jameslnewell/react-observable`](https://github.com/jameslnewell/react-observable).
+
 ## Installation
 
 NPM:
