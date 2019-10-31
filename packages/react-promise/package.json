@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-promise",
-  "version": "3.0.4",
+  "version": "3.0.6",
   "description": "React hooks for working with promises.",
   "keywords": [
     "react",
@@ -17,6 +17,7 @@
     "rejected",
     "jameslnewell"
   ],
+  "repository": "jameslnewell/react-promise",
   "files": [
     "dist"
   ],
