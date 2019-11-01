@@ -18,7 +18,7 @@ export type UseInvokablePromiseMetadata<E = any> = Metadata<E>;
 export function useInvokablePromise<T, E = any, P extends any[] = any[]>(
   fn: UseInvokablePromiseFactory<T, P> | undefined,
   deps: UseInvokablePromiseDependencies,
-): [() => void, T | undefined, UseInvokablePromiseMetadata<E>] {
+): [() => Promise<T>, T | undefined, UseInvokablePromiseMetadata<E>] {
   const current = useRef<Promise<any> | undefined>(undefined);
   const isMounted = useMounted();
   const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
@@ -26,10 +26,14 @@ export function useInvokablePromise<T, E = any, P extends any[] = any[]>(
     initialState,
   );
 
-  const invoke = (...args: P): void => {
-    // execute and track the promise state
+  const invoke = async (...args: P): Promise<T> => {
     if (fn) {
-      execute<T, E, P>({fn, dispatch, isMounted, current}, args);
+      // execute and track the promise state
+      return execute<T, E, P>({fn, dispatch, isMounted, current}, args);
+    } else {
+      throw new Error(
+        "The invoke function cannot be called at this time because the factory didn't return a promise.",
+      );
     }
   };
 

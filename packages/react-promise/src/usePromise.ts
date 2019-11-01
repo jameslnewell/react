@@ -29,7 +29,7 @@ export function usePromise<T, E = any>(
     // reset state whenever the dependencies change i.e. the result returned by the function will be a new promise
     // execute and track the promise state
     if (fn) {
-      execute<T, E, []>({fn, dispatch, isMounted, current}, []);
+      execute<T, E, []>({fn, dispatch, isMounted, current}, []).catch(() => {});
     } else {
       current.current = undefined;
       dispatch(reset());

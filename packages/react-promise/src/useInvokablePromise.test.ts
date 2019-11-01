@@ -55,7 +55,10 @@ describe('useInvokablePromise()', () => {
     const {result} = renderUseInvokablePromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
@@ -70,7 +73,10 @@ describe('useInvokablePromise()', () => {
     const {result, waitForNextUpdate} = renderUseInvokablePromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     expect(result.current).toEqual([
       expect.any(Function),
@@ -86,7 +92,10 @@ describe('useInvokablePromise()', () => {
     const {result, waitForNextUpdate} = renderUseInvokablePromiseHook(() =>
       delay(() => Promise.reject(new Error('This is a test error!'))),
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     expect(result.current).toEqual([
       expect.any(Function),
@@ -102,7 +111,10 @@ describe('useInvokablePromise()', () => {
     const {result, unmount} = renderUseInvokablePromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     unmount();
     expect(result.current).toEqual([
       expect.any(Function),
@@ -125,10 +137,16 @@ describe('useInvokablePromise()', () => {
         ),
       {initialProps: {step: 0}},
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     rerender({step: 1});
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
@@ -151,10 +169,16 @@ describe('useInvokablePromise()', () => {
         ),
       {initialProps: {step: 0}},
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     rerender({step: 1});
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
@@ -177,10 +201,16 @@ describe('useInvokablePromise()', () => {
         ),
       {initialProps: {step: 0}},
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     rerender({step: 1});
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     expect(result.current).toEqual([
       expect.any(Function),
@@ -198,10 +228,15 @@ describe('useInvokablePromise()', () => {
         useInvokablePromise(() => delay(() => Promise.resolve(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     expect(result.current[2].isPending).toBeTruthy();
     rerender({ms: 10});
-    act(() => result.current[0]());
+    act(() => {
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     await delay(async () => {
       expect(result.current).toEqual([
@@ -221,10 +256,15 @@ describe('useInvokablePromise()', () => {
         useInvokablePromise(() => delay(() => Promise.reject(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
-    act(() => result.current[0]());
+    act(() => {
+      // run async and don't wait
+      result.current[0]().catch(() => {});
+    });
     expect(result.current[2].isPending).toBeTruthy();
     rerender({ms: 10});
-    act(() => result.current[0]());
+    act(() => {
+      result.current[0]().catch(() => {});
+    });
     await waitForNextUpdate();
     await delay(async () => {
       expect(result.current).toEqual([
@@ -236,5 +276,24 @@ describe('useInvokablePromise()', () => {
         }),
       ]);
     }, 100);
+  });
+
+  it('should return the value from the invoke function', async () => {
+    expect.assertions(1);
+    const {result} = renderUseInvokablePromiseHook(() =>
+      delay(() => Promise.resolve({foo: 'bar'})),
+    );
+    await act(async () => {
+      const value = await result.current[0]();
+      expect(value).toEqual({foo: 'bar'});
+    });
+  });
+
+  it('should throw an error from the invoke function', async () => {
+    expect.assertions(1);
+    const {result} = renderUseInvokablePromiseHook(undefined);
+    await act(async () => {
+      await expect(result.current[0]()).rejects.toThrowError();
+    });
   });
 });

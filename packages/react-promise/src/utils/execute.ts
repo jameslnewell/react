@@ -13,7 +13,7 @@ export interface ExecuteOptions<T, E, P extends any[]> {
 export async function execute<T, E, P extends any[]>(
   {fn, dispatch, isMounted, current}: ExecuteOptions<T, E, P>,
   args: P,
-): Promise<void> {
+): Promise<T> {
   dispatch(pending());
   const promise = (current.current = fn(...args));
   try {
@@ -28,4 +28,5 @@ export async function execute<T, E, P extends any[]>(
       dispatch(rejected(error));
     }
   }
+  return current.current;
 }
