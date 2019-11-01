@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-observable",
-  "version": "2.0.0-preview.8",
+  "version": "2.0.0-preview.9",
   "description": "🎣 React hooks for working with observables.",
   "keywords": [
     "react",

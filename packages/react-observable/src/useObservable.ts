@@ -9,10 +9,15 @@ import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
+export type UseObservableFactory<T> = Factory<T, []>;
+export type UseObservableDependencies = Dependencies;
+export type UseObservableStatus<T> = Factory<T, []>;
+export type UseObservableMetadata<E = any> = Metadata<E>;
+
 export function useObservable<T, E = any>(
-  fn: Factory<T, []> | undefined,
-  deps: Dependencies = [],
-): [T | undefined, Metadata<E>] {
+  fn: UseObservableFactory<T> | undefined,
+  deps: UseObservableDependencies = [],
+): [T | undefined, UseObservableMetadata] {
   const isMounted = useMounted();
   const subscription = useRef<Subscription | undefined>(undefined);
   const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(

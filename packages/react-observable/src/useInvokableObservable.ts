@@ -9,11 +9,19 @@ import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
+export type UseInvokableObservableFactory<T, P extends any[] = any[]> = Factory<
+  T,
+  P
+>;
+export type UseInvokableObservableDependencies = Dependencies;
+export type UseInvokableObservableStatus<T> = Factory<T, []>;
+export type UseInvokableObservableMetadata<E = any> = Metadata<E>;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokableObservable<T, E = any, P extends any[] = any[]>(
-  fn: Factory<T, P> | undefined,
-  deps: Dependencies = [],
-): [(...args: P) => void, T | undefined, Metadata<E>] {
+  fn: UseInvokableObservableFactory<T, P> | undefined,
+  deps: UseInvokableObservableDependencies = [],
+): [(...args: P) => void, T | undefined, UseInvokableObservableMetadata<E>] {
   const isMounted = useMounted();
   const subscription = useRef<Subscription | undefined>(undefined);
   const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
