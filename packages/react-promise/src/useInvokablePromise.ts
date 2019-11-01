@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {useReducer, useEffect, Reducer, useRef} from 'react';
-import {Dependencies, Factory, Metadata} from './types';
+import {Status, Dependencies, Factory, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
@@ -9,11 +9,16 @@ import {initialState} from './utils/initialState';
 import {execute} from './utils/execute';
 import {getMetadata} from './utils/getMetadata';
 
+export {Status as UseInvokablePromiseStatus};
+export type UseInvokablePromiseFactory<T, P extends any[]> = Factory<T, P>;
+export type UseInvokablePromiseDependencies = Dependencies;
+export type UseInvokablePromiseMetadata<E = any> = Metadata<E>;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useInvokablePromise<T, P extends any[], E = any>(
-  fn: Factory<T, P> | undefined,
-  deps: Dependencies,
-): [() => void, T | undefined, Metadata<E>] {
+export function useInvokablePromise<T, E = any, P extends any[] = any[]>(
+  fn: UseInvokablePromiseFactory<T, P> | undefined,
+  deps: UseInvokablePromiseDependencies,
+): [() => void, T | undefined, UseInvokablePromiseMetadata<E>] {
   const current = useRef<Promise<any> | undefined>(undefined);
   const isMounted = useMounted();
   const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(

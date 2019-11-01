@@ -1,9 +1,9 @@
 import {renderHook} from '@testing-library/react-hooks';
-import {Status, Factory, usePromise} from '.';
+import {UsePromiseStatus, UsePromiseFactory, usePromise} from '.';
 
 describe('usePromise()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function renderUsePromiseHook<T>(fn: Factory<T> | undefined) {
+  function renderUsePromiseHook<T>(fn: UsePromiseFactory<T> | undefined) {
     return renderHook(() => usePromise(fn, []));
   }
 
@@ -37,7 +37,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UsePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -51,7 +51,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       {foo: 'bar'},
       expect.objectContaining({
-        status: Status.Fulfilled,
+        status: UsePromiseStatus.Fulfilled,
         error: undefined,
       }),
     ]);
@@ -65,7 +65,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       undefined,
       expect.objectContaining({
-        status: Status.Rejected,
+        status: UsePromiseStatus.Rejected,
         error: new Error('This is a test error!'),
       }),
     ]);
@@ -79,7 +79,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UsePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -124,7 +124,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UsePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -148,7 +148,7 @@ describe('usePromise()', () => {
     expect(result.current).toEqual([
       {bar: 'foo'},
       expect.objectContaining({
-        status: Status.Fulfilled,
+        status: UsePromiseStatus.Fulfilled,
         error: undefined,
       }),
     ]);
@@ -167,7 +167,7 @@ describe('usePromise()', () => {
       expect(result.current).toEqual([
         10,
         expect.objectContaining({
-          status: Status.Fulfilled,
+          status: UsePromiseStatus.Fulfilled,
           error: undefined,
         }),
       ]);
@@ -187,7 +187,7 @@ describe('usePromise()', () => {
       expect(result.current).toEqual([
         undefined,
         expect.objectContaining({
-          status: Status.Rejected,
+          status: UsePromiseStatus.Rejected,
           error: 10,
         }),
       ]);

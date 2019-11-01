@@ -1,11 +1,14 @@
 import {act, renderHook} from '@testing-library/react-hooks';
-import {Factory, Status} from './types';
-import {useInvokablePromise} from '.';
+import {
+  UseInvokablePromiseStatus,
+  UseInvokablePromiseFactory,
+  useInvokablePromise,
+} from '.';
 
 describe('useInvokablePromise()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type,@typescript-eslint/no-explicit-any
   function renderUseInvokablePromiseHook<T, P extends any[] = []>(
-    fn: Factory<T, P> | undefined,
+    fn: UseInvokablePromiseFactory<T, P> | undefined,
   ) {
     return renderHook(() => useInvokablePromise(fn, []));
   }
@@ -57,7 +60,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UseInvokablePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -73,7 +76,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       {foo: 'bar'},
       expect.objectContaining({
-        status: Status.Fulfilled,
+        status: UseInvokablePromiseStatus.Fulfilled,
         error: undefined,
       }),
     ]);
@@ -89,7 +92,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Rejected,
+        status: UseInvokablePromiseStatus.Rejected,
         error: new Error('This is a test error!'),
       }),
     ]);
@@ -105,7 +108,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UseInvokablePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -156,7 +159,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Pending,
+        status: UseInvokablePromiseStatus.Pending,
         error: undefined,
       }),
     ]);
@@ -183,7 +186,7 @@ describe('useInvokablePromise()', () => {
       expect.any(Function),
       {bar: 'foo'},
       expect.objectContaining({
-        status: Status.Fulfilled,
+        status: UseInvokablePromiseStatus.Fulfilled,
         error: undefined,
       }),
     ]);
@@ -205,7 +208,7 @@ describe('useInvokablePromise()', () => {
         expect.any(Function),
         10,
         expect.objectContaining({
-          status: Status.Fulfilled,
+          status: UseInvokablePromiseStatus.Fulfilled,
           error: undefined,
         }),
       ]);
@@ -228,7 +231,7 @@ describe('useInvokablePromise()', () => {
         expect.any(Function),
         undefined,
         expect.objectContaining({
-          status: Status.Rejected,
+          status: UseInvokablePromiseStatus.Rejected,
           error: 10,
         }),
       ]);
