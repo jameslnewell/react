@@ -28,5 +28,5 @@ export async function execute<T, E, P extends any[]>(
       dispatch(rejected(error));
     }
   }
-  return current.current;
+  return current.current ? current.current.catch(() => {}) : current.current;
 }

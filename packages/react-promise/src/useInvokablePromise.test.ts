@@ -57,7 +57,7 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     expect(result.current).toEqual([
       expect.any(Function),
@@ -75,7 +75,7 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     expect(result.current).toEqual([
@@ -94,7 +94,7 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     expect(result.current).toEqual([
@@ -113,7 +113,7 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     unmount();
     expect(result.current).toEqual([
@@ -139,13 +139,15 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     rerender({step: 1});
-    act(() => {
+    await act(async () => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      await expect(result.current[0]()).rejects.toThrow(
+        /The invoke function cannot be called at this time because the factory didn't return a promise./,
+      );
     });
     expect(result.current).toEqual([
       expect.any(Function),
@@ -171,13 +173,13 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     rerender({step: 1});
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     expect(result.current).toEqual([
       expect.any(Function),
@@ -203,13 +205,13 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     rerender({step: 1});
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     expect(result.current).toEqual([
@@ -230,12 +232,12 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     expect(result.current[2].isPending).toBeTruthy();
     rerender({ms: 10});
     act(() => {
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     await delay(async () => {
@@ -258,12 +260,12 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     expect(result.current[2].isPending).toBeTruthy();
     rerender({ms: 10});
     act(() => {
-      result.current[0]().catch(() => {});
+      result.current[0]();
     });
     await waitForNextUpdate();
     await delay(async () => {

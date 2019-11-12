@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-promise",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "React hooks for working with promises.",
   "keywords": [
     "react",
