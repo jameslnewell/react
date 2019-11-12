@@ -18,7 +18,7 @@ export type UseInvokablePromiseMetadata<E = any> = Metadata<E>;
 export function useInvokablePromise<T, E = any, P extends any[] = any[]>(
   fn: UseInvokablePromiseFactory<T, P> | undefined,
   deps: UseInvokablePromiseDependencies,
-): [() => Promise<T>, T | undefined, UseInvokablePromiseMetadata<E>] {
+): [(...args: P) => Promise<T>, T | undefined, UseInvokablePromiseMetadata<E>] {
   const current = useRef<Promise<any> | undefined>(undefined);
   const isMounted = useMounted();
   const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
