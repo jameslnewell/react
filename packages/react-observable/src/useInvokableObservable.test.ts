@@ -12,21 +12,26 @@ import {
 } from '.';
 
 // waiting, received, completed errored
-const waiting = (): Observable<number> => create(() => {});
+const waiting = (): Observable<number> =>
+  create(() => {
+    /* do nothing */
+  });
 const received = (x = 1): Observable<number> =>
-  create(observer => observer.next(x));
+  create((observer) => observer.next(x));
 const completed = (): Observable<number> => fromArray([1, 2, 3]);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const errored = (e?: any): Observable<number> => fromError(e);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const delay = <T, E = any>(
   observable: Observable<T, E>,
   ms = 100,
 ): Observable<T, E> => {
-  return create(observer => {
+  return create((observer) => {
     const subscription = observable.subscribe({
-      next: data => setTimeout(() => observer.next(data), ms),
+      next: (data) => setTimeout(() => observer.next(data), ms),
       complete: () => setTimeout(() => observer.complete(), ms),
-      error: error => setTimeout(() => observer.error(error), ms),
+      error: (error) => setTimeout(() => observer.error(error), ms),
     });
     return subscription.unsubscribe;
   });
@@ -204,7 +209,7 @@ describe('useInvokableObservable()', () => {
     ]);
   });
 
-  it('should not update state with the result of an old observable when an old observable publishes a value after the current observable', async () => {
+  test('should not update state with the result of an old observable when an old observable publishes a value after the current observable', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({ms}: {ms: number}) =>
         useInvokableObservable(() => delay(received(ms), ms), [ms]),
@@ -227,7 +232,7 @@ describe('useInvokableObservable()', () => {
     }, 100);
   });
 
-  it('should not update state with the result of an old observable when an old observable errored after the current observable', async () => {
+  test('should not update state with the result of an old observable when an old observable errored after the current observable', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({ms}: {ms: number}) =>
         useInvokableObservable(() => delay(errored(ms), ms), [ms]),
@@ -248,24 +253,5 @@ describe('useInvokableObservable()', () => {
         }),
       ]);
     }, 100);
-  });
-
-  it('should return the value from the invoke function', async () => {
-    expect.assertions(1);
-    const {result} = renderUseInvokableObservableHook(() =>
-      delay(() => Promise.resolve({foo: 'bar'})),
-    );
-    await act(async () => {
-      const value = await result.current[0]();
-      expect(value).toEqual({foo: 'bar'});
-    });
-  });
-
-  it('should throw an error from the invoke function', async () => {
-    expect.assertions(1);
-    const {result} = renderUseInvokableObservableHook(undefined);
-    await act(async () => {
-      await expect(result.current[0]()).rejects.toThrowError();
-    });
   });
 });

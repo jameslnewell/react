@@ -10,11 +10,13 @@ import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
 export {Status as UseInvokableObservableStatus};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UseInvokableObservableFactory<T, P extends any[] = any[]> = Factory<
   T,
   P
 >;
 export type UseInvokableObservableDependencies = Dependencies;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UseInvokableObservableMetadata<E = any> = Metadata<E>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

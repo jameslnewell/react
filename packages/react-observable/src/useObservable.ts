@@ -12,8 +12,10 @@ import {getMetadata} from './utils/getMetadata';
 export {Status as UseObservableStatus};
 export type UseObservableFactory<T> = Factory<T, []>;
 export type UseObservableDependencies = Dependencies;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UseObservableMetadata<E = any> = Metadata<E>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useObservable<T, E = any>(
   fn: UseObservableFactory<T> | undefined,
   deps: UseObservableDependencies = [],

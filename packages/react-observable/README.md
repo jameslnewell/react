@@ -44,7 +44,7 @@ const getUser = async id => {
 };
 
 const UserProfile = ({id}) => {
-  const [user, {status, error}] = useInvokableObservable(
+  const [user, {status, error}] = useObservable(
     () => getUser(id),
     [id],
   );
@@ -87,10 +87,10 @@ const putUser = (id, data) => {
 const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
   const [save, , {isReceiving}] = useInvokableObservable(
-    data => putUser(id, data),
+    (data) => putUser(id, data),
     [id],
   );
-  const handleSave = async event => save(id, {name: input.current.value});
+  const handleSave = async (event) => save(id, {name: input.current.value});
   return (
     <>
       <input ref={input} />

@@ -42,25 +42,25 @@ const erroredState: TestState = {
 };
 
 describe('reducer()', () => {
-  it('should be in a reset state when reset', () => {
+  test('should be in a reset state when reset', () => {
     expect(reducer(observingState, reset())).toEqual(resetState);
   });
 
-  it('should be in a observing state when observing', () => {
+  test('should be in a observing state when observing', () => {
     expect(reducer(resetState, observing())).toEqual(observingState);
   });
 
-  it('should be in a observed state when observed', () => {
+  test('should be in a observed state when observed', () => {
     expect(reducer(observingState, observed({foo: 'bar'}))).toEqual(
       observedState,
     );
   });
 
-  it('should be in a completed state when completed', () => {
+  test('should be in a completed state when completed', () => {
     expect(reducer(observingState, completed())).toEqual(completedState);
   });
 
-  it('should be in an errored state when errored', () => {
+  test('should be in an errored state when errored', () => {
     expect(reducer(observingState, errored('Uh oh!'))).toEqual(erroredState);
   });
 });
