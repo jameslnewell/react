@@ -46,9 +46,9 @@ const getUser = (id) => {
 const UserProfile = ({id}) => {
   const [user, {status, error}] = useObservable(() => getUser(id), [id]);
   switch (status) {
-    case 'recieving':
+    case 'waiting':
       return <>Loading...</>;
-    case 'recieved':
+    case 'received':
     case 'completed':
       return (
         <>
