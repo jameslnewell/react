@@ -1,6 +1,6 @@
 import {useReducer, useEffect, Reducer, useRef} from 'react';
 import {Subscription} from '@jameslnewell/observable';
-import {Factory, Dependencies, Metadata} from './types';
+import {Factory, Dependencies, Status, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
@@ -9,9 +9,9 @@ import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
+export {Status as UseObservableStatus};
 export type UseObservableFactory<T> = Factory<T, []>;
 export type UseObservableDependencies = Dependencies;
-export type UseObservableStatus<T> = Factory<T, []>;
 export type UseObservableMetadata<E = any> = Metadata<E>;
 
 export function useObservable<T, E = any>(

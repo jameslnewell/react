@@ -5,7 +5,11 @@ import {
   fromArray,
   fromError,
 } from '@jameslnewell/observable';
-import {Status, Factory, useInvokableObservable} from '.';
+import {
+  UseInvokableObservableStatus,
+  UseInvokableObservableFactory,
+  useInvokableObservable,
+} from '.';
 
 // waiting, received, completed errored
 const waiting = (): Observable<number> => create(() => {});
@@ -42,12 +46,14 @@ function wait<T>(fn: () => Promise<T>, ms = 100): Promise<T> {
 
 describe('useInvokableObservable()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function runUseObservableHook<T>(fn: Factory<T> | undefined) {
+  function renderUseInvokableObservableHook<T>(
+    fn: UseInvokableObservableFactory<T> | undefined,
+  ) {
     return renderHook(() => useInvokableObservable(fn));
   }
 
   test('is in unknown state when no observable is provided', async () => {
-    const {result} = runUseObservableHook(undefined);
+    const {result} = renderUseInvokableObservableHook(undefined);
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
@@ -59,7 +65,7 @@ describe('useInvokableObservable()', () => {
   });
 
   test('is in unknown state when an observable is provided but not yet invoked', async () => {
-    const {result} = runUseObservableHook(() => waiting());
+    const {result} = renderUseInvokableObservableHook(() => waiting());
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
@@ -71,46 +77,46 @@ describe('useInvokableObservable()', () => {
   });
 
   test('is in waiting state when an observable is provided, when it has been invoked and is waiting for a value', async () => {
-    const {result} = runUseObservableHook(() => waiting());
+    const {result} = renderUseInvokableObservableHook(() => waiting());
     act(() => result.current[0]());
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Waiting,
+        status: UseInvokableObservableStatus.Waiting,
         error: undefined,
       }),
     ]);
   });
 
   test('is in received state when an observable is provided, when it has been invoked and a value is observed', async () => {
-    const {result} = runUseObservableHook(() => received());
+    const {result} = renderUseInvokableObservableHook(() => received());
     act(() => result.current[0]());
     expect(result.current).toEqual([
       expect.any(Function),
       1,
       expect.objectContaining({
-        status: Status.Receieved,
+        status: UseInvokableObservableStatus.Receieved,
         error: undefined,
       }),
     ]);
   });
 
   test('is in completed state when an observable is provided, when it has been invoked and has completed', async () => {
-    const {result} = runUseObservableHook(() => completed());
+    const {result} = renderUseInvokableObservableHook(() => completed());
     act(() => result.current[0]());
     expect(result.current).toEqual([
       expect.any(Function),
       3,
       expect.objectContaining({
-        status: Status.Completed,
+        status: UseInvokableObservableStatus.Completed,
         error: undefined,
       }),
     ]);
   });
 
   test('is in errored state when an observable is provided, when it has been invoked and has errored', async () => {
-    const {result} = runUseObservableHook(() =>
+    const {result} = renderUseInvokableObservableHook(() =>
       fromError(new Error('This is a test error!')),
     );
     act(() => result.current[0]());
@@ -118,21 +124,21 @@ describe('useInvokableObservable()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Errored,
+        status: UseInvokableObservableStatus.Errored,
         error: new Error('This is a test error!'),
       }),
     ]);
   });
 
   test('is in waiting state when an observable is provided, when it has been invoked and is waiting and the component is unmounted', async () => {
-    const {result, unmount} = runUseObservableHook(() => waiting());
+    const {result, unmount} = renderUseInvokableObservableHook(() => waiting());
     act(() => result.current[0]());
     unmount();
     expect(result.current).toEqual([
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Waiting,
+        status: UseInvokableObservableStatus.Waiting,
         error: undefined,
       }),
     ]);
@@ -172,7 +178,7 @@ describe('useInvokableObservable()', () => {
       expect.any(Function),
       undefined,
       expect.objectContaining({
-        status: Status.Waiting,
+        status: UseInvokableObservableStatus.Waiting,
         error: undefined,
       }),
     ]);
@@ -192,7 +198,7 @@ describe('useInvokableObservable()', () => {
       expect.any(Function),
       1,
       expect.objectContaining({
-        status: Status.Receieved,
+        status: UseInvokableObservableStatus.Receieved,
         error: undefined,
       }),
     ]);
@@ -214,7 +220,7 @@ describe('useInvokableObservable()', () => {
         expect.any(Function),
         10,
         expect.objectContaining({
-          status: Status.Receieved,
+          status: UseInvokableObservableStatus.Receieved,
           error: undefined,
         }),
       ]);
@@ -237,10 +243,29 @@ describe('useInvokableObservable()', () => {
         expect.any(Function),
         undefined,
         expect.objectContaining({
-          status: Status.Errored,
+          status: UseInvokableObservableStatus.Errored,
           error: 10,
         }),
       ]);
     }, 100);
+  });
+
+  it('should return the value from the invoke function', async () => {
+    expect.assertions(1);
+    const {result} = renderUseInvokableObservableHook(() =>
+      delay(() => Promise.resolve({foo: 'bar'})),
+    );
+    await act(async () => {
+      const value = await result.current[0]();
+      expect(value).toEqual({foo: 'bar'});
+    });
+  });
+
+  it('should throw an error from the invoke function', async () => {
+    expect.assertions(1);
+    const {result} = renderUseInvokableObservableHook(undefined);
+    await act(async () => {
+      await expect(result.current[0]()).rejects.toThrowError();
+    });
   });
 });

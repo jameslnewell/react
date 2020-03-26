@@ -1,6 +1,6 @@
 import {useReducer, useEffect, Reducer, useRef} from 'react';
 import {Subscription} from '@jameslnewell/observable';
-import {Factory, Dependencies, Metadata} from './types';
+import {Factory, Dependencies, Status, Metadata} from './types';
 import {State} from './utils/State';
 import {Action, reset} from './utils/Action';
 import {useMounted} from './utils/useMounted';
@@ -9,12 +9,12 @@ import {initialState} from './utils/initialState';
 import {invoke} from './utils/invoke';
 import {getMetadata} from './utils/getMetadata';
 
+export {Status as UseInvokableObservableStatus};
 export type UseInvokableObservableFactory<T, P extends any[] = any[]> = Factory<
   T,
   P
 >;
 export type UseInvokableObservableDependencies = Dependencies;
-export type UseInvokableObservableStatus<T> = Factory<T, []>;
 export type UseInvokableObservableMetadata<E = any> = Metadata<E>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
