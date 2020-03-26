@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "dependencies": {
-    "@jameslnewell/observable": "^1.2.4"
+    "@jameslnewell/observable": "^1.3.0"
   },
   "peerDependencies": {
     "@types/react": "^16.9.11",

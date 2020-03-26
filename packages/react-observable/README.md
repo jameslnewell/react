@@ -36,18 +36,15 @@ import {fromFetch} from 'rxjs/fetch';
 import {switchMap, map} from 'rxjs/operators';
 import {useObservable} from '@jameslnewell/react-observable';
 
-const getUser = async id => {
+const getUser = (id) => {
   return fromFetch(`https://jsonplaceholder.typicode.com/users/${id}`).pipe(
-    switchMap(response => response.json()),
-    map(data => data.username),
+    switchMap((response) => response.json()),
+    map((data) => data.username),
   );
 };
 
 const UserProfile = ({id}) => {
-  const [user, {status, error}] = useObservable(
-    () => getUser(id),
-    [id],
-  );
+  const [user, {status, error}] = useObservable(() => getUser(id), [id]);
   switch (status) {
     case 'recieving':
       return <>Loading...</>;
@@ -55,15 +52,13 @@ const UserProfile = ({id}) => {
     case 'completed':
       return (
         <>
-          Hello <strong>{user.name}</strong>!
+          Hello <strong>{user}</strong>!
         </>
       );
     case 'errored':
-      return (
-        <>
-          Sorry, we couldn't find that user.
-        <>
-      );
+      return <>Sorry, we couldn't find that user.</>;
+    default:
+      return null;
   }
 };
 ```
