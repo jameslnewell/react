@@ -12,15 +12,18 @@ export type UseSetDocumentData = firebase.firestore.DocumentData;
 export type UseSetDocumentMetadata = UseInvokablePromiseMetadata;
 
 export type UseSetDocumentResult = [
-  (path: string, data: UseSetDocumentData) => Promise<void>,
+  (data: UseSetDocumentData) => Promise<void>,
   UseSetDocumentMetadata,
 ];
 
-export function useSetDocument(): UseSetDocumentResult {
+export function useSetDocument(
+  document: string | undefined,
+): UseSetDocumentResult {
   const app = useApp();
   const [invoke, , meta] = useInvokablePromise(
-    (path: string, data: UseSetDocumentData) =>
-      app.firestore().doc(path).set(data),
+    document
+      ? (data: UseSetDocumentData) => app.firestore().doc(document).set(data)
+      : undefined,
     [app],
   );
   return [invoke, meta];

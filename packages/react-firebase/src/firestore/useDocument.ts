@@ -13,11 +13,16 @@ export type UseDocumentSnapshot = firebase.firestore.DocumentSnapshot;
 export type UseDocumentMetadata = UseObservableMetadata<Error>;
 
 export function useDocument(
-  path: string,
+  document: string | undefined,
 ): [UseDocumentSnapshot | undefined, UseDocumentMetadata] {
   const app = useApp();
   return useObservable(
-    () => create((observer) => app.firestore().doc(path).onSnapshot(observer)),
-    [app, path],
+    document
+      ? () =>
+          create((observer) =>
+            app.firestore().doc(document).onSnapshot(observer),
+          )
+      : undefined,
+    [app, document],
   );
 }

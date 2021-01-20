@@ -9,9 +9,11 @@ describe('firestore', () => {
       const collection = 'users';
       const document = {name: 'Johnny Applesmith'};
       const ref = await app.firestore().collection(collection).add(document);
-      const {result} = renderHook(() => useUpdateDocument(), {wrapper});
+      const {result} = renderHook(() => useUpdateDocument(`users/${ref.id}`), {
+        wrapper,
+      });
       await act(async () => {
-        await result.current[0](`users/${ref.id}`, document);
+        await result.current[0](document);
         const data = await app
           .firestore()
           .collection(collection)

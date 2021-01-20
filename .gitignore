@@ -7,10 +7,10 @@ firebase-debug.log
 firestore-debug.log
 
 # ignore distributable directories
-/dist/
-/app/dist/
-/auth/dist/
-/firestore/dist/
-/storage/dist/
+/packages/*/dist/
+/packages/app/dist/
+/packages/auth/dist/
+/packages/firestore/dist/
+/packages/storage/dist/
 
 /storybook-static

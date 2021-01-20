@@ -13,14 +13,14 @@ export type UseCollectionSnapshot = firebase.firestore.QuerySnapshot;
 export type UseCollectionMetadata = UseObservableMetadata<Error>;
 
 export function useCollection(
-  path: string,
+  collection: string,
 ): [UseCollectionSnapshot | undefined, UseCollectionMetadata] {
   const app = useApp();
   return useObservable(
     () =>
       create<UseCollectionSnapshot, Error>((observer) =>
-        app.firestore().collection(path).onSnapshot(observer),
+        app.firestore().collection(collection).onSnapshot(observer),
       ),
-    [app, path],
+    [app, collection],
   );
 }

@@ -12,14 +12,16 @@ export type UseDeleteDocumentReference = firebase.firestore.DocumentReference;
 export type UseDeleteDocumentMetadata = UseInvokablePromiseMetadata;
 
 export type UseDeleteDocumentResult = [
-  (path: string) => Promise<void>,
+  () => Promise<void>,
   UseDeleteDocumentMetadata,
 ];
 
-export function useDeleteDocument(): UseDeleteDocumentResult {
+export function useDeleteDocument(
+  document: string | undefined,
+): UseDeleteDocumentResult {
   const app = useApp();
   const [invoke, , meta] = useInvokablePromise(
-    (path: string) => app.firestore().doc(path).delete(),
+    document ? () => app.firestore().doc(document).delete() : undefined,
     [app, document],
   );
   return [invoke, {...meta}];

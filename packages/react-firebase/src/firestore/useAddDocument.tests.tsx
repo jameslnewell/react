@@ -7,12 +7,14 @@ describe('firestore', () => {
     test('creates a document', async () => {
       const collection = 'users';
       const document = {name: 'Johnny Applesmith'};
-      const {result} = renderHook(() => useAddDocument(), {wrapper});
+      const {result} = renderHook(() => useAddDocument(collection), {wrapper});
       await act(async () => {
-        const ref = await result.current[0](collection, document);
-        const data = await ref.get();
-        expect(data.data()).toEqual(document);
+        const [invoke] = result.current;
+        await invoke(document);
       });
+      const [, ref] = result.current;
+      const data = await ref?.get();
+      expect(data?.data()).toEqual(document);
     });
   });
 });

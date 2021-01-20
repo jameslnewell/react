@@ -10,26 +10,20 @@ export const UseAddDocumentStatus = UseInvokablePromiseStatus;
 export type UseAddDocumentStatus = UseInvokablePromiseStatus;
 export type UseAddDocumentData = firebase.firestore.DocumentData;
 export type UseAddDocumentReference = firebase.firestore.DocumentReference;
-
-export interface UseAddDocumentMetadata
-  extends Omit<UseInvokablePromiseMetadata, 'value'> {
-  ref?: UseAddDocumentReference;
-}
+export type UseAddDocumentMetadata = UseInvokablePromiseMetadata;
 
 export type UseAddDocumentResult = [
-  (
-    collection: string,
-    data: UseAddDocumentData,
-  ) => Promise<UseAddDocumentReference>,
+  (data: UseAddDocumentData) => Promise<UseAddDocumentReference>,
+  UseAddDocumentReference | undefined,
   UseAddDocumentMetadata,
 ];
 
-export function useAddDocument(): UseAddDocumentResult {
+export function useAddDocument(collection: string): UseAddDocumentResult {
   const app = useApp();
-  const [invoke, value, meta] = useInvokablePromise(
-    (collection: string, data: UseAddDocumentData) =>
+  const [invoke, ref, meta] = useInvokablePromise(
+    (data: UseAddDocumentData) =>
       app.firestore().collection(collection).add(data),
-    [app],
+    [app, collection],
   );
-  return [invoke, {...meta, ref: value}];
+  return [invoke, ref, meta];
 }

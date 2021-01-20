@@ -9,6 +9,5 @@
     "module": "esnext",
     "target": "esnext"
   },
-  "include": ["src"],
-  "exclude": ["**/*Example*"]
+  "include": ["packages/*/src"]
 }
