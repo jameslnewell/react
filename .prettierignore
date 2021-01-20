@@ -1,5 +1,7 @@
 # ignore distributable directories
-package/dist/
-package/auth/dist/
-package/firestore/dist/
-package/storage/dist/
+/packages/*/dist/
+/packages/*/storybook-static
+/packages/react-firebase/app/dist/
+/packages/react-firebase/auth/dist/
+/packages/react-firebase/firestore/dist/
+/packages/react-firebase/storage/dist/
