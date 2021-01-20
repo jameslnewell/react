@@ -18,11 +18,7 @@
     }
   },
   "jest": {
-    "rootDir": ".",
-    "testMatch": [
-      "<rootDir>/src/**/*.tests.ts?(x)"
-    ],
-    "testEnvironment": "node"
+    "preset": "@jameslnewell/jest-preset"
   },
   "prettier": "@jameslnewell/prettier-config",
   "preconstruct": {
@@ -36,7 +32,7 @@
     "@babel/core": "^7.12.10",
     "@jameslnewell/babel-preset": "^2.1.0",
     "@jameslnewell/eslint-config": "^0.16.0",
-    "@jameslnewell/jest-preset-test": "^6.0.0",
+    "@jameslnewell/jest-preset": "^2.0.0",
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
     "@preconstruct/cli": "^2.0.1",
