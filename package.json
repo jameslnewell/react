@@ -1,9 +1,11 @@
 {
-  "name": "react-monorepo",
+  "name": "monorepo",
+  "version": "1.0.0",
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "storybook"
     ]
   },
   "babel": {
@@ -49,11 +51,14 @@
   },
   "scripts": {
     "postinstall": "preconstruct dev",
+    "cleaning": "rm -rf packages/*/node_modules",
+    "cleaning:node_modules": "rm -rf node_modules/ packages/*/node_modules",
     "format": "prettier --write '**/*.{js,json,md,ts,tsx}'",
     "formatting": "prettier --check '**/*.{js,json,md,ts,tsx}'",
     "linting": "eslint --ext .ts,.tsx . --fix",
     "typing": "tsc --noEmit --project tsconfig.json",
     "building": "preconstruct build",
-    "testing": "jest"
+    "testing": "jest",
+    "start": "yarn workspace storybook run start"
   }
 }

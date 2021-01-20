@@ -1,5 +1,6 @@
 .env
 .vscode
+.DS_Store
 node_modules
 yarn-error.log
 ui-debug.log

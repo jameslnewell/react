@@ -1,0 +1,16 @@
+{
+  "name": "storybook",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@storybook/react": "^6.1.14",
+    "@types/react": "^17.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "scripts": {
+    "start": "start-storybook -p 1234",
+    "build": "build-storybook"
+  },
+  "license": "MIT"
+}
