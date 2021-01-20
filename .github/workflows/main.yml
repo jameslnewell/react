@@ -3,7 +3,7 @@ name: main
 on: [push, pull_request]
 
 jobs:
-  typing:
+  check_dependencies:
     runs-on: ubuntu-latest
 
     strategy:
@@ -27,15 +27,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: installing
+      - name: install
         run: |
           yarn install
 
-      - name: typing
+      - name: check dependencies
         run: |
-          yarn run typing
+          yarn run check:dependencies
 
-  linting:
+  check_typings:
     runs-on: ubuntu-latest
 
     strategy:
@@ -59,15 +59,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: installing
+      - name: install
         run: |
           yarn install
 
-      - name: linting
+      - name: check typings
         run: |
-          yarn run linting
+          yarn run check:typings
 
-  formatting:
+  check_linting:
     runs-on: ubuntu-latest
 
     strategy:
@@ -91,15 +91,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: installing
+      - name: install
         run: |
           yarn install
 
-      - name: formatting
+      - name: check linting
         run: |
-          yarn run formatting
+          yarn run check:linting
 
-  building:
+  check_formatting:
     runs-on: ubuntu-latest
 
     strategy:
@@ -123,15 +123,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: installing
+      - name: install
         run: |
           yarn install
 
-      - name: building
+      - name: check formatting
         run: |
-          yarn run building
+          yarn run check:formatting
 
-  testing:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -155,10 +155,42 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: installing
+      - name: install
         run: |
           yarn install
 
-      - name: testing
+      - name: build
         run: |
-          yarn run testing
+          yarn run build
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x] #, 14.x, 16.x]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: install
+        run: |
+          yarn install
+
+      - name: test
+        run: |
+          yarn run test
