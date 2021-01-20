@@ -39,9 +39,9 @@ jobs:
       - name: formatting
         run: |
           yarn run formatting
-      - name: build
+      - name: building
         run: |
-          yarn run build
-      - name: test
+          yarn run building
+      - name: testing
         run: |
-          yarn run test
+          yarn run testing
