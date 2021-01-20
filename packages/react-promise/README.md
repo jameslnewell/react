@@ -79,10 +79,11 @@ const putUser = async (id, data) => {
 
 const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
-  const [save, , {isPending}] = useInvokablePromise(data => putUser(id, data), [
-    id,
-  ]);
-  const handleSave = async event => save(id, {name: input.current.value});
+  const [save, , {isPending}] = useInvokablePromise(
+    (data) => putUser(id, data),
+    [id],
+  );
+  const handleSave = async (event) => save(id, {name: input.current.value});
   return (
     <>
       <input ref={input} />

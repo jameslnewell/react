@@ -19,12 +19,12 @@ export function invoke<T, E, P extends any[]>(
   dispatch(observing());
   const observable = fn(...args);
   return observable.subscribe({
-    next: value => {
+    next: (value) => {
       if (isMounted.current) {
         dispatch(observed(value));
       }
     },
-    error: error => {
+    error: (error) => {
       if (isMounted.current) {
         dispatch(errored<E>(error));
       }

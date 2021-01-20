@@ -1,7 +1,8 @@
 import React from 'react';
 import firebase from 'firebase';
 
-const Context = React.createContext<firebase.app.App | undefined>(undefined);
+const Context =
+  (React.createContext < firebase.app.App) | (undefined > undefined);
 
 export interface ProviderProps {
   app: firebase.app.App;

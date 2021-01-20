@@ -14,10 +14,12 @@ export const Demo = () => {
     ObservableType.Completed,
   );
   const [delay, setDelay] = React.useState(1000);
-  const {invoke, status, error, value} = useInvokableObservable(
-    createObservable(type, delay),
-    [type, delay],
-  );
+  const {
+    invoke,
+    status,
+    error,
+    value,
+  } = useInvokableObservable(createObservable(type, delay), [type, delay]);
 
   const handleChange = ({
     type,

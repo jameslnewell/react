@@ -16,7 +16,7 @@ export function createObservable(
     return undefined;
   }
   return () => {
-    return create(subject => {
+    return create((subject) => {
       switch (type) {
         case ObservableType.Waiting: {
           return;

@@ -6,21 +6,21 @@ import './styles.css';
 
 async function getUser(id: string): Promise<{name: string}> {
   console.log(`getUser(${id})`);
-  return new Promise(resolve =>
+  return new Promise((resolve) =>
     setTimeout(() => resolve({name: 'LunaticClaw'}), 1000),
   );
 }
 
 async function putUser(id: string, data: {name: string}): Promise<void> {
   console.log(`putUser(${id}, ${data})`);
-  return new Promise(resolve => setTimeout(() => resolve(), 1000));
+  return new Promise((resolve) => setTimeout(() => resolve(), 1000));
 }
 
 const Example: React.FC<{id: string}> = ({id}) => {
   const [name, setName] = useState<string>('');
   const [isEdited, setEdited] = useState<boolean>(false);
   const [user, loading] = usePromise(() => getUser(id), [id]);
-  const [save, , saving] = useInvokablePromise(name => putUser(id, {name}), [
+  const [save, , saving] = useInvokablePromise((name) => putUser(id, {name}), [
     id,
   ]);
 
