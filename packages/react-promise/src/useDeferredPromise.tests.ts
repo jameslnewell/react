@@ -1,7 +1,7 @@
 import {act, renderHook, RenderHookResult} from '@testing-library/react-hooks';
 import {
   UseDeferredPromiseStatus,
-  UseDeferredPromiseFactory,
+  UseDeferredPromiseFactoryFunction,
   useDeferredPromise,
   UseDeferredPromiseResult,
 } from './useDeferredPromise';
@@ -11,7 +11,7 @@ describe('useDeferredPromise()', () => {
     Value,
     Parameters extends unknown[] = []
   >(
-    fn: UseDeferredPromiseFactory<Value, Parameters> | undefined,
+    fn: UseDeferredPromiseFactoryFunction<Value, Parameters> | undefined,
   ): RenderHookResult<unknown, UseDeferredPromiseResult<Value, Parameters>> {
     return renderHook(() => useDeferredPromise(fn, []));
   }
