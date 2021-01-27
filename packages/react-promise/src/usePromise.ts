@@ -1,40 +1,70 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {useReducer, useEffect, Reducer, useRef} from 'react';
-import {Status, Factory, Dependencies, Metadata} from './types';
-import {State} from './utils/State';
-import {Action, reset} from './utils/Action';
-import {useMounted} from './utils/useMounted';
-import {reducer} from './utils/reducer';
-import {initialState} from './utils/initialState';
-import {execute} from './utils/execute';
-import {getMetadata} from './utils/getMetadata';
+import {useEffect, useRef} from 'react';
+import {
+  useDeferredPromise,
+  UseDeferredPromiseDependencies,
+  UseDeferredPromiseFactoryFunction,
+  UseDeferredPromiseInvokeAsyncFunction,
+  UseDeferredPromiseInvokeFunction,
+  UseDeferredPromiseResult,
+  UseDeferredPromiseStatus,
+} from './useDeferredPromise';
 
-export {Status as UsePromiseStatus};
-export type UsePromiseFactory<T> = Factory<T, []>;
-export type UsePromiseDependencies = Dependencies;
-export type UsePromiseMetadata<E = any> = Metadata<E>;
+export interface UsePromiseFactory<
+  Value = unknown,
+  Parameters extends unknown[] = []
+> extends UseDeferredPromiseFactoryFunction<Value, Parameters> {}
 
-export function usePromise<T, E = any>(
-  fn: UsePromiseFactory<T> | undefined,
-  deps: UsePromiseDependencies,
-): [T | undefined, UsePromiseMetadata<E>] {
-  const current = useRef<Promise<any> | undefined>(undefined);
-  const isMounted = useMounted();
-  const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
-    reducer,
-    initialState,
-  );
+export interface UsePromiseInvokeFunction<Parameters extends unknown[] = []>
+  extends UseDeferredPromiseInvokeFunction<Parameters> {}
 
+export interface UsePromiseInvokeAsyncFunction<
+  Value = unknown,
+  Parameters extends unknown[] = []
+> extends UseDeferredPromiseInvokeAsyncFunction<Value, Parameters> {}
+
+export interface UsePromiseDependencies
+  extends UseDeferredPromiseDependencies {}
+
+export interface UsePromiseOptions {
+  invokeWhenMounted?: boolean;
+  invokeWhenChanged?: boolean;
+}
+
+export type UsePromiseStatus = UseDeferredPromiseStatus;
+export const UsePromiseStatus = UseDeferredPromiseStatus;
+
+export interface UsePromiseResult<Value = unknown, Error = unknown>
+  extends UseDeferredPromiseResult<Value, [], Error> {}
+
+export function usePromise<Value = unknown, Error = unknown>(
+  fn: UsePromiseFactory<Value> | undefined,
+  deps?: UsePromiseDependencies,
+  {invokeWhenMounted = true, invokeWhenChanged = true}: UsePromiseOptions = {},
+): UsePromiseResult<Value, Error> {
+  const isFirstRun = useRef(true);
+  const result = useDeferredPromise<Value, never, Error>(fn, deps);
+
+  const canInvokeWhenMounted = !!fn && invokeWhenMounted;
+  const canInvokeWhenChanged = !!fn && invokeWhenChanged;
+
+  // invoke when mounted or changed
   useEffect(() => {
-    // reset state whenever the dependencies change i.e. the result returned by the function will be a new promise
-    // execute and track the promise state
-    if (fn) {
-      execute<T, E, []>({fn, dispatch, isMounted, current}, []).catch(() => {});
-    } else {
-      current.current = undefined;
-      dispatch(reset());
+    if (isFirstRun.current && canInvokeWhenMounted) {
+      result.invoke();
     }
-  }, deps);
+    if (!isFirstRun.current && canInvokeWhenChanged) {
+      result.invoke();
+    }
+    isFirstRun.current = false;
+  }, [canInvokeWhenMounted, canInvokeWhenChanged, result.invoke]);
 
-  return [state.value, getMetadata(state)];
+  return {
+    ...result,
+    status:
+      isFirstRun.current && canInvokeWhenMounted
+        ? UsePromiseStatus.Pending
+        : result.status,
+    isPending:
+      isFirstRun.current && canInvokeWhenMounted ? true : result.isPending,
+  };
 }

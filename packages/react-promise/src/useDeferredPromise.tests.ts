@@ -1,16 +1,19 @@
-import {act, renderHook} from '@testing-library/react-hooks';
+import {act, renderHook, RenderHookResult} from '@testing-library/react-hooks';
 import {
-  UseInvokablePromiseStatus,
-  UseInvokablePromiseFactory,
-  useInvokablePromise,
-} from '.';
+  UseDeferredPromiseStatus,
+  UseDeferredPromiseFactory,
+  useDeferredPromise,
+  UseDeferredPromiseResult,
+} from './useDeferredPromise';
 
-describe('useInvokablePromise()', () => {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type,@typescript-eslint/no-explicit-any
-  function renderUseInvokablePromiseHook<T, P extends any[] = []>(
-    fn: UseInvokablePromiseFactory<T, P> | undefined,
-  ) {
-    return renderHook(() => useInvokablePromise(fn, []));
+describe('useDeferredPromise()', () => {
+  function renderUseDeferredPromiseHook<
+    Value,
+    Parameters extends unknown[] = []
+  >(
+    fn: UseDeferredPromiseFactory<Value, Parameters> | undefined,
+  ): RenderHookResult<unknown, UseDeferredPromiseResult<Value, Parameters>> {
+    return renderHook(() => useDeferredPromise(fn, []));
   }
 
   function delay<T>(fn: () => Promise<T>, ms = 100): Promise<T> {
@@ -26,110 +29,104 @@ describe('useInvokablePromise()', () => {
   }
 
   it('should be unknown when a promise is not returned', async () => {
-    const {result} = renderUseInvokablePromiseHook(undefined);
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    const {result} = renderUseDeferredPromiseHook(undefined);
+    expect(result.current).toEqual(
       expect.objectContaining({
         status: undefined,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be unknown when a promise is not invoked', async () => {
-    const {result} = renderUseInvokablePromiseHook(() =>
+    const {result} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
         status: undefined,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be resolving when a promise is returned and is resolving', async () => {
-    const {result} = renderUseInvokablePromiseHook(() =>
+    const {result} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Pending,
+        status: UseDeferredPromiseStatus.Pending,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be resolved when a promise is returned and is resolved', async () => {
-    const {result, waitForNextUpdate} = renderUseInvokablePromiseHook(() =>
+    const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
-    expect(result.current).toEqual([
-      expect.any(Function),
-      {foo: 'bar'},
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Fulfilled,
+        status: UseDeferredPromiseStatus.Fulfilled,
+        value: {foo: 'bar'},
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be rejected when a promise is returned and is rejected', async () => {
-    const {result, waitForNextUpdate} = renderUseInvokablePromiseHook(() =>
+    const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.reject(new Error('This is a test error!'))),
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Rejected,
+        status: UseDeferredPromiseStatus.Rejected,
+        value: undefined,
         error: new Error('This is a test error!'),
       }),
-    ]);
+    );
   });
 
   it('should remain resolving when a promise is return and is resolving and the component is unmounted', async () => {
-    const {result, unmount} = renderUseInvokablePromiseHook(() =>
+    const {result, unmount} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     unmount();
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Pending,
+        status: UseDeferredPromiseStatus.Pending,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be unknown when rerendered and no promise is returned', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
-        useInvokablePromise(
+        useDeferredPromise(
           step === 0
             ? () => delay(() => Promise.resolve({foo: 'bar'}))
             : undefined,
@@ -139,30 +136,29 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     rerender({step: 1});
     await act(async () => {
       // run async and don't wait
-      await expect(result.current[0]()).rejects.toThrow(
+      await expect(result.current.invokeAsync()).rejects.toThrow(
         /The invoke function cannot be called at this time because the factory didn't return a promise./,
       );
     });
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
         status: undefined,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be resolving when rerendered and a promise is returned and is resolving', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
-        useInvokablePromise(
+        useDeferredPromise(
           () =>
             delay(() =>
               Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'}),
@@ -173,28 +169,27 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     rerender({step: 1});
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
-    expect(result.current).toEqual([
-      expect.any(Function),
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Pending,
+        status: UseDeferredPromiseStatus.Pending,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should be resolved when rerendered and a promise is returned and is resolved', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
-        useInvokablePromise(
+        useDeferredPromise(
           () =>
             delay(() =>
               Promise.resolve(step === 0 ? {foo: 'bar'} : {bar: 'foo'}),
@@ -205,97 +200,94 @@ describe('useInvokablePromise()', () => {
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     rerender({step: 1});
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
-    expect(result.current).toEqual([
-      expect.any(Function),
-      {bar: 'foo'},
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseInvokablePromiseStatus.Fulfilled,
+        status: UseDeferredPromiseStatus.Fulfilled,
+        value: {bar: 'foo'},
         error: undefined,
       }),
-    ]);
+    );
   });
 
   it('should not update state with the result of an old promise when an old promise resolves after the current promise', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({ms}: {ms: number}) =>
-        useInvokablePromise(() => delay(() => Promise.resolve(ms), ms), [ms]),
+        useDeferredPromise(() => delay(() => Promise.resolve(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
-    expect(result.current[2].isPending).toBeTruthy();
+    expect(result.current.isPending).toBeTruthy();
     rerender({ms: 10});
     act(() => {
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     await delay(async () => {
-      expect(result.current).toEqual([
-        expect.any(Function),
-        10,
+      expect(result.current).toEqual(
         expect.objectContaining({
-          status: UseInvokablePromiseStatus.Fulfilled,
+          status: UseDeferredPromiseStatus.Fulfilled,
+          value: 10,
           error: undefined,
         }),
-      ]);
+      );
     }, 100);
   });
 
   it('should not update state with the result of an old promise when an old promise rejects after the current promise', async () => {
     const {result, waitForNextUpdate, rerender} = renderHook(
       ({ms}: {ms: number}) =>
-        useInvokablePromise(() => delay(() => Promise.reject(ms), ms), [ms]),
+        useDeferredPromise(() => delay(() => Promise.reject(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
     act(() => {
       // run async and don't wait
-      result.current[0]();
+      result.current.invoke();
     });
-    expect(result.current[2].isPending).toBeTruthy();
+    expect(result.current.isPending).toBeTruthy();
     rerender({ms: 10});
     act(() => {
-      result.current[0]();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     await delay(async () => {
-      expect(result.current).toEqual([
-        expect.any(Function),
-        undefined,
+      expect(result.current).toEqual(
         expect.objectContaining({
-          status: UseInvokablePromiseStatus.Rejected,
+          status: UseDeferredPromiseStatus.Rejected,
+          value: undefined,
           error: 10,
         }),
-      ]);
+      );
     }, 100);
   });
 
   it('should return the value from the invoke function', async () => {
     expect.assertions(1);
-    const {result} = renderUseInvokablePromiseHook(() =>
+    const {result} = renderUseDeferredPromiseHook(() =>
       delay(() => Promise.resolve({foo: 'bar'})),
     );
     await act(async () => {
-      const value = await result.current[0]();
+      const value = await result.current.invokeAsync();
       expect(value).toEqual({foo: 'bar'});
     });
   });
 
   it('should throw an error from the invoke function', async () => {
     expect.assertions(1);
-    const {result} = renderUseInvokablePromiseHook(undefined);
+    const {result} = renderUseDeferredPromiseHook(undefined);
     await act(async () => {
-      await expect(result.current[0]()).rejects.toThrowError();
+      await expect(result.current.invokeAsync()).rejects.toThrowError();
     });
   });
 });

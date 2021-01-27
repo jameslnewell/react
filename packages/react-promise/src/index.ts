@@ -1,2 +1,3 @@
+export * from './createResource';
 export * from './usePromise';
-export * from './useInvokablePromise';
+export * from './useDeferredPromise';

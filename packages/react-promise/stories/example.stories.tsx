@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 import {storiesOf} from '@storybook/react';
-import {usePromise, useInvokablePromise} from '../src';
+import {usePromise, useDeferredPromise} from '../src';
 import './styles.css';
 
 async function getUser(id: string): Promise<{name: string}> {
@@ -20,7 +20,7 @@ const Example: React.FC<{id: string}> = ({id}) => {
   const [name, setName] = useState<string>('');
   const [isEdited, setEdited] = useState<boolean>(false);
   const [user, loading] = usePromise(() => getUser(id), [id]);
-  const [save, , saving] = useInvokablePromise((name) => putUser(id, {name}), [
+  const [save, , saving] = useDeferredPromise((name) => putUser(id, {name}), [
     id,
   ]);
 
