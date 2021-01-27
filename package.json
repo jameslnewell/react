@@ -60,6 +60,8 @@
     "check:formatting": "prettier --check '**/*.{js,json,md,ts,tsx}'",
     "build": "preconstruct build",
     "test": "jest",
-    "start": "yarn workspace storybook run start"
+    "start": "yarn workspace storybook run start",
+    "prepublish": "yarn run build && yarn run test && yarn run check:*",
+    "publish": "manypkg exec publish-if-not-published"
   }
 }
