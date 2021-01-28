@@ -1,84 +1,60 @@
 /**
  * @jest-environment node
  */
-import {DependencyList, useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {client} from './xClient';
 import useIsMounted from '@jameslnewell/react-mounted';
+import {Factory, Result, Status} from './types';
 
-export interface UseDeferredPromiseFactoryFunction<
-  Value = unknown,
-  Parameters extends unknown[] = []
-> {
-  (...params: Parameters): Promise<Value>;
+export interface UseDeferredPromiseOptions {
+  suspendWhenPending?: boolean;
+  throwWhenRejected?: boolean;
 }
 
-export interface UseDeferredPromiseInvokeFunction<
-  Parameters extends unknown[] = []
-> {
-  (...params: Parameters): void;
-}
-
-export interface UseDeferredPromiseInvokeAsyncFunction<
-  Value = unknown,
-  Parameters extends unknown[] = []
-> {
-  (...params: Parameters): Promise<Value>;
-}
-
-export interface UseDeferredPromiseDependencies extends DependencyList {}
-
-export enum UseDeferredPromiseStatus {
-  Pending = 'pending',
-  Fulfilled = 'fulfilled',
-  Rejected = 'rejected',
-}
-
-export interface UseDeferredPromiseResult<
-  Value = unknown,
-  Parameters extends unknown[] = [],
-  Error = unknown
-> {
-  status: UseDeferredPromiseStatus | undefined;
-  value?: Value;
-  error?: Error;
-  invoke: UseDeferredPromiseInvokeFunction<Parameters>;
-  invokeAsync: UseDeferredPromiseInvokeAsyncFunction<Value, Parameters>;
-  isPending: boolean;
-  isFulfilled: boolean;
-  isRejected: boolean;
-}
-
-interface UseDeferredPromiseState<Value, Error> {
-  status: UseDeferredPromiseStatus | undefined;
+interface State<Parameters, Value, Error> {
+  status: Status | undefined;
   value: Value | undefined;
   error: Error | undefined;
+  params: Parameters | undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const idleState: UseDeferredPromiseState<any, any> = {
+const idleState: State<any, any, any> = {
   status: undefined,
   value: undefined,
   error: undefined,
+  params: undefined,
 };
 
 export function useDeferredPromise<
-  Value = unknown,
   Parameters extends unknown[] = [],
+  Value = unknown,
   Error = unknown
 >(
-  fn: UseDeferredPromiseFactoryFunction<Value, Parameters> | undefined,
-  deps?: UseDeferredPromiseDependencies,
-): UseDeferredPromiseResult<Value, Parameters, Error> {
+  fn: Factory<Parameters, Value> | undefined,
+  {
+    suspendWhenPending = false,
+    throwWhenRejected = false,
+  }: UseDeferredPromiseOptions = {},
+): Result<Parameters, Value, Error> {
   const isMounted = useIsMounted();
-  const resolveFunction = useRef<(() => void) | undefined>(undefined);
-  const mostRecentlyCreatedPromise = useRef<Promise<Value> | undefined>(
+  const mostRecentlyInvokedPromise = useRef<Promise<Value> | undefined>(
     undefined,
   );
-  const [state, setState] = useState<UseDeferredPromiseState<Value, Error>>(
+  const [state, setState] = useState<State<Parameters, Value, Error>>(
     idleState,
   );
 
+  if (fn && state.params && suspendWhenPending) {
+    client.suspendWhenPending(fn, state.params);
+  }
+
+  if (fn && state.params && throwWhenRejected) {
+    client.throwWhenRejected(fn, state.params);
+  }
+
   const invokeAsync = useCallback(
-    async (...parameters: Parameters): Promise<Value> => {
+    (...params: Parameters): Promise<Value> => {
       if (!fn) {
         throw new Error(
           "The invoke function cannot be called at this time because the factory didn't return a promise.",
@@ -86,46 +62,50 @@ export function useDeferredPromise<
       }
 
       setState({
-        status: UseDeferredPromiseStatus.Pending,
+        status: Status.Pending,
         value: undefined,
         error: undefined,
+        params: params || [],
       });
 
-      const thisPromise = (mostRecentlyCreatedPromise.current = fn(
-        ...parameters,
-      ));
-      try {
-        const value = await thisPromise;
-        if (
-          isMounted.current &&
-          thisPromise === mostRecentlyCreatedPromise.current
-        ) {
-          setState({
-            status: UseDeferredPromiseStatus.Fulfilled,
-            value,
-            error: undefined,
-          });
-          resolveFunction.current = undefined;
-          mostRecentlyCreatedPromise.current = undefined;
-        }
-        return value;
-      } catch (error) {
-        if (
-          isMounted.current &&
-          thisPromise === mostRecentlyCreatedPromise.current
-        ) {
-          setState({
-            status: UseDeferredPromiseStatus.Rejected,
-            value: undefined,
-            error,
-          });
-          resolveFunction.current = undefined;
-          mostRecentlyCreatedPromise.current = undefined;
-        }
-        throw error;
-      }
+      const promise = (mostRecentlyInvokedPromise.current = client
+        .invoke(fn, params || [], {force: true})
+        .then(
+          (value) => {
+            if (
+              isMounted.current &&
+              promise === mostRecentlyInvokedPromise.current
+            ) {
+              setState((prevState) => ({
+                ...prevState,
+                status: Status.Fulfilled,
+                value,
+                error: undefined,
+              }));
+              mostRecentlyInvokedPromise.current = undefined;
+            }
+            return value;
+          },
+          (error) => {
+            if (
+              isMounted.current &&
+              promise === mostRecentlyInvokedPromise.current
+            ) {
+              setState((prevState) => ({
+                ...prevState,
+                status: Status.Rejected,
+                value: undefined,
+                error,
+              }));
+              mostRecentlyInvokedPromise.current = undefined;
+            }
+            throw error;
+          },
+        ));
+
+      return promise;
     },
-    [...(deps ?? []), setState],
+    [fn, setState],
   );
 
   const invoke = useCallback(
@@ -145,12 +125,24 @@ export function useDeferredPromise<
     [invoke],
   );
 
+  // clean up the previous state when it changes
+  useEffect(
+    () => () => {
+      if (fn && state.params) {
+        client.clear(fn, state.params);
+      }
+    },
+    [fn, state.params],
+  );
+
   return {
-    ...state,
+    status: state.status,
+    value: state.value,
+    error: state.error,
     invoke,
     invokeAsync,
-    isPending: state.status === UseDeferredPromiseStatus.Pending,
-    isFulfilled: state.status === UseDeferredPromiseStatus.Fulfilled,
-    isRejected: state.status === UseDeferredPromiseStatus.Rejected,
+    isPending: state.status === Status.Pending,
+    isFulfilled: state.status === Status.Fulfilled,
+    isRejected: state.status === Status.Rejected,
   };
 }

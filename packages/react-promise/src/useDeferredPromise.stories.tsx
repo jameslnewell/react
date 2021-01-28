@@ -1,9 +1,8 @@
-import React from 'react';
-import {
-  useDeferredPromise,
-  UseDeferredPromiseDependencies,
-  UseDeferredPromiseFactoryFunction,
-} from './useDeferredPromise';
+import React, {Suspense} from 'react';
+import {ErrorBoundary} from 'react-error-boundary';
+import {Factory} from './types';
+import {useDeferredPromise} from './useDeferredPromise';
+import {UsePromiseOptions} from './usePromise';
 import {
   createEventuallyFulfilledPromise,
   createEventuallyRejectedPromise,
@@ -17,14 +16,18 @@ export default {
   title: 'react-promise/useDeferredPromise',
 };
 interface UsePromiseProps {
-  fn?: UseDeferredPromiseFactoryFunction;
-  deps?: UseDeferredPromiseDependencies;
+  fn?: Factory;
+  opts?: UsePromiseOptions;
 }
 
-const UseDeferredPromise: React.FC<UsePromiseProps> = ({fn, deps, opts}) => {
-  const result = useDeferredPromise(fn, deps);
-  console.log('Story', result.status);
-  return <RenderJSON value={result} />;
+const UseDeferredPromise: React.FC<UsePromiseProps> = ({fn, opts}) => {
+  const result = useDeferredPromise(fn, opts);
+  return (
+    <>
+      <button onClick={() => result.invoke()}>Invoke</button>
+      <RenderJSON value={result} />
+    </>
+  );
 };
 
 export const NoFactory: React.FC = () => {
@@ -49,4 +52,48 @@ export const EventuallyFulfilled: React.FC = () => {
 
 export const EventuallyRejected: React.FC = () => {
   return <UseDeferredPromise fn={createEventuallyRejectedPromise} />;
+};
+
+export const Suspended: React.FC = () => {
+  return (
+    <Suspense fallback={<p>Suspended!</p>}>
+      <UseDeferredPromise
+        fn={createPendingPromise}
+        opts={{suspendWhenPending: true}}
+      />
+    </Suspense>
+  );
+};
+
+export const Thrown: React.FC = () => {
+  return (
+    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
+      <UseDeferredPromise
+        fn={createRejectedPromise}
+        opts={{throwWhenRejected: true}}
+      />
+    </ErrorBoundary>
+  );
+};
+
+export const SuspendedEventuallyFulfilled: React.FC = () => {
+  return (
+    <Suspense fallback={<p>Suspended!</p>}>
+      <UseDeferredPromise
+        fn={createEventuallyFulfilledPromise}
+        opts={{suspendWhenPending: true}}
+      />
+    </Suspense>
+  );
+};
+
+export const SuspendedEventuallyRejected: React.FC = () => {
+  return (
+    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
+      <UseDeferredPromise
+        fn={createEventuallyRejectedPromise}
+        opts={{throwWhenRejected: true}}
+      />
+    </ErrorBoundary>
+  );
 };

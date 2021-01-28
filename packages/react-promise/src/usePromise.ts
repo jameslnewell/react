@@ -1,48 +1,25 @@
 import {useEffect, useRef} from 'react';
+import {Result, Factory, Status} from './types';
 import {
   useDeferredPromise,
-  UseDeferredPromiseDependencies,
-  UseDeferredPromiseFactoryFunction,
-  UseDeferredPromiseInvokeAsyncFunction,
-  UseDeferredPromiseInvokeFunction,
-  UseDeferredPromiseResult,
-  UseDeferredPromiseStatus,
+  UseDeferredPromiseOptions,
 } from './useDeferredPromise';
 
-export interface UsePromiseFactory<
-  Value = unknown,
-  Parameters extends unknown[] = []
-> extends UseDeferredPromiseFactoryFunction<Value, Parameters> {}
-
-export interface UsePromiseInvokeFunction<Parameters extends unknown[] = []>
-  extends UseDeferredPromiseInvokeFunction<Parameters> {}
-
-export interface UsePromiseInvokeAsyncFunction<
-  Value = unknown,
-  Parameters extends unknown[] = []
-> extends UseDeferredPromiseInvokeAsyncFunction<Value, Parameters> {}
-
-export interface UsePromiseDependencies
-  extends UseDeferredPromiseDependencies {}
-
-export interface UsePromiseOptions {
+export interface UsePromiseOptions extends UseDeferredPromiseOptions {
   invokeWhenMounted?: boolean;
   invokeWhenChanged?: boolean;
 }
 
-export type UsePromiseStatus = UseDeferredPromiseStatus;
-export const UsePromiseStatus = UseDeferredPromiseStatus;
-
-export interface UsePromiseResult<Value = unknown, Error = unknown>
-  extends UseDeferredPromiseResult<Value, [], Error> {}
-
 export function usePromise<Value = unknown, Error = unknown>(
-  fn: UsePromiseFactory<Value> | undefined,
-  deps?: UsePromiseDependencies,
-  {invokeWhenMounted = true, invokeWhenChanged = true}: UsePromiseOptions = {},
-): UsePromiseResult<Value, Error> {
+  fn: Factory<never, Value> | undefined,
+  {
+    invokeWhenMounted = true,
+    invokeWhenChanged = true,
+    ...opts
+  }: UsePromiseOptions = {},
+): Result<never, Value, Error> {
   const isFirstRun = useRef(true);
-  const result = useDeferredPromise<Value, never, Error>(fn, deps);
+  const result = useDeferredPromise<never, Value, Error>(fn, opts);
 
   const canInvokeWhenMounted = !!fn && invokeWhenMounted;
   const canInvokeWhenChanged = !!fn && invokeWhenChanged;
@@ -62,7 +39,7 @@ export function usePromise<Value = unknown, Error = unknown>(
     ...result,
     status:
       isFirstRun.current && canInvokeWhenMounted
-        ? UsePromiseStatus.Pending
+        ? Status.Pending
         : result.status,
     isPending:
       isFirstRun.current && canInvokeWhenMounted ? true : result.isPending,

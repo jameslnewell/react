@@ -1,6 +1,19 @@
 import React from 'react';
+import {Factory} from '../types';
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
+
+export const noop = (): void => {
+  /* do nothing */
+};
+
+export function createDelay(factory: Factory, ms: number): Factory {
+  return () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => factory().then(resolve, reject), ms);
+    });
+  };
+}
 
 export async function createPendingPromise(): Promise<unknown> {
   return new Promise(() => {

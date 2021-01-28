@@ -10,7 +10,9 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@jameslnewell/react-mounted": ["packages/react-mounted/src"]
+      "@jameslnewell/react-mounted": ["packages/react-mounted/src"],
+      "@jameslnewell/react-promise": ["packages/react-promise/src"],
+      "@jameslnewell/react-observable": ["packages/react-observable/src"]
     }
   },
   "include": ["packages/*/src"]
