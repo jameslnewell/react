@@ -1,47 +1,69 @@
-import {useEffect, useRef} from 'react';
-import {Result, Factory, Status} from './types';
+import {useCallback, useEffect, useMemo, useRef} from 'react';
+import {Factory, Resource} from './Resource';
 import {
-  useDeferredPromise,
-  UseDeferredPromiseOptions,
-} from './useDeferredPromise';
+  useResource,
+  UseResourceOptions,
+  UseResourceResult,
+} from './useResource';
 
-export interface UsePromiseOptions extends UseDeferredPromiseOptions {
+export interface UsePromiseOptions extends UseResourceOptions {
   invokeWhenMounted?: boolean;
   invokeWhenChanged?: boolean;
 }
 
-export function usePromise<Value = unknown, Error = unknown>(
-  fn: Factory<never, Value> | undefined,
+export type UsePromiseResult<Value, Error> = UseResourceResult<Value, Error> & {
+  invoke(): void;
+  invokeAsync(): Promise<Value>;
+};
+
+export function usePromise<Value, Error>(
+  factory: Factory<never[], Value> | undefined,
   {
     invokeWhenMounted = true,
     invokeWhenChanged = true,
-    ...opts
+    suspendWhenPending = false,
+    throwWhenRejected = false,
   }: UsePromiseOptions = {},
-): Result<never, Value, Error> {
-  const isFirstRun = useRef(true);
-  const result = useDeferredPromise<never, Value, Error>(fn, opts);
+): UsePromiseResult<Value, Error> {
+  const mounted = useRef(false);
+  const resource = useRef(new Resource<never[], Value, Error>());
+  const result = useResource(resource.current, {
+    suspendWhenPending,
+    throwWhenRejected,
+  });
 
-  const canInvokeWhenMounted = !!fn && invokeWhenMounted;
-  const canInvokeWhenChanged = !!fn && invokeWhenChanged;
+  const invoke = useCallback(() => {
+    if (!factory) {
+      throw new Error('No factory provided.');
+    }
+    resource.current.invoke(factory, []).catch(() => {
+      /* do nothing */
+    });
+  }, []);
 
-  // invoke when mounted or changed
+  const invokeAsync = useCallback(() => {
+    if (!factory) {
+      throw new Error('No factory provided.');
+    }
+    return resource.current.invoke(factory, []);
+  }, []);
+
+  // invoke on mount and change
   useEffect(() => {
-    if (isFirstRun.current && canInvokeWhenMounted) {
-      result.invoke();
+    if (invokeWhenMounted && !mounted.current && factory) {
+      invoke();
+    } else if (invokeWhenChanged && mounted.current && factory) {
+      invoke();
     }
-    if (!isFirstRun.current && canInvokeWhenChanged) {
-      result.invoke();
-    }
-    isFirstRun.current = false;
-  }, [canInvokeWhenMounted, canInvokeWhenChanged, result.invoke]);
+    mounted.current = true;
+  }, [invokeWhenMounted, invokeWhenChanged, factory]);
 
-  return {
-    ...result,
-    status:
-      isFirstRun.current && canInvokeWhenMounted
-        ? Status.Pending
-        : result.status,
-    isPending:
-      isFirstRun.current && canInvokeWhenMounted ? true : result.isPending,
-  };
+  return useMemo<UsePromiseResult<Value, Error>>(
+    () => ({
+      ...result,
+      invoke,
+      invokeAsync,
+    }),
+    [result, factory, invoke],
+  );
 }

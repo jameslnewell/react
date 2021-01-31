@@ -1,7 +1,39 @@
 import React from 'react';
+import {
+  FulfilledState,
+  PendingState,
+  RejectedState,
+  Status,
+  UninitialisedState,
+} from '../Resource';
 import {Factory} from '../types';
+
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
+
+export const uninitialisedState: UninitialisedState = {
+  status: undefined,
+  value: undefined,
+  error: undefined,
+};
+
+export const pendingState: PendingState = {
+  status: Status.Pending,
+  value: undefined,
+  error: undefined,
+};
+
+export const fulfilledState: FulfilledState<typeof value> = {
+  status: Status.Fulfilled,
+  value,
+  error: undefined,
+};
+
+export const rejectedState: RejectedState<typeof error> = {
+  status: Status.Rejected,
+  value: undefined,
+  error,
+};
 
 export const noop = (): void => {
   /* do nothing */

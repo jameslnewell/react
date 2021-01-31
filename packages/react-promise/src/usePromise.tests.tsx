@@ -3,8 +3,7 @@ import React from 'react';
 import {renderHook, RenderHookResult} from '@testing-library/react-hooks';
 import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Status, Factory, usePromise, Result} from '.';
-import {UsePromiseOptions} from './usePromise';
+import {usePromise, UsePromiseOptions, UsePromiseResult} from './usePromise';
 import {
   value,
   error,
@@ -13,11 +12,12 @@ import {
   createRejectedPromise,
   noop,
 } from './__fixtures__';
+import {Factory, Status} from './Resource';
 
-function renderUseDeferredPromiseHook<Value = unknown>(
+function renderUseDeferredPromiseHook<Value = unknown, Error = unknown>(
   fn: Factory<never, Value> | undefined,
   opts?: UsePromiseOptions,
-): RenderHookResult<unknown, Result<never, Value>> {
+): RenderHookResult<unknown, UsePromiseResult<Value, Error>> {
   return renderHook(() => usePromise(fn, opts));
 }
 

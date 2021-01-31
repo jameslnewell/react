@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Factory} from './types';
+import {Factory} from './Resource';
 import {useDeferredPromise} from './useDeferredPromise';
 import {UsePromiseOptions} from './usePromise';
 import {
@@ -15,12 +15,12 @@ import {
 export default {
   title: 'react-promise/useDeferredPromise',
 };
-interface UsePromiseProps {
-  fn?: Factory;
+interface UseDeferredPromiseProps {
+  fn?: Factory<unknown[], unknown>;
   opts?: UsePromiseOptions;
 }
 
-const UseDeferredPromise: React.FC<UsePromiseProps> = ({fn, opts}) => {
+const UseDeferredPromise: React.FC<UseDeferredPromiseProps> = ({fn, opts}) => {
   const result = useDeferredPromise(fn, opts);
   return (
     <>

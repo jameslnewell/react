@@ -3,8 +3,11 @@ import React, {useEffect} from 'react';
 import {act, renderHook, RenderHookResult} from '@testing-library/react-hooks';
 import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Status, Factory, useDeferredPromise, Result} from '.';
-import {UseDeferredPromiseOptions} from './useDeferredPromise';
+import {
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
+} from './useDeferredPromise';
 import {
   value,
   error,
@@ -14,14 +17,19 @@ import {
   noop,
   createDelay,
 } from './__fixtures__';
+import {Factory, Status} from './Resource';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],
-  Value = unknown
+  Value = unknown,
+  Error = unknown
 >(
   fn: Factory<Parameters, Value> | undefined,
   opts?: UseDeferredPromiseOptions,
-): RenderHookResult<unknown, Result<Parameters, Value>> {
+): RenderHookResult<
+  unknown,
+  UseDeferredPromiseResult<Parameters, Value, Error>
+> {
   return renderHook(() => useDeferredPromise(fn, opts));
 }
 
@@ -36,11 +44,12 @@ describe('useDeferredPromise()', () => {
       }),
     );
   });
+
   test('throws an error when invoked without a fn', () => {
     const {result} = renderUseDeferredPromiseHook(undefined);
     act(() => {
       expect(() => result.current.invokeAsync()).toThrow(
-        `The invoke function cannot be called at this time because the factory didn't return a promise.`,
+        `No factory provided.`,
       );
     });
   });
