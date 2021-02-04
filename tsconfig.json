@@ -10,6 +10,7 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
+      "testing-utilities": ["packages/testing-utilities/src"],
       "@jameslnewell/react-mounted": ["packages/react-mounted/src"],
       "@jameslnewell/react-promise": ["packages/react-promise/src"],
       "@jameslnewell/react-observable": ["packages/react-observable/src"]

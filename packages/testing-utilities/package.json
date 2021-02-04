@@ -1,0 +1,6 @@
+{
+  "name": "testing-utilities",
+  "version": "1.0.0",
+  "main": "dist/testing-utilities.cjs.js",
+  "private": true
+}

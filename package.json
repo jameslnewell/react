@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/core": "^7.12.10",
     "@jameslnewell/babel-preset": "^2.2.0",
-    "@jameslnewell/eslint-config": "^0.17.1",
+    "@jameslnewell/eslint-config": "^0.17.2",
     "@jameslnewell/jest-preset": "^2.1.0",
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
@@ -61,7 +61,7 @@
     "build": "preconstruct build",
     "test": "jest",
     "start": "yarn workspace storybook run start",
-    "prepublish": "yarn run build && yarn run test && yarn run check:*",
+    "prepublishOnly": "yarn run build && yarn run test && yarn run check:*",
     "publish": "manypkg exec publish-if-not-published"
   }
 }

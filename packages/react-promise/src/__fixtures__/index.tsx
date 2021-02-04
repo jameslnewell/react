@@ -4,14 +4,13 @@ import {
   PendingState,
   RejectedState,
   Status,
-  UninitialisedState,
+  UnknownState,
 } from '../Resource';
-import {Factory} from '../types';
 
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
 
-export const uninitialisedState: UninitialisedState = {
+export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,

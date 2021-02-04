@@ -1,14 +1,16 @@
 import {renderHook} from '@testing-library/react-hooks';
-import {UseObservableStatus, UseObservableFactory, useObservable} from '.';
+import {useObservable} from '.';
 import {
   Observable,
   create,
   fromArray,
   fromError,
 } from '@jameslnewell/observable';
+import {Factory, Status} from './Resource';
+import {unknownState, waitingState} from './__fixtures__';
 
 // waiting, received, completed errored
-const waiting = (): Observable<number> =>
+const createWaitingObservable = (): Observable<number> =>
   create(() => {
     /* do nothing */
   });
@@ -47,77 +49,69 @@ function wait<T>(fn: () => Promise<T>, ms = 100): Promise<T> {
 
 describe('useObservable()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function renderUseObservableHook<T>(fn: UseObservableFactory<T> | undefined) {
-    return renderHook(() => useObservable(fn));
+  function renderUseObservableHook<Value, Error>(
+    factory: Factory<never[], Value, Error> | undefined,
+  ) {
+    return renderHook(() => useObservable(factory));
   }
 
-  test('is in unknown state when no observable is provided', async () => {
+  test('state is unknown when mounted without a factory', async () => {
     const {result} = renderUseObservableHook(undefined);
-    expect(result.current).toEqual([
-      undefined,
-      expect.objectContaining({
-        status: undefined,
-        error: undefined,
-      }),
-    ]);
+    expect(result.current).toEqual(expect.objectContaining(unknownState));
   });
 
-  test('is in waiting state when an observable is provided and is waiting for a value', async () => {
-    const {result} = renderUseObservableHook(() => waiting());
-    expect(result.current).toEqual([
-      undefined,
-      expect.objectContaining({
-        status: UseObservableStatus.Waiting,
-        error: undefined,
-      }),
-    ]);
+  test.only('state is waiting when mounted with a factory', async () => {
+    const {result} = renderUseObservableHook(createWaitingObservable);
+    expect(result.current).toEqual(expect.objectContaining(waitingState));
   });
 
   test('is in received state when an observable is provided and a value is observed', async () => {
     const {result} = renderUseObservableHook(() => received());
-    expect(result.current).toEqual([
-      1,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Receieved,
+        status: Status.Receieved,
+        value: 1,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('is in completed state when an observable is provided and has completed', async () => {
     const {result} = renderUseObservableHook(() => completed());
-    expect(result.current).toEqual([
-      3,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Completed,
+        status: Status.Completed,
+        value: 3,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('is in errored state when an observable is provided and has errored', async () => {
     const {result} = renderUseObservableHook(() =>
       fromError(new Error('This is a test error!')),
     );
-    expect(result.current).toEqual([
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Errored,
+        status: Status.Errored,
+        value: undefined,
         error: new Error('This is a test error!'),
       }),
-    ]);
+    );
   });
 
   test('is in waiting state when an observable is provided, is waiting and the component is unmounted', async () => {
-    const {result, unmount} = renderUseObservableHook(() => waiting());
+    const {result, unmount} = renderUseObservableHook(() =>
+      createWaitingObservable(),
+    );
     unmount();
-    expect(result.current).toEqual([
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Waiting,
+        status: Status.Waiting,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('is in unknown state when rerendered and no observable is provided', async () => {
@@ -130,29 +124,32 @@ describe('useObservable()', () => {
       {initialProps: {step: 0}},
     );
     rerender({step: 1});
-    expect(result.current).toEqual([
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
         status: undefined,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('is in waiting when rerendered, an observable is provided and is waiting for a value', async () => {
     const {result, rerender} = renderHook(
       ({step}: {step: 0 | 1}) =>
-        useObservable(() => (step === 0 ? received() : waiting()), [step]),
+        useObservable(
+          () => (step === 0 ? received() : createWaitingObservable()),
+          [step],
+        ),
       {initialProps: {step: 0}},
     );
     rerender({step: 1});
-    expect(result.current).toEqual([
-      undefined,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Waiting,
+        status: Status.Waiting,
+        value: undefined,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('is in received when rerendered, an observable is provided and a value is observed', async () => {
@@ -162,13 +159,13 @@ describe('useObservable()', () => {
       {initialProps: {step: 0}},
     );
     rerender({step: 1});
-    expect(result.current).toEqual([
-      1,
+    expect(result.current).toEqual(
       expect.objectContaining({
-        status: UseObservableStatus.Receieved,
+        status: Status.Receieved,
+        value: 1,
         error: undefined,
       }),
-    ]);
+    );
   });
 
   test('should not update state with the result of an old observable when an old observable publishes after the current observable', async () => {
@@ -177,17 +174,17 @@ describe('useObservable()', () => {
         useObservable(() => delay(received(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
-    expect(result.current[1].isWaiting).toBeTruthy();
+    expect(result.current.isWaiting).toBeTruthy();
     rerender({ms: 10});
     await waitForNextUpdate();
     await wait(async () => {
-      expect(result.current).toEqual([
-        10,
+      expect(result.current).toEqual(
         expect.objectContaining({
-          status: UseObservableStatus.Receieved,
+          status: Status.Receieved,
+          value: 10,
           error: undefined,
         }),
-      ]);
+      );
     }, 100);
   });
 
@@ -196,17 +193,17 @@ describe('useObservable()', () => {
       ({ms}: {ms: number}) => useObservable(() => delay(errored(ms), ms), [ms]),
       {initialProps: {ms: 100}},
     );
-    expect(result.current[1].isWaiting).toBeTruthy();
+    expect(result.current.isWaiting).toBeTruthy();
     rerender({ms: 10});
     await waitForNextUpdate();
     await wait(async () => {
-      expect(result.current).toEqual([
-        undefined,
+      expect(result.current).toEqual(
         expect.objectContaining({
-          status: UseObservableStatus.Errored,
+          status: Status.Errored,
+          value: undefined,
           error: 10,
         }),
-      ]);
+      );
     }, 100);
   });
 });

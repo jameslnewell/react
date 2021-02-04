@@ -22,7 +22,7 @@ function renderUseDeferredPromiseHook<Value = unknown, Error = unknown>(
 }
 
 describe('usePromise()', () => {
-  test('state is undefined when mounted without a fn', () => {
+  test('state is unknown when mounted without a fn', () => {
     const {result} = renderUseDeferredPromiseHook(undefined);
     expect(result.current).toEqual(
       expect.objectContaining({

@@ -1635,10 +1635,10 @@
     "@babel/preset-react" "^7.10.4"
     "@babel/preset-typescript" "^7.10.4"
 
-"@jameslnewell/eslint-config@^0.17.1":
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.17.1.tgz#befc093d9f6d67436ea1025a90f5a6018db7200d"
-  integrity sha512-+uPTAclZOIlpV5SCbuJSj+LGJyl3BWOLvi71qMrHUrLs0HGpHDR3NYjS+LprNIYj109jRV4ujwGdV+NUSrHxwQ==
+"@jameslnewell/eslint-config@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/eslint-config/-/eslint-config-0.17.2.tgz#4f06becab34fa817352023a763dcd76455f0f219"
+  integrity sha512-9uNTGwfn7cx8KI1fzj6WfBOZla0Vrqdx2VLXDvvQ8S3OOGeYQw6siYN/mFPEvbUZdXryGRK4jC/XtD82W4NRIw==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^4.4.0"
     "@typescript-eslint/parser" "^4.4.0"
@@ -1661,6 +1661,11 @@
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.3.0.tgz#7f5f8662430b7c6206ff58b2a0b535e48e467e57"
   integrity sha512-pr+WxFCGdhMblr1Da8J+asfvhbLnYrxY+2FvpUKi527Y/Zg8MIPA21XmKHRZqCTa+PQkl46gh6B1H2CiksHPIQ==
+
+"@jameslnewell/observable@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.5.0.tgz#26e1ffc56eebc5ab6a33861fa0f44dffa0ccd2d2"
+  integrity sha512-S9vSRQpQid7mtwyZqnkaOF7n8xHkfrFQVDkgaKNfrBfOVzvPm9vvG/vh74mywLSqW2yabMED/CQ5IBOmpJEiSQ==
 
 "@jameslnewell/prettier-config@^1.0.1":
   version "1.0.1"
@@ -14101,6 +14106,11 @@ w3c-xmlserializer@^2.0.0:
   integrity sha512-4tzD0mF8iSiMiNs30BiLO3EpfGLZUT2MSX/G+o7ZywDzliWQ3OPtTZ0PTC3B3ca1UAf4cJMHB+2Bf56EriJuRA==
   dependencies:
     xml-name-validator "^3.0.0"
+
+wait-for-expect@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/wait-for-expect/-/wait-for-expect-3.0.2.tgz#d2f14b2f7b778c9b82144109c8fa89ceaadaa463"
+  integrity sha512-cfS1+DZxuav1aBYbaO/kE06EOS8yRw7qOFoD3XtjTkYvCvh3zUvNST8DXK/nPaeqIzIv3P3kL3lRJn8iwOiSag==
 
 walker@^1.0.7, walker@~1.0.5:
   version "1.0.7"

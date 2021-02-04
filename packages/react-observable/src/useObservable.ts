@@ -1,45 +1,59 @@
-import {useReducer, useEffect, Reducer, useRef} from 'react';
-import {Subscription} from '@jameslnewell/observable';
-import {Factory, Dependencies, Status, Metadata} from './types';
-import {State} from './utils/State';
-import {Action, reset} from './utils/Action';
-import {useMounted} from './utils/useMounted';
-import {reducer} from './utils/reducer';
-import {initialState} from './utils/initialState';
-import {invoke} from './utils/invoke';
-import {getMetadata} from './utils/getMetadata';
+import {useEffect, useRef, useCallback, useMemo} from 'react';
+import {
+  useResource,
+  UseResourceOptions,
+  UseResourceResult,
+} from './useResource';
+import {Resource, Factory} from './Resource';
 
-export {Status as UseObservableStatus};
-export type UseObservableFactory<T> = Factory<T, []>;
-export type UseObservableDependencies = Dependencies;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type UseObservableMetadata<E = any> = Metadata<E>;
+export interface UseObservableOptions extends UseResourceOptions {
+  invokeWhenMounted?: boolean;
+  invokeWhenChanged?: boolean;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useObservable<T, E = any>(
-  fn: UseObservableFactory<T> | undefined,
-  deps: UseObservableDependencies = [],
-): [T | undefined, UseObservableMetadata] {
-  const isMounted = useMounted();
-  const subscription = useRef<Subscription | undefined>(undefined);
-  const [state, dispatch] = useReducer<Reducer<State<T, E>, Action<T, E>>>(
-    reducer,
-    initialState,
-  );
+export type UseObservableResult<Value, Error> = UseResourceResult<
+  Value,
+  Error
+> & {
+  invoke(): void;
+};
 
+export function useObservable<Value, Error>(
+  factory: Factory<never[], Value, Error> | undefined,
+  {
+    invokeWhenMounted = true,
+    invokeWhenChanged = true,
+    suspendWhenWaiting = false,
+    throwWhenErrored = false,
+  }: UseObservableOptions = {},
+): UseObservableResult<Value, Error> {
+  const mounted = useRef(false);
+  const resource = useRef(new Resource<never[], Value, Error>(factory));
+  const result = useResource(resource.current, {
+    suspendWhenWaiting,
+    throwWhenErrored,
+  });
+
+  const invoke = useCallback(() => {
+    // TODO: silence errors
+    resource.current.invoke();
+  }, []);
+
+  // invoke on mount and change
   useEffect(() => {
-    if (fn) {
-      subscription.current = invoke({fn, dispatch, isMounted}, []);
-    } else {
-      dispatch(reset());
+    if (invokeWhenMounted && !mounted.current && factory) {
+      invoke();
+    } else if (invokeWhenChanged && mounted.current && factory) {
+      invoke();
     }
-    return () => {
-      if (subscription.current) {
-        subscription.current.unsubscribe();
-        subscription.current = undefined;
-      }
-    };
-  }, deps);
+    mounted.current = true;
+  }, [invokeWhenMounted, invokeWhenChanged, factory]);
 
-  return [state.value, getMetadata(state)];
+  return useMemo<UseObservableResult<Value, Error>>(
+    () => ({
+      ...result,
+      invoke,
+    }),
+    [result, factory, invoke],
+  );
 }

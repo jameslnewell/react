@@ -3,33 +3,31 @@ import useMounted from '@jameslnewell/react-mounted';
 import {useEffect, useMemo, useState} from 'react';
 
 export interface UseResourceOptions {
-  suspendWhenPending?: boolean;
-  throwWhenRejected?: boolean;
+  suspendWhenWaiting?: boolean;
+  throwWhenErrored?: boolean;
 }
 
 export type UseResourceResult<Value, Error> = State<Value, Error> & {
-  isPending: boolean;
-  isFulfilled: boolean;
-  isRejected: boolean;
+  isWaiting: boolean;
+  isReceived: boolean;
+  isCompleted: boolean;
+  isErrored: boolean;
 };
 
 export function useResource<Parameters extends unknown[], Value, Error>(
   resource: Resource<Parameters, Value, Error>,
-  {
-    suspendWhenPending = true,
-    throwWhenRejected = true,
-  }: UseResourceOptions = {},
+  {suspendWhenWaiting = true, throwWhenErrored = true}: UseResourceOptions = {},
 ): UseResourceResult<Value, Error> {
   const mounted = useMounted();
-  const [state, setState] = useState(() => resource.state);
+  const [state, setState] = useState(() => resource?.state);
 
   // suspend
-  if (suspendWhenPending && state.status === Status.Pending) {
+  if (suspendWhenWaiting && state.status === Status.Waiting) {
     throw resource.wait();
   }
 
   // throw
-  if (throwWhenRejected && state.status === Status.Rejected) {
+  if (throwWhenErrored && state.status === Status.Errored) {
     throw state.error;
   }
 
@@ -40,15 +38,18 @@ export function useResource<Parameters extends unknown[], Value, Error>(
         setState(state);
       }
     });
+
+    // TODO: unsubscribe
   }, [resource]);
 
   // create the result
   return useMemo<UseResourceResult<Value, Error>>(
     () => ({
       ...state,
-      isPending: state.status === Status.Pending,
-      isFulfilled: state.status === Status.Fulfilled,
-      isRejected: state.status === Status.Rejected,
+      isWaiting: state.status === Status.Waiting,
+      isReceived: state.status === Status.Receieved,
+      isCompleted: state.status === Status.Completed,
+      isErrored: state.status === Status.Errored,
     }),
     [state],
   );
