@@ -1,57 +1,101 @@
-import {useCallback, useMemo, useRef} from 'react';
-import {Factory, Resource} from './Resource';
-import {
-  useResource,
-  UseResourceOptions,
-  UseResourceResult,
-} from './useResource';
+import useMounted from '@jameslnewell/react-mounted';
+import {useMemo, useRef, useState} from 'react';
+import {Status, Factory} from './types';
+import {Store, StoreState} from './Store';
+import {invoke as _invoke_} from './utilities/invoke';
+import {wait} from './utilities/wait';
 
-export interface UseDeferredPromiseOptions extends UseResourceOptions {}
+const globalStore = new Store();
+
+export interface UseDeferredPromiseOptions {
+  suspendWhenPending?: boolean;
+  throwWhenRejected?: boolean;
+}
 
 export type UseDeferredPromiseResult<
   Parameters extends unknown[],
-  Value,
-  Error
-> = UseResourceResult<Value, Error> & {
+  Value
+> = StoreState<Value> & {
   invoke(...params: Parameters): void;
   invokeAsync(...params: Parameters): Promise<Value>;
+  isPending: boolean;
+  isFulfilled: boolean;
+  isRejected: boolean;
 };
 
-export function useDeferredPromise<Parameters extends unknown[], Value, Error>(
+export function useDeferredPromise<Parameters extends unknown[], Value>(
   factory: Factory<Parameters, Value> | undefined,
   {
     suspendWhenPending = false,
     throwWhenRejected = false,
   }: UseDeferredPromiseOptions = {},
-): UseDeferredPromiseResult<Parameters, Value, Error> {
-  const resource = useRef(new Resource<Parameters, Value, Error>());
-  const result = useResource(resource.current, {
-    suspendWhenPending,
-    throwWhenRejected,
-  });
+): UseDeferredPromiseResult<Parameters, Value> {
+  const mountedRef = useMounted();
+  const unsubscribeRef = useRef<undefined | (() => void)>(undefined);
+  const [state, setState] = useState<StoreState<Value>>(() => ({
+    status: undefined,
+    value: undefined,
+    error: undefined,
+    suspender: undefined,
+  }));
 
-  const invoke = useCallback((...params: Parameters) => {
-    if (!factory) {
-      throw new Error('No factory provided.');
-    }
-    resource.current.invoke(factory, params).catch(() => {
-      /* do nothing */
-    });
-  }, []);
+  console.log('render useDeferredPromise', state);
 
-  const invokeAsync = useCallback((...params: Parameters) => {
-    if (!factory) {
-      throw new Error('No factory provided.');
-    }
-    return resource.current.invoke(factory, params);
-  }, []);
+  // suspend
+  if (suspendWhenPending && state.status === Status.Pending) {
+    console.log('suspending');
+    throw state.suspender;
+  }
 
-  return useMemo<UseDeferredPromiseResult<Parameters, Value, Error>>(
-    () => ({
-      ...result,
+  // throw
+  if (throwWhenRejected && state.status === Status.Rejected) {
+    throw state.error;
+  }
+
+  // create the result
+  return useMemo<UseDeferredPromiseResult<Parameters, Value>>(() => {
+    const invokeAsync = (...parameters: Parameters): Promise<Value> => {
+      const key = [factory, ...parameters];
+
+      if (!factory) {
+        throw new Error('No factory provided.');
+      }
+
+      // unsubscribe from state updates
+      unsubscribeRef.current?.();
+
+      // invoke the promise
+      const result = _invoke_<Parameters, Value>({
+        store: globalStore,
+        key,
+        factory,
+        parameters,
+      });
+
+      // subscribe to state updates
+      unsubscribeRef.current = globalStore.subscribe<Value>(key, (state) => {
+        if (!mountedRef.current) {
+          return;
+        }
+        setState(state);
+      });
+
+      return result;
+    };
+
+    const invoke = (...parameters: Parameters): void => {
+      invokeAsync(...parameters).catch(() => {
+        /* do nothing */
+      });
+    };
+
+    return {
+      ...state,
+      isPending: state.status === Status.Pending,
+      isFulfilled: state.status === Status.Fulfilled,
+      isRejected: state.status === Status.Rejected,
       invoke,
       invokeAsync,
-    }),
-    [result, factory],
-  );
+    };
+  }, [state]);
 }

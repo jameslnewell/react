@@ -12,7 +12,7 @@ import {
   createRejectedPromise,
   noop,
 } from './__fixtures__';
-import {Factory, Status} from './Resource';
+import {Factory, Status} from './createResource';
 
 function renderUseDeferredPromiseHook<Value = unknown, Error = unknown>(
   fn: Factory<never, Value> | undefined,

@@ -26,7 +26,8 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "dependencies": {
-    "@jameslnewell/react-mounted": "^1.0.0"
+    "@jameslnewell/react-mounted": "^1.0.0",
+    "fast-shallow-equal": "^1.0.0"
   },
   "peerDependencies": {
     "@types/react": ">=16.9.0",

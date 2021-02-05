@@ -98,43 +98,6 @@ const EditUserProfile = ({id}) => {
 };
 ```
 
-### useResource
-
-A function implementing the [Render-as-You-Fetch](https://reactjs.org/docs/concurrent-mode-suspense.html#approach-3-render-as-you-fetch-using-suspense) pattern using Suspense.
-
-```jsx
-import React from 'react';
-import {Resource, useResource} from '@jameslnewell/react-promise';
-
-const getUser = async (id) => {
-  const res = await fetch(`/user/${id}`, {method: 'GET'});
-  const data = await res.json();
-  return data;
-};
-
-const userResource = new Resource();
-
-resource.invoke(getUser, ['abc-def']);
-
-const UserGreeting = ({id}) => {
-  const user = useResource(userResource);
-  return (
-    <>
-      Hello <strong>{user.name}</strong>!
-    </>
-  );
-};
-
-const UserProfile = () => {
-  const {id} = useParams();
-  return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <UserGreeting id={123} />
-    </Suspense>
-  );
-};
-```
-
 ## API
 
 ### usePromise()

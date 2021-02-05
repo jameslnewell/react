@@ -1,22 +1,19 @@
 import {useCallback, useEffect, useMemo, useRef} from 'react';
-import {Factory, Resource} from './Resource';
+import {Factory} from './types';
 import {
-  useResource,
-  UseResourceOptions,
-  UseResourceResult,
-} from './useResource';
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
+} from './useDeferredPromise';
 
-export interface UsePromiseOptions extends UseResourceOptions {
+export interface UsePromiseOptions extends UseDeferredPromiseOptions {
   invokeWhenMounted?: boolean;
   invokeWhenChanged?: boolean;
 }
 
-export type UsePromiseResult<Value, Error> = UseResourceResult<Value, Error> & {
-  invoke(): void;
-  invokeAsync(): Promise<Value>;
-};
+export type UsePromiseResult<Value> = UseDeferredPromiseResult<never[], Value>;
 
-export function usePromise<Value, Error>(
+export function usePromise<Value>(
   factory: Factory<never[], Value> | undefined,
   {
     invokeWhenMounted = true,
@@ -24,46 +21,25 @@ export function usePromise<Value, Error>(
     suspendWhenPending = false,
     throwWhenRejected = false,
   }: UsePromiseOptions = {},
-): UsePromiseResult<Value, Error> {
-  const mounted = useRef(false);
-  const resource = useRef(new Resource<never[], Value, Error>());
-  const result = useResource(resource.current, {
+): UsePromiseResult<Value> {
+  const result = useDeferredPromise(factory, {
     suspendWhenPending,
     throwWhenRejected,
   });
-
-  const invoke = useCallback(() => {
-    if (!factory) {
-      throw new Error('No factory provided.');
-    }
-    resource.current.invoke(factory, []).catch(() => {
-      /* do nothing */
-    });
-  }, []);
-
-  const invokeAsync = useCallback(() => {
-    if (!factory) {
-      throw new Error('No factory provided.');
-    }
-    return resource.current.invoke(factory, []);
-  }, []);
-
+  const mountedRef = useRef(false);
+  console.log(result);
   // invoke on mount and change
+  if (invokeWhenMounted && !mountedRef.current && factory) {
+    result.invoke();
+  }
   useEffect(() => {
-    if (invokeWhenMounted && !mounted.current && factory) {
-      invoke();
-    } else if (invokeWhenChanged && mounted.current && factory) {
-      invoke();
+    mountedRef.current = true;
+    if (invokeWhenChanged && mountedRef.current && factory) {
+      result.invoke();
     }
-    mounted.current = true;
+
+    // TODO: include result in deps
   }, [invokeWhenMounted, invokeWhenChanged, factory]);
 
-  return useMemo<UsePromiseResult<Value, Error>>(
-    () => ({
-      ...result,
-      invoke,
-      invokeAsync,
-    }),
-    [result, factory, invoke],
-  );
+  return result;
 }

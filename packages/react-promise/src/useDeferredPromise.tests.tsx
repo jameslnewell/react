@@ -17,7 +17,7 @@ import {
   noop,
   createDelay,
 } from './__fixtures__';
-import {Factory, Status} from './Resource';
+import {Factory, Status} from './createResource';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],

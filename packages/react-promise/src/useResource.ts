@@ -1,4 +1,4 @@
-import {Resource, State, Status} from './Resource';
+import {Resource, State, Status} from './createResource';
 import useMounted from '@jameslnewell/react-mounted';
 import {useEffect, useMemo, useState} from 'react';
 

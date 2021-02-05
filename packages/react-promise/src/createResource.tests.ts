@@ -1,5 +1,5 @@
 import {waitForExpect, waitForQueuedFunctions} from 'testing-utilities';
-import {Resource, Status} from './Resource';
+import {Resource, Status} from './createResource';
 import {
   noop,
   createFulfilledPromise,

@@ -5,7 +5,7 @@ import {
   RejectedState,
   Status,
   UnknownState,
-} from '../Resource';
+} from '../types';
 
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
@@ -28,7 +28,7 @@ export const fulfilledState: FulfilledState<typeof value> = {
   error: undefined,
 };
 
-export const rejectedState: RejectedState<typeof error> = {
+export const rejectedState: RejectedState = {
   status: Status.Rejected,
   value: undefined,
   error,
