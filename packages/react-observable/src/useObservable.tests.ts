@@ -6,7 +6,7 @@ import {
   fromArray,
   fromError,
 } from '@jameslnewell/observable';
-import {Factory, Status} from './Resource';
+import {Factory, Status} from './types';
 import {unknownState, waitingState} from './__fixtures__';
 
 // waiting, received, completed errored
@@ -49,8 +49,8 @@ function wait<T>(fn: () => Promise<T>, ms = 100): Promise<T> {
 
 describe('useObservable()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function renderUseObservableHook<Value, Error>(
-    factory: Factory<never[], Value, Error> | undefined,
+  function renderUseObservableHook<Value>(
+    factory: Factory<never[], Value> | undefined,
   ) {
     return renderHook(() => useObservable(factory));
   }
@@ -69,7 +69,7 @@ describe('useObservable()', () => {
     const {result} = renderUseObservableHook(() => received());
     expect(result.current).toEqual(
       expect.objectContaining({
-        status: Status.Receieved,
+        status: Status.Received,
         value: 1,
         error: undefined,
       }),
@@ -180,7 +180,7 @@ describe('useObservable()', () => {
     await wait(async () => {
       expect(result.current).toEqual(
         expect.objectContaining({
-          status: Status.Receieved,
+          status: Status.Received,
           value: 10,
           error: undefined,
         }),

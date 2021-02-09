@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  FulfilledState,
+  UnknownState,
   PendingState,
+  FulfilledState,
   RejectedState,
   Status,
-  UnknownState,
+  Factory,
 } from '../types';
 
 export const value = 'Hello World!';
@@ -14,36 +15,42 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
+  suspender: undefined,
 };
 
 export const pendingState: PendingState = {
   status: Status.Pending,
   value: undefined,
   error: undefined,
+  suspender: expect.any(Promise),
 };
 
 export const fulfilledState: FulfilledState<typeof value> = {
   status: Status.Fulfilled,
   value,
   error: undefined,
+  suspender: expect.any(Promise),
 };
 
 export const rejectedState: RejectedState = {
   status: Status.Rejected,
   value: undefined,
   error,
+  suspender: expect.any(Promise),
 };
 
 export const noop = (): void => {
   /* do nothing */
 };
 
-export function createDelay(factory: Factory, ms: number): Factory {
-  return () => {
-    return new Promise((resolve, reject) => {
+export function createDelay(
+  factory: Factory<unknown[], unknown>,
+  ms: number,
+): Factory<unknown[], unknown> {
+  return () =>
+    new Promise((resolve, reject) => {
       setTimeout(() => factory().then(resolve, reject), ms);
     });
-  };
 }
 
 export async function createPendingPromise(): Promise<unknown> {
@@ -60,17 +67,13 @@ export async function createRejectedPromise(): Promise<unknown> {
   return new Promise((_unused_resolve, reject) => reject(error));
 }
 
-export async function createEventuallyFulfilledPromise(
-  ms = 3000,
-): Promise<unknown> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), ms));
+export async function createEventuallyFulfilledPromise(): Promise<unknown> {
+  return new Promise((resolve) => setTimeout(() => resolve(value), 3000));
 }
 
-export async function createEventuallyRejectedPromise(
-  ms = 3000,
-): Promise<unknown> {
+export async function createEventuallyRejectedPromise(): Promise<unknown> {
   return new Promise((_unused_resolve, reject) =>
-    setTimeout(() => reject(error), ms),
+    setTimeout(() => reject(error), 3000),
   );
 }
 
@@ -115,83 +118,5 @@ export const RenderJSON: React.FC<RenderJSONProps> = ({value}) => {
     <code>
       <pre>{JSON.stringify(value, null, 2)}</pre>
     </code>
-  );
-};
-
-export interface FactoryConfiguratorProps {
-  initialType: PromiseType;
-  initialDelay: number;
-  onChange: ({type, delay}: {type: PromiseType; delay: number}) => void;
-}
-
-export const FactoryConfigurator: React.FC<FactoryConfiguratorProps> = ({
-  initialType,
-  initialDelay,
-  onChange,
-}) => {
-  const [type, setType] = React.useState<PromiseType>(initialType);
-  const [delay, setDelay] = React.useState(initialDelay);
-
-  const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    switch (value) {
-      case 'none':
-      case 'resolve':
-      case 'reject':
-        setType(value);
-        break;
-      default:
-        throw new Error('Invalid promise type');
-    }
-    onChange({type: value, delay});
-  };
-
-  const handleDelayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value, 10);
-    setDelay(value);
-    onChange({type, delay: value});
-  };
-
-  return (
-    <>
-      <label className="control">
-        <span className="control__label">Promise:</span>
-        <label className="radio">
-          <input
-            type="radio"
-            name="promise"
-            value="none"
-            autoFocus
-            checked={type === 'none'}
-            onChange={handleTypeChange}
-          />{' '}
-          None
-        </label>
-        <label className="radio">
-          <input
-            type="radio"
-            name="promise"
-            value="resolve"
-            checked={type === 'resolve'}
-            onChange={handleTypeChange}
-          />{' '}
-          Resolve
-        </label>
-        <label className="radio">
-          <input
-            type="radio"
-            name="promise"
-            value="reject"
-            checked={type === 'reject'}
-            onChange={handleTypeChange}
-          />{' '}
-          Reject
-        </label>
-      </label>
-      <label className="control">
-        <span className="control__label">Delay:</span>
-        <input value={String(initialDelay)} onChange={handleDelayChange} />
-      </label>
-    </>
   );
 };

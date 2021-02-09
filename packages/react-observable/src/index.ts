@@ -1,4 +1,3 @@
-export * from './Resource';
-export * from './useResource';
+export * from './createResource';
 export * from './useObservable';
 export * from './useDeferredObservable';

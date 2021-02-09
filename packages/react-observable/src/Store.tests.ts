@@ -1,6 +1,14 @@
+import {waitForExpect} from 'testing-utilities';
 import {Store, StoreState, StoreKey} from './Store';
 import {Status} from './types';
-import {value, error, unknownState} from './__fixtures__';
+import {
+  value,
+  error,
+  createFulfilledPromise,
+  createPendingPromise,
+  createRejectedPromise,
+  unknownState,
+} from './__fixtures__';
 
 const fulfilledFactory = (..._unused_parameters: unknown[]): Promise<unknown> =>
   Promise.resolve(value);
@@ -13,18 +21,16 @@ const key1: StoreKey = [fulfilledFactory, ...parameters1];
 const key2: StoreKey = [rejectedFactory, ...parameters1];
 const key3: StoreKey = [fulfilledFactory, ...parameters2];
 
-const entry1: StoreState<typeof value> = {
+const entry1: StoreState = {
   status: Status.Pending,
   value: undefined,
   error: undefined,
-  suspender: Promise.resolve(),
 };
 
-const entry2: StoreState<typeof value> = {
+const entry2: StoreState = {
   status: Status.Fulfilled,
-  value,
+  value: 123456,
   error: undefined,
-  suspender: Promise.resolve(),
 };
 
 describe('Store', () => {

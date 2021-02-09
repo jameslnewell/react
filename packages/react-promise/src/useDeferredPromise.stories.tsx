@@ -52,17 +52,11 @@ export const Rejected: React.FC = () => {
 };
 
 export const EventuallyFulfilled: React.FC = () => {
-  return (
-    <UseDeferredPromise
-      factory={() => createEventuallyFulfilledPromise(1000)}
-    />
-  );
+  return <UseDeferredPromise factory={createEventuallyFulfilledPromise} />;
 };
 
 export const EventuallyRejected: React.FC = () => {
-  return (
-    <UseDeferredPromise factory={() => createEventuallyRejectedPromise(1000)} />
-  );
+  return <UseDeferredPromise factory={createEventuallyRejectedPromise} />;
 };
 
 export const Suspended: React.FC = () => {

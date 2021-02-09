@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {Factory} from './types';
 import {
   useDeferredPromise,
@@ -27,7 +27,7 @@ export function usePromise<Value>(
     throwWhenRejected,
   });
   const mountedRef = useRef(false);
-  console.log(result);
+
   // invoke on mount and change
   if (invokeWhenMounted && !mountedRef.current && factory) {
     result.invoke();

@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {useInvokableObservable} from '../src';
-import {ObservableType, createObservable} from './createObservable';
-import {ObservableState} from './ObservableState';
-import {ObservableConfig} from './ObservableConfig';
+import {useObservable} from '.';
+import {ObservableType, createObservable} from '../stories/createObservable';
+import {ObservableState} from '../stories/ObservableState';
+import {ObservableConfig} from '../stories/ObservableConfig';
 import './styles.css';
 
 export default {
-  title: 'useInvokableObservable',
+  title: 'react-observable/useObservable',
 };
 
 export const Demo = () => {
@@ -14,12 +14,10 @@ export const Demo = () => {
     ObservableType.Completed,
   );
   const [delay, setDelay] = React.useState(1000);
-  const {
-    invoke,
-    status,
-    error,
-    value,
-  } = useInvokableObservable(createObservable(type, delay), [type, delay]);
+  const {status, error, value} = useObservable(createObservable(type, delay), [
+    type,
+    delay,
+  ]);
 
   const handleChange = ({
     type,
@@ -34,7 +32,6 @@ export const Demo = () => {
 
   return (
     <>
-      <button onClick={() => invoke()}>Invoke</button>
       <ObservableState status={status} error={error} value={value} />
       <ObservableConfig
         initialType={type}

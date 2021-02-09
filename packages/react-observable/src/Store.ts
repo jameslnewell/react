@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   UnknownState,
-  PendingState,
-  FulfilledState,
-  RejectedState,
+  WaitingState,
+  ReceivedState,
+  CompletedState,
+  ErroredState,
 } from './types';
 import {equal} from 'fast-shallow-equal';
 
@@ -11,9 +12,10 @@ export type StoreKey = unknown[];
 
 export type StoreState<Value> =
   | UnknownState
-  | PendingState
-  | FulfilledState<Value>
-  | RejectedState;
+  | WaitingState
+  | ReceivedState<Value>
+  | CompletedState<Value>
+  | ErroredState;
 
 export interface StoreSubscriber<Value> {
   (state: StoreState<Value>): void;
@@ -57,16 +59,16 @@ export class Store {
       | ((previousState: StoreState<Value>) => StoreState<Value>),
   ): void {
     const index = this.entries.findIndex(([k]) => equal(k, key));
+    const entry: [StoreKey, StoreState<Value>] = [
+      key,
+      typeof state === 'function'
+        ? state(this.entries[index][1] || unknownState)
+        : state,
+    ];
     if (index !== -1) {
-      this.entries[index] = [
-        key,
-        typeof state === 'function' ? state(this.entries[index][1]) : state,
-      ];
+      this.entries[index] = entry;
     } else {
-      this.entries.push([
-        key,
-        typeof state === 'function' ? state(this.entries[index][1]) : state,
-      ]);
+      this.entries.push(entry);
     }
     this.notifySubscribers(key);
   }

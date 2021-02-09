@@ -1,9 +1,8 @@
 import useMounted from '@jameslnewell/react-mounted';
 import {useMemo, useRef, useState} from 'react';
-import {Status, Factory} from './types';
+import {Status, Factory, UnknownState} from './types';
 import {Store, StoreState} from './Store';
 import {invoke as _invoke_} from './utilities/invoke';
-import {wait} from './utilities/wait';
 
 const globalStore = new Store();
 
@@ -23,6 +22,13 @@ export type UseDeferredPromiseResult<
   isRejected: boolean;
 };
 
+const unknownState: UnknownState = {
+  status: undefined,
+  value: undefined,
+  error: undefined,
+  suspender: undefined,
+};
+
 export function useDeferredPromise<Parameters extends unknown[], Value>(
   factory: Factory<Parameters, Value> | undefined,
   {
@@ -32,18 +38,10 @@ export function useDeferredPromise<Parameters extends unknown[], Value>(
 ): UseDeferredPromiseResult<Parameters, Value> {
   const mountedRef = useMounted();
   const unsubscribeRef = useRef<undefined | (() => void)>(undefined);
-  const [state, setState] = useState<StoreState<Value>>(() => ({
-    status: undefined,
-    value: undefined,
-    error: undefined,
-    suspender: undefined,
-  }));
-
-  console.log('render useDeferredPromise', state);
+  const [state, setState] = useState<StoreState<Value>>(unknownState);
 
   // suspend
   if (suspendWhenPending && state.status === Status.Pending) {
-    console.log('suspending');
     throw state.suspender;
   }
 
@@ -60,7 +58,6 @@ export function useDeferredPromise<Parameters extends unknown[], Value>(
       if (!factory) {
         throw new Error('No factory provided.');
       }
-
       // unsubscribe from state updates
       unsubscribeRef.current?.();
 

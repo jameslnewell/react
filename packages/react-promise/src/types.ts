@@ -1,5 +1,3 @@
-import {ImportsNotUsedAsValues} from 'typescript';
-
 export enum Status {
   Pending = 'pending',
   Fulfilled = 'fulfilled',
@@ -17,29 +15,29 @@ export interface UnknownState {
   suspender: undefined;
 }
 
-export interface PendingState<Value> {
+export interface PendingState {
   status: Status.Pending;
   value: undefined;
   error: undefined;
-  suspender: Promise<Value>;
+  suspender: Promise<void>;
 }
 
 export interface FulfilledState<Value> {
   status: Status.Fulfilled;
   value: Value;
   error: undefined;
-  suspender: Promise<Value>;
+  suspender: Promise<void>;
 }
 
-export interface RejectedState<Value> {
+export interface RejectedState {
   status: Status.Rejected;
   value: undefined;
   error: unknown;
-  suspender: Promise<Value>;
+  suspender: Promise<void>;
 }
 
 export type State<Value> =
   | UnknownState
-  | PendingState<Value>
+  | PendingState
   | FulfilledState<Value>
-  | RejectedState<Value>;
+  | RejectedState;

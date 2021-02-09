@@ -8,7 +8,7 @@ import {
   ErroredState,
   Status,
   UnknownState,
-} from '../Resource';
+} from '../types';
 
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
@@ -17,30 +17,35 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
+  suspender: undefined,
 };
 
 export const waitingState: WaitingState = {
   status: Status.Waiting,
   value: undefined,
   error: undefined,
+  suspender: undefined,
 };
 
 export const receivedState: ReceivedState<typeof value> = {
-  status: Status.Receieved,
+  status: Status.Received,
   value,
   error: undefined,
+  suspender: undefined,
 };
 
 export const completedState: CompletedState<typeof value> = {
   status: Status.Completed,
   value,
   error: undefined,
+  suspender: undefined,
 };
 
-export const erroredState: ErroredState<typeof error> = {
+export const erroredState: ErroredState = {
   status: Status.Errored,
   value: undefined,
   error,
+  suspender: undefined,
 };
 
 export const noop = (): void => {

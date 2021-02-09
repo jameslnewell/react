@@ -14,38 +14,51 @@ export function invoke<Parameters extends unknown[], Value>({
   factory,
   parameters,
 }: InvokeOptions<Parameters, Value>): Promise<Value> {
-  const suspender: Promise<Value> = factory(...parameters).then(
+  const promise: Promise<Value> = factory(...parameters).then(
     (value) => {
-      // TODO: make more efficient to avoid arrary searching e.g. maybe fn inside setState returns prev state
-      if (suspender === store.getState(key)?.suspender) {
-        store.setState(key, {
-          status: Status.Fulfilled,
-          value,
-          error: undefined,
-          suspender,
-        });
-      }
+      store.setState(key, (previousState) => {
+        if (suspender === previousState.suspender) {
+          return {
+            status: Status.Fulfilled,
+            value,
+            error: undefined,
+            suspender,
+          };
+        } else {
+          return previousState;
+        }
+      });
       return value;
     },
     (error) => {
-      // TODO: make more efficient to avoid arrary searching e.g. maybe fn inside setState returns prev state
-      if (suspender === store.getState(key)?.suspender) {
-        store.setState(key, {
-          status: Status.Rejected,
-          value: undefined,
-          error,
-          suspender,
-        });
-      }
+      store.setState(key, (previousState) => {
+        if (suspender === previousState.suspender) {
+          return {
+            status: Status.Rejected,
+            value: undefined,
+            error,
+            suspender,
+          };
+        } else {
+          return previousState;
+        }
+      });
       throw error;
     },
   );
-  console.log('pending');
+  const suspender = promise.then(
+    () => {
+      /* do nothing */
+    },
+    () => {
+      /* do nothing */
+    },
+  );
   store.setState(key, {
     status: Status.Pending,
     value: undefined,
     error: undefined,
     suspender,
   });
-  return suspender;
+  return promise;
 }

@@ -1,59 +1,48 @@
-import {useEffect, useRef, useCallback, useMemo} from 'react';
+import {useEffect, useRef} from 'react';
+import {Factory} from './types';
 import {
-  useResource,
-  UseResourceOptions,
-  UseResourceResult,
-} from './useResource';
-import {Resource, Factory} from './Resource';
+  useDeferredObservable,
+  UseDeferredObservableOptions,
+  UseDeferredObservableResult,
+} from './useDeferredObservable';
 
-export interface UseObservableOptions extends UseResourceOptions {
+export interface UseObservableOptions extends UseDeferredObservableOptions {
   invokeWhenMounted?: boolean;
   invokeWhenChanged?: boolean;
 }
 
-export type UseObservableResult<Value, Error> = UseResourceResult<
-  Value,
-  Error
-> & {
-  invoke(): void;
-};
+export type UseObservableResult<Value> = UseDeferredObservableResult<
+  never[],
+  Value
+>;
 
-export function useObservable<Value, Error>(
-  factory: Factory<never[], Value, Error> | undefined,
+export function useObservable<Value>(
+  factory: Factory<never[], Value> | undefined,
   {
     invokeWhenMounted = true,
     invokeWhenChanged = true,
-    suspendWhenWaiting = false,
-    throwWhenErrored = false,
+    suspendWhenPending = false,
+    throwWhenRejected = false,
   }: UseObservableOptions = {},
-): UseObservableResult<Value, Error> {
-  const mounted = useRef(false);
-  const resource = useRef(new Resource<never[], Value, Error>(factory));
-  const result = useResource(resource.current, {
-    suspendWhenWaiting,
-    throwWhenErrored,
+): UseObservableResult<Value> {
+  const result = useDeferredObservable(factory, {
+    suspendWhenPending,
+    throwWhenRejected,
   });
-
-  const invoke = useCallback(() => {
-    // TODO: silence errors
-    resource.current.invoke();
-  }, []);
+  const mountedRef = useRef(false);
 
   // invoke on mount and change
+  if (invokeWhenMounted && !mountedRef.current && factory) {
+    result.invoke();
+  }
   useEffect(() => {
-    if (invokeWhenMounted && !mounted.current && factory) {
-      invoke();
-    } else if (invokeWhenChanged && mounted.current && factory) {
-      invoke();
+    mountedRef.current = true;
+    if (invokeWhenChanged && mountedRef.current && factory) {
+      result.invoke();
     }
-    mounted.current = true;
+
+    // TODO: include result in deps
   }, [invokeWhenMounted, invokeWhenChanged, factory]);
 
-  return useMemo<UseObservableResult<Value, Error>>(
-    () => ({
-      ...result,
-      invoke,
-    }),
-    [result, factory, invoke],
-  );
+  return result;
 }

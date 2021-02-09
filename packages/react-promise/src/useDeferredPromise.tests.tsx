@@ -17,20 +17,16 @@ import {
   noop,
   createDelay,
 } from './__fixtures__';
-import {Factory, Status} from './createResource';
+import {Factory, Status} from './types';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],
-  Value = unknown,
-  Error = unknown
+  Value = unknown
 >(
-  fn: Factory<Parameters, Value> | undefined,
-  opts?: UseDeferredPromiseOptions,
-): RenderHookResult<
-  unknown,
-  UseDeferredPromiseResult<Parameters, Value, Error>
-> {
-  return renderHook(() => useDeferredPromise(fn, opts));
+  factory: Factory<Parameters, Value> | undefined,
+  options?: UseDeferredPromiseOptions,
+): RenderHookResult<unknown, UseDeferredPromiseResult<Parameters, Value>> {
+  return renderHook(() => useDeferredPromise(factory, options));
 }
 
 describe('useDeferredPromise()', () => {
@@ -121,27 +117,29 @@ describe('useDeferredPromise()', () => {
       .fn()
       .mockImplementationOnce(createDelay(() => Promise.resolve(1), 100))
       .mockImplementationOnce(createDelay(() => Promise.resolve(2), 50));
-    const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(fn);
+    const {result, waitFor} = renderUseDeferredPromiseHook(fn);
     act(() => {
       result.current.invokeAsync();
       result.current.invokeAsync();
     });
-    await waitForNextUpdate();
-    expect(result.current).toEqual(expect.objectContaining({value: 2}));
+    await waitFor(() =>
+      expect(result.current).toEqual(expect.objectContaining({value: 2})),
+    );
   });
 
   test('uses error from last invoked promise even when the previously invoked promise finishes last', async () => {
     const fn = jest
       .fn()
-      .mockImplementationOnce(createDelay(() => Promise.reject(1), 100))
-      .mockImplementationOnce(createDelay(() => Promise.reject(2), 50));
-    const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(fn);
+      .mockImplementationOnce(createDelay(() => Promise.reject(3), 100))
+      .mockImplementationOnce(createDelay(() => Promise.reject(4), 50));
+    const {result, waitFor} = renderUseDeferredPromiseHook(fn);
     act(() => {
       result.current.invokeAsync().catch(noop);
       result.current.invokeAsync().catch(noop);
     });
-    await waitForNextUpdate();
-    expect(result.current).toEqual(expect.objectContaining({error: 2}));
+    await waitFor(() =>
+      expect(result.current).toEqual(expect.objectContaining({error: 4})),
+    );
   });
 
   test('suspends when pending and suspendWhenPending=true', () => {

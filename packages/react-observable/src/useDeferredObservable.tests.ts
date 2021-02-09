@@ -1,10 +1,8 @@
 import {renderHook, act} from '@testing-library/react-hooks';
 import {fromArray} from '@jameslnewell/observable';
 import {useDeferredObservable} from '.';
-import {Factory, Status} from './Resource';
+import {Factory, Status} from './types';
 import {
-  value,
-  error,
   completedState,
   createCompletedObservable,
   createErroredObservable,
@@ -20,9 +18,8 @@ describe('useDeferredObservable()', () => {
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function renderUseInvokableObservableHook<
     Parameters extends unknown[],
-    Value,
-    Error
-  >(factory: Factory<Parameters, Value, Error> | undefined) {
+    Value
+  >(factory: Factory<Parameters, Value> | undefined) {
     return renderHook(() => useDeferredObservable(factory));
   }
 

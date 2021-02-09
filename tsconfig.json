@@ -16,5 +16,6 @@
       "@jameslnewell/react-observable": ["packages/react-observable/src"]
     }
   },
+  "exclude": ["packages/react-firebase"],
   "include": ["packages/*/src"]
 }

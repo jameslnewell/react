@@ -1,48 +1,91 @@
-import {useRef, useCallback, useMemo} from 'react';
-import {
-  useResource,
-  UseResourceOptions,
-  UseResourceResult,
-} from './useResource';
-import {Factory, Resource} from './Resource';
+import useMounted from '@jameslnewell/react-mounted';
+import {useMemo, useRef, useState} from 'react';
+import {Status, Factory} from './types';
+import {Store, StoreState} from './Store';
+import {invoke as _invoke_} from './utilities/invoke';
 
-export interface UseDeferredObservableOptions extends UseResourceOptions {}
+const globalStore = new Store();
+
+export interface UseDeferredObservableOptions {
+  suspendWhenPending?: boolean;
+  throwWhenRejected?: boolean;
+}
 
 export type UseDeferredObservableResult<
   Parameters extends unknown[],
-  Value,
-  Error
-> = UseResourceResult<Value, Error> & {
+  Value
+> = StoreState<Value> & {
   invoke(...params: Parameters): void;
+  isWaiting: boolean;
+  isReceived: boolean;
+  isCompleted: boolean;
+  isErrored: boolean;
 };
 
-export function useDeferredObservable<
-  Parameters extends unknown[],
-  Value,
-  Error
->(
-  factory: Factory<Parameters, Value, Error> | undefined,
+export function useDeferredObservable<Parameters extends unknown[], Value>(
+  factory: Factory<Parameters, Value> | undefined,
   {
-    suspendWhenWaiting = false,
-    throwWhenErrored = false,
+    suspendWhenPending = false,
+    throwWhenRejected = false,
   }: UseDeferredObservableOptions = {},
-): UseDeferredObservableResult<Parameters, Value, Error> {
-  const resource = useRef(new Resource<Parameters, Value, Error>(factory));
-  const result = useResource(resource.current, {
-    suspendWhenWaiting,
-    throwWhenErrored,
-  });
+): UseDeferredObservableResult<Parameters, Value> {
+  const mountedRef = useMounted();
+  const unsubscribeRef = useRef<undefined | (() => void)>(undefined);
+  const [state, setState] = useState<StoreState<Value>>(() => ({
+    status: undefined,
+    value: undefined,
+    error: undefined,
+    suspender: undefined,
+  }));
 
-  const invoke = useCallback((...params: Parameters) => {
-    // TODO: silence errors
-    resource.current.invoke(...params);
-  }, []);
+  // suspend
+  if (suspendWhenPending && state.status === Status.Waiting) {
+    throw state.suspender;
+  }
 
-  return useMemo<UseDeferredObservableResult<Parameters, Value, Error>>(
-    () => ({
-      ...result,
+  // throw
+  if (throwWhenRejected && state.status === Status.Errored) {
+    throw state.error;
+  }
+
+  // create the result
+  return useMemo<UseDeferredObservableResult<Parameters, Value>>(() => {
+    const invoke = (...parameters: Parameters): Promise<Value> => {
+      const key = [factory, ...parameters];
+
+      if (!factory) {
+        throw new Error('No factory provided.');
+      }
+
+      // unsubscribe from state updates
+      unsubscribeRef.current?.();
+
+      // invoke the promise
+      const result = _invoke_<Parameters, Value>({
+        store: globalStore,
+        key,
+        factory,
+        parameters,
+      });
+
+      // subscribe to state updates
+      unsubscribeRef.current = globalStore.subscribe<Value>(key, (state) => {
+        if (!mountedRef.current) {
+          return;
+        }
+        setState(state);
+      });
+
+      return result;
+    };
+
+    return {
+      ...state,
+      isWaiting: state.status === Status.Waiting,
+      isReceived: state.status === Status.Received,
+      isCompleted: state.status === Status.Completed,
+      isErrored: state.status === Status.Errored,
       invoke,
-    }),
-    [result, factory],
-  );
+    };
+  }, [state]);
 }

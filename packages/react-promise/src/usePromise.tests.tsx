@@ -12,13 +12,13 @@ import {
   createRejectedPromise,
   noop,
 } from './__fixtures__';
-import {Factory, Status} from './createResource';
+import {Factory, Status} from './types';
 
-function renderUseDeferredPromiseHook<Value = unknown, Error = unknown>(
-  fn: Factory<never, Value> | undefined,
-  opts?: UsePromiseOptions,
-): RenderHookResult<unknown, UsePromiseResult<Value, Error>> {
-  return renderHook(() => usePromise(fn, opts));
+function renderUseDeferredPromiseHook<Value = unknown>(
+  factory: Factory<never, Value> | undefined,
+  options?: UsePromiseOptions,
+): RenderHookResult<unknown, UsePromiseResult<Value>> {
+  return renderHook(() => usePromise(factory, options));
 }
 
 describe('usePromise()', () => {

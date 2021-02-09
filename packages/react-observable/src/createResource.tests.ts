@@ -1,26 +1,26 @@
 import {createResource} from './createResource';
 import {
-  createFulfilledPromise,
-  createPendingPromise,
-  createRejectedPromise,
   error,
   value,
+  createWaitingObservable,
+  createErroredObservable,
+  createReceivedObservable,
 } from './__fixtures__';
 
 describe('createResource()', () => {
-  test('throws a promise when already pending', () => {
-    const resource = createResource(createPendingPromise);
+  test('throws a promise when already waiting', () => {
+    const resource = createResource(createWaitingObservable);
     resource.preload();
     expect(() => resource.read()).toThrow(expect.any(Promise));
   });
 
-  test('throws a promise when transitioned to pending', () => {
-    const resource = createResource(createPendingPromise);
+  test('throws a promise when transitioned to waiting', () => {
+    const resource = createResource(createWaitingObservable);
     expect(() => resource.read()).toThrow(expect.any(Promise));
   });
 
-  test('returns a value when transitioned to fulfilled', async () => {
-    const resource = createResource(createFulfilledPromise);
+  test('returns a value when transitioned to received', async () => {
+    const resource = createResource(createReceivedObservable);
     try {
       resource.read();
     } catch (error) {
@@ -29,8 +29,8 @@ describe('createResource()', () => {
     expect(resource.read()).toEqual(value);
   });
 
-  test('throws an error when transitioned to rejected', async () => {
-    const resource = createResource(createRejectedPromise);
+  test('throws an error when transitioned to errored', async () => {
+    const resource = createResource(createErroredObservable);
     try {
       resource.read();
     } catch (error) {
@@ -39,8 +39,8 @@ describe('createResource()', () => {
     expect(() => resource.read()).toThrow(error);
   });
 
-  test('returns a cached value when already fulfilled', async () => {
-    const resource = createResource(createFulfilledPromise);
+  test.only('returns a cached value when already received', async () => {
+    const resource = createResource(createReceivedObservable);
     try {
       resource.read();
     } catch (error) {
@@ -50,8 +50,8 @@ describe('createResource()', () => {
     expect(resource.read()).toEqual(value);
   });
 
-  test('throws a cached error when already rejected', async () => {
-    const resource = createResource(createRejectedPromise);
+  test('throws a cached error when already errored', async () => {
+    const resource = createResource(createErroredObservable);
     try {
       resource.read();
     } catch (error) {

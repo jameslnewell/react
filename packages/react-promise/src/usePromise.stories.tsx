@@ -16,43 +16,46 @@ export default {
 };
 
 interface UsePromiseProps {
-  fn?: Factory;
-  opts?: UsePromiseOptions;
+  factory?: Factory<unknown[], unknown>;
+  options?: UsePromiseOptions;
 }
 
-const UsePromise: React.FC<UsePromiseProps> = ({fn, opts}) => {
-  const result = usePromise(fn, opts);
+const UsePromise: React.FC<UsePromiseProps> = ({factory, options}) => {
+  const result = usePromise(factory, options);
   return <RenderJSON value={result} />;
 };
 
 export const NoFactory: React.FC = () => {
-  return <UsePromise fn={undefined} />;
+  return <UsePromise factory={undefined} />;
 };
 
 export const Pending: React.FC = () => {
-  return <UsePromise fn={createPendingPromise} />;
+  return <UsePromise factory={createPendingPromise} />;
 };
 
 export const Fulfilled: React.FC = () => {
-  return <UsePromise fn={createFulfilledPromise} />;
+  return <UsePromise factory={createFulfilledPromise} />;
 };
 
 export const Rejected: React.FC = () => {
-  return <UsePromise fn={createRejectedPromise} />;
+  return <UsePromise factory={createRejectedPromise} />;
 };
 
 export const EventuallyFulfilled: React.FC = () => {
-  return <UsePromise fn={createEventuallyFulfilledPromise} />;
+  return <UsePromise factory={createEventuallyFulfilledPromise} />;
 };
 
 export const EventuallyRejected: React.FC = () => {
-  return <UsePromise fn={createEventuallyRejectedPromise} />;
+  return <UsePromise factory={createEventuallyRejectedPromise} />;
 };
 
 export const Suspended: React.FC = () => {
   return (
     <Suspense fallback={<p>Suspended!</p>}>
-      <UsePromise fn={createPendingPromise} opts={{suspendWhenPending: true}} />
+      <UsePromise
+        factory={createPendingPromise}
+        options={{suspendWhenPending: true}}
+      />
     </Suspense>
   );
 };
@@ -60,7 +63,10 @@ export const Suspended: React.FC = () => {
 export const Thrown: React.FC = () => {
   return (
     <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UsePromise fn={createRejectedPromise} opts={{throwWhenRejected: true}} />
+      <UsePromise
+        factory={createRejectedPromise}
+        options={{throwWhenRejected: true}}
+      />
     </ErrorBoundary>
   );
 };
@@ -69,8 +75,8 @@ export const SuspendedEventuallyFulfilled: React.FC = () => {
   return (
     <Suspense fallback={<p>Suspended!</p>}>
       <UsePromise
-        fn={createEventuallyFulfilledPromise}
-        opts={{suspendWhenPending: true}}
+        factory={createEventuallyFulfilledPromise}
+        options={{suspendWhenPending: true}}
       />
     </Suspense>
   );
@@ -80,8 +86,8 @@ export const SuspendedEventuallyRejected: React.FC = () => {
   return (
     <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
       <UsePromise
-        fn={createEventuallyRejectedPromise}
-        opts={{throwWhenRejected: true}}
+        factory={createEventuallyRejectedPromise}
+        options={{throwWhenRejected: true}}
       />
     </ErrorBoundary>
   );
