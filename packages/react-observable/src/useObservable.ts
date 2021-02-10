@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useLayoutEffect, useRef} from 'react';
 import {Factory} from './types';
 import {
   useDeferredObservable,
@@ -21,28 +21,32 @@ export function useObservable<Value>(
   {
     invokeWhenMounted = true,
     invokeWhenChanged = true,
-    suspendWhenPending = false,
-    throwWhenRejected = false,
+    suspendWhenWaiting = false,
+    throwWhenErrored = false,
   }: UseObservableOptions = {},
 ): UseObservableResult<Value> {
   const result = useDeferredObservable(factory, {
-    suspendWhenPending,
-    throwWhenRejected,
+    suspendWhenWaiting,
+    throwWhenErrored,
   });
-  const mountedRef = useRef(false);
+  const isFirstLayoutEffectRef = useRef(true);
+  const isFirstEffectRef = useRef(true);
 
-  // invoke on mount and change
-  if (invokeWhenMounted && !mountedRef.current && factory) {
-    result.invoke();
-  }
-  useEffect(() => {
-    mountedRef.current = true;
-    if (invokeWhenChanged && mountedRef.current && factory) {
+  // invoke on mount
+  useLayoutEffect(() => {
+    if (invokeWhenMounted && factory && isFirstEffectRef.current) {
       result.invoke();
     }
+    isFirstLayoutEffectRef.current = false;
+  }, [invokeWhenMounted, invokeWhenChanged, factory, result.invoke]);
 
-    // TODO: include result in deps
-  }, [invokeWhenMounted, invokeWhenChanged, factory]);
+  // invoke on change
+  useEffect(() => {
+    if (invokeWhenChanged && factory && !isFirstEffectRef.current) {
+      result.invoke();
+    }
+    isFirstEffectRef.current = false;
+  }, [invokeWhenChanged, factory, result.invoke]);
 
   return result;
 }

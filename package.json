@@ -55,7 +55,7 @@
     "clean:node_modules": "rm -rf node_modules/ packages/*/node_modules",
     "format": "prettier --write '**/*.{js,json,md,ts,tsx}'",
     "check:dependencies": "manypkg check",
-    "check:typings": "tsc --noEmit --project tsconfig.json",
+    "check:typing": "tsc --noEmit --project tsconfig.json",
     "check:linting": "eslint --ext .ts,.tsx .",
     "check:formatting": "prettier --check '**/*.{js,json,md,ts,tsx}'",
     "build": "preconstruct build",

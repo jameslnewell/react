@@ -15,28 +15,24 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
-  suspender: undefined,
 };
 
 export const pendingState: PendingState = {
   status: Status.Pending,
   value: undefined,
   error: undefined,
-  suspender: expect.any(Promise),
 };
 
 export const fulfilledState: FulfilledState<typeof value> = {
   status: Status.Fulfilled,
   value,
   error: undefined,
-  suspender: expect.any(Promise),
 };
 
 export const rejectedState: RejectedState = {
   status: Status.Rejected,
   value: undefined,
   error,
-  suspender: expect.any(Promise),
 };
 
 export const noop = (): void => {

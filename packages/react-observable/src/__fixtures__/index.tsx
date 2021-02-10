@@ -1,4 +1,5 @@
 import {fromArray} from '@jameslnewell/observable';
+import {fromError} from '@jameslnewell/observable';
 import {create, delay, Observable} from '@jameslnewell/observable';
 import React from 'react';
 import {
@@ -17,35 +18,30 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
-  suspender: undefined,
 };
 
 export const waitingState: WaitingState = {
   status: Status.Waiting,
   value: undefined,
   error: undefined,
-  suspender: undefined,
 };
 
 export const receivedState: ReceivedState<typeof value> = {
   status: Status.Received,
   value,
   error: undefined,
-  suspender: undefined,
 };
 
 export const completedState: CompletedState<typeof value> = {
   status: Status.Completed,
   value,
   error: undefined,
-  suspender: undefined,
 };
 
 export const erroredState: ErroredState = {
   status: Status.Errored,
   value: undefined,
   error,
-  suspender: undefined,
 };
 
 export const noop = (): void => {
@@ -71,16 +67,18 @@ export function createErroredObservable(): Observable<unknown> {
   return create((observer) => observer.error(error));
 }
 
-export function createEventuallyFulfilledObservable(
-  ms = 3000,
-): Observable<unknown, unknown> {
-  return delay(ms)(fromArray([1, 2, 3]));
+export function createEventuallyCompletedObservable(): Observable<
+  unknown,
+  unknown
+> {
+  return delay(3000)(fromArray([value]));
 }
 
-export function createEventuallyRejectedPromise(
-  ms = 3000,
-): Observable<unknown, unknown> {
-  return delay(ms)(fromArray([1, 2, 3]));
+export function createEventuallyErroredObservable(): Observable<
+  unknown,
+  unknown
+> {
+  return delay(3000)(fromError(error));
 }
 
 export const Fallback: React.FC = () => {

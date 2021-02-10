@@ -1,91 +1,117 @@
-import useMounted from '@jameslnewell/react-mounted';
-import {useMemo, useRef, useState} from 'react';
-import {Status, Factory} from './types';
-import {Store, StoreState} from './Store';
-import {invoke as _invoke_} from './utilities/invoke';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {Status, Factory, UnknownState, State} from './types';
+import {
+  createInvokableByFactoryByParamtersMap,
+  Invokable,
+  InvokableUbsubscribe,
+} from './createInvokable';
+import {Observable} from '@jameslnewell/observable';
 
-const globalStore = new Store();
+const invokablesByFactoryByParametersMap = createInvokableByFactoryByParamtersMap();
 
 export interface UseDeferredObservableOptions {
-  suspendWhenPending?: boolean;
-  throwWhenRejected?: boolean;
+  suspendWhenWaiting?: boolean;
+  throwWhenErrored?: boolean;
 }
 
 export type UseDeferredObservableResult<
   Parameters extends unknown[],
   Value
-> = StoreState<Value> & {
+> = State<Value> & {
   invoke(...params: Parameters): void;
+  invokeAsync(...params: Parameters): Observable<Value>;
   isWaiting: boolean;
   isReceived: boolean;
   isCompleted: boolean;
   isErrored: boolean;
 };
 
+const unknownState: UnknownState = {
+  status: undefined,
+  value: undefined,
+  error: undefined,
+};
+
 export function useDeferredObservable<Parameters extends unknown[], Value>(
   factory: Factory<Parameters, Value> | undefined,
   {
-    suspendWhenPending = false,
-    throwWhenRejected = false,
+    suspendWhenWaiting = false,
+    throwWhenErrored = false,
   }: UseDeferredObservableOptions = {},
 ): UseDeferredObservableResult<Parameters, Value> {
-  const mountedRef = useMounted();
-  const unsubscribeRef = useRef<undefined | (() => void)>(undefined);
-  const [state, setState] = useState<StoreState<Value>>(() => ({
-    status: undefined,
-    value: undefined,
-    error: undefined,
-    suspender: undefined,
-  }));
+  const [state, setState] = useState<State<Value>>(unknownState);
+  const invokableRef = useRef<Invokable<Value> | undefined>(undefined);
+  const unsubscribeRef = useRef<InvokableUbsubscribe | undefined>(undefined);
 
   // suspend
-  if (suspendWhenPending && state.status === Status.Waiting) {
-    throw state.suspender;
+  if (suspendWhenWaiting && state.status === Status.Waiting) {
+    throw invokableRef.current?.getSuspender();
   }
 
   // throw
-  if (throwWhenRejected && state.status === Status.Errored) {
+  if (throwWhenErrored && state.status === Status.Errored) {
     throw state.error;
   }
 
-  // create the result
-  return useMemo<UseDeferredObservableResult<Parameters, Value>>(() => {
-    const invoke = (...parameters: Parameters): Promise<Value> => {
-      const key = [factory, ...parameters];
+  // unsubscribe from the invokable when the factory changes or we unmount
+  useEffect(
+    () => () => {
+      // unsubscribe if we're subscribed
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = undefined;
+      }
 
+      // clear the invokable
+      invokableRef.current = undefined;
+
+      // TODO: reset state?
+    },
+    [factory],
+  );
+
+  const invokeAsync = useCallback(
+    (...parameters: Parameters): Observable<Value> => {
       if (!factory) {
         throw new Error('No factory provided.');
       }
 
-      // unsubscribe from state updates
-      unsubscribeRef.current?.();
+      // unsubscribe if we're subscribed
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = undefined;
+      }
 
-      // invoke the promise
-      const result = _invoke_<Parameters, Value>({
-        store: globalStore,
-        key,
-        factory,
-        parameters,
-      });
+      // get the invokable
+      invokableRef.current = invokablesByFactoryByParametersMap
+        .get(factory)
+        .get(parameters);
 
-      // subscribe to state updates
-      unsubscribeRef.current = globalStore.subscribe<Value>(key, (state) => {
-        if (!mountedRef.current) {
-          return;
-        }
-        setState(state);
-      });
+      // invoke the invokable
+      const result = invokableRef.current.invoke();
+
+      // subscribe to the invokable
+      unsubscribeRef.current = invokableRef.current.subscribe((newState) =>
+        setState(newState || unknownState),
+      );
 
       return result;
-    };
+    },
+    [],
+  );
 
-    return {
-      ...state,
-      isWaiting: state.status === Status.Waiting,
-      isReceived: state.status === Status.Received,
-      isCompleted: state.status === Status.Completed,
-      isErrored: state.status === Status.Errored,
-      invoke,
-    };
-  }, [state]);
+  const invoke = useCallback((...parameters: Parameters): void => {
+    invokeAsync(...parameters);
+  }, []);
+
+  // create the result
+  return {
+    ...state,
+    isWaiting: state.status === Status.Waiting,
+    isReceived: state.status === Status.Received,
+    isCompleted: state.status === Status.Completed,
+    isErrored: state.status === Status.Errored,
+    invoke,
+    invokeAsync,
+  };
 }

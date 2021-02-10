@@ -92,7 +92,7 @@ export const SuspendedEventuallyFulfilled: React.FC = () => {
   );
 };
 
-export const SuspendedEventuallyRejected: React.FC = () => {
+export const ThrownEventuallyRejected: React.FC = () => {
   return (
     <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
       <UseDeferredPromise
