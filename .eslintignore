@@ -1,6 +1,4 @@
 
 # ignore distributable directories
-/dist/
-/auth/dist/
-/firestore/dist/
-/storage/dist/
+/packages/*/dist/
+/packages/**/dist/
