@@ -9,15 +9,18 @@ import {
   UseObservableResult,
 } from './useObservable';
 import {
-  value,
-  error,
   createWaitingObservable,
   createReceivedObservable,
   createCompletedObservable,
   createErroredObservable,
   noop,
+  receivedState,
+  waitingState,
+  unknownState,
+  completedState,
+  erroredState,
 } from './__fixtures__';
-import {Factory, Status} from './types';
+import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
 
 function renderUseDeferredPromiseHook<Value = unknown>(
@@ -30,49 +33,32 @@ function renderUseDeferredPromiseHook<Value = unknown>(
 describe('useObservable()', () => {
   test('state is unknown when mounted without a fn', () => {
     const {result} = renderUseDeferredPromiseHook(undefined);
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        status: undefined,
-        value: undefined,
-        error: undefined,
-      }),
-    );
+    expect(result.current).toEqual(expect.objectContaining(unknownState));
   });
 
-  test('state is pending when mounted with a fn', () => {
+  test('state is waiting when mounted with a fn', () => {
     const {result} = renderUseDeferredPromiseHook(createWaitingObservable);
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        status: Status.Waiting,
-        value: undefined,
-        error: undefined,
-      }),
-    );
+    expect(result.current).toEqual(expect.objectContaining(waitingState));
   });
 
-  test('state transitions to fulfilled when mounted', async () => {
-    const {result} = renderUseDeferredPromiseHook(createCompletedObservable);
+  test('state transitions to received when mounted', async () => {
+    const {result} = renderUseDeferredPromiseHook(createReceivedObservable);
     await waitForExpect(() => {
-      expect(result.current).toEqual(
-        expect.objectContaining({
-          status: Status.Completed,
-          value,
-          error: undefined,
-        }),
-      );
+      expect(result.current).toEqual(expect.objectContaining(receivedState));
     });
   });
 
-  test('state transitions to rejected when mounted', async () => {
+  test('state transitions to cmpleted when mounted', async () => {
+    const {result} = renderUseDeferredPromiseHook(createCompletedObservable);
+    await waitForExpect(() => {
+      expect(result.current).toEqual(expect.objectContaining(completedState));
+    });
+  });
+
+  test('state transitions to errored when mounted', async () => {
     const {result} = renderUseDeferredPromiseHook(createErroredObservable);
     await waitForExpect(() => {
-      expect(result.current).toEqual(
-        expect.objectContaining({
-          status: Status.Errored,
-          value: undefined,
-          error,
-        }),
-      );
+      expect(result.current).toEqual(expect.objectContaining(erroredState));
     });
   });
 

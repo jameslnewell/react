@@ -1,3 +1,4 @@
+import {Subscription} from '@jameslnewell/observable';
 import {firstValueFrom, Observable} from '@jameslnewell/observable';
 import {
   Factory,
@@ -40,6 +41,7 @@ export function createInvokable<Parameters extends unknown[], Value>(
 ): Invokable<Value> {
   let state: InvokableState<Value> | undefined = undefined;
   let suspender: Promise<void> | undefined = undefined;
+  let subscription: Subscription;
   const subscribers: Set<InvokableSubscriber<Value>> = new Set();
 
   const notifySubscribers = (): void => {
@@ -60,10 +62,15 @@ export function createInvokable<Parameters extends unknown[], Value>(
     reset() {
       state = undefined;
       suspender = undefined;
+      subscription?.unsubscribe();
       notifySubscribers();
     },
 
     invoke() {
+      // clear any previous subscriptions
+      subscription?.unsubscribe();
+
+      // create the observable
       const observable: Observable<Value> = factory(...parameters);
 
       if (state?.status !== Status.Waiting) {
@@ -78,8 +85,7 @@ export function createInvokable<Parameters extends unknown[], Value>(
       const thisSuspender = firstValueFrom(observable).then(noop, noop);
       suspender = thisSuspender;
 
-      // TODO: clear previous subscription when we create a new one
-      const subscription = observable.subscribe({
+      subscription = observable.subscribe({
         next: (value) => {
           if (thisSuspender === suspender) {
             state = {

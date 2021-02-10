@@ -1,3 +1,4 @@
+import {fromArray} from '@jameslnewell/observable';
 import {createResource} from './createResource';
 import {
   error,
@@ -64,7 +65,7 @@ describe('createResource()', () => {
   test('different parameters are cached separately', async () => {
     const id1 = 'abc';
     const id2 = 'xyz';
-    const resource = createResource((id: string) => Promise.resolve(id));
+    const resource = createResource((id: string) => fromArray([id]));
     try {
       resource.read(id1);
     } catch (error1) {

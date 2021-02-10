@@ -3,7 +3,6 @@ import {
   fromArray,
   firstValueFrom,
   fromError,
-  Observable,
 } from '@jameslnewell/observable';
 import {waitForExpect} from 'testing-utilities';
 import {
@@ -15,9 +14,7 @@ import {
   createCompletedObservable,
   createWaitingObservable,
   createErroredObservable,
-  error,
   erroredState,
-  value,
   waitingState,
   completedState,
   createReceivedObservable,

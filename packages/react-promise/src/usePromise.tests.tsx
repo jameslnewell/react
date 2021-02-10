@@ -5,14 +5,16 @@ import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {usePromise, UsePromiseOptions, UsePromiseResult} from './usePromise';
 import {
-  value,
-  error,
   createFulfilledPromise,
   createPendingPromise,
   createRejectedPromise,
   noop,
+  unknownState,
+  rejectedState,
+  fulfilledState,
+  pendingState,
 } from './__fixtures__';
-import {Factory, Status} from './types';
+import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
 
 function renderUseDeferredPromiseHook<Value = unknown>(
@@ -25,53 +27,29 @@ function renderUseDeferredPromiseHook<Value = unknown>(
 describe('usePromise()', () => {
   test('state is unknown when mounted without a fn', () => {
     const {result} = renderUseDeferredPromiseHook(undefined);
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        status: undefined,
-        value: undefined,
-        error: undefined,
-      }),
-    );
+    expect(result.current).toEqual(expect.objectContaining(unknownState));
   });
 
   test('state is pending when mounted with a fn', () => {
     const {result} = renderUseDeferredPromiseHook(createPendingPromise);
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        status: Status.Pending,
-        value: undefined,
-        error: undefined,
-      }),
-    );
+    expect(result.current).toEqual(expect.objectContaining(pendingState));
   });
 
   test('state transitions to fulfilled when mounted', async () => {
     const {result} = renderUseDeferredPromiseHook(createFulfilledPromise);
     await waitForExpect(() => {
-      expect(result.current).toEqual(
-        expect.objectContaining({
-          status: Status.Fulfilled,
-          value,
-          error: undefined,
-        }),
-      );
+      expect(result.current).toEqual(expect.objectContaining(fulfilledState));
     });
   });
 
   test('state transitions to rejected when mounted', async () => {
     const {result} = renderUseDeferredPromiseHook(createRejectedPromise);
     await waitForExpect(() => {
-      expect(result.current).toEqual(
-        expect.objectContaining({
-          status: Status.Rejected,
-          value: undefined,
-          error,
-        }),
-      );
+      expect(result.current).toEqual(expect.objectContaining(rejectedState));
     });
   });
 
-  test('suspends when pending and suspendWhenPending=true', () => {
+  test('suspends when pending and suspendWhenPending=true', async () => {
     const Component: React.FC = () => {
       usePromise(createPendingPromise, {suspendWhenPending: true});
       return <h1>Loaded!</h1>;
@@ -81,14 +59,19 @@ describe('usePromise()', () => {
         <Component />
       </React.Suspense>,
     );
-    expect(queryByText('Loading...')).toBeVisible();
-    expect(queryByText('Loaded!')).not.toBeVisible();
+    await waitForExpect(() => {
+      expect(queryByText('Loading...')).toBeVisible();
+      expect(queryByText('Loaded!')).not.toBeVisible();
+    });
   });
 
-  test('throws when rejected and throwWhenRejected=true', () => {
+  test('throws when rejected and throwWhenRejected=true', async () => {
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {
-      usePromise(createRejectedPromise, {throwWhenRejected: true});
+      const result = usePromise(createRejectedPromise, {
+        throwWhenRejected: true,
+      });
+      console.log(result);
       return <h1>Loaded!</h1>;
     };
     const {queryByText} = render(
@@ -96,7 +79,9 @@ describe('usePromise()', () => {
         <Component />
       </ErrorBoundary>,
     );
-    expect(queryByText('Error!')).toBeVisible();
-    expect(queryByText('Loaded!')).toBeNull();
+    await waitForExpect(() => {
+      expect(queryByText('Error!')).toBeVisible();
+      expect(queryByText('Loaded!')).toBeNull();
+    });
   });
 });

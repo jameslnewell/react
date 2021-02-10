@@ -3,11 +3,7 @@ import {ErrorBoundary} from 'react-error-boundary';
 import {Factory} from './types';
 import {useObservable, UseObservableOptions} from './useObservable';
 import {
-  createEventuallyFulfilledPromise,
   createEventuallyErroredObservable,
-  createFulfilledPromise,
-  createPendingPromise,
-  createRejectedPromise,
   RenderJSON,
   createWaitingObservable,
   createCompletedObservable,
