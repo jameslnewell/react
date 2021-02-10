@@ -1,62 +1,48 @@
 import firebase from 'firebase';
 import {create} from '@jameslnewell/observable';
-import {useObservable} from '@jameslnewell/react-observable';
+import {
+  useObservable,
+  UseObservableOptions,
+} from '@jameslnewell/react-observable';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
 export enum UseUserStatus {
-  Authenticating = 'authenticating',
   Authenticated = 'authenticated',
   Unauthenticated = 'unauthenticated',
-  Errored = 'errored',
 }
 
-export type UseUserUser = firebase.User;
+export interface UseUserOptions extends UseObservableOptions {}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface UseUserMetadata<E = any> {
+export type UseUserResult = {
   status: UseUserStatus;
-  error: E | undefined;
-  isAuthenticating: boolean;
+  value: firebase.User | undefined;
+  error: unknown | undefined;
   isAuthenticated: boolean;
   isUnauthenticated: boolean;
-  isErrored: boolean;
-}
+};
 
-export type UseUserResult = [UseUserUser | undefined, UseUserMetadata];
-
-export function useUser(): UseUserResult {
+export function useUser(options?: UseUserOptions): UseUserResult {
   const app = useApp();
-  const [value, metadata] = useObservable(
-    () =>
-      create<firebase.User | null>((observer) => {
-        return app.auth().onAuthStateChanged(observer);
-      }),
-    [app],
+  const result = useObservable(
+    useCallback(
+      () =>
+        create<firebase.User | null>((observer) => {
+          return app.auth().onAuthStateChanged(observer);
+        }),
+      [app],
+    ),
+    options,
   );
-
-  const user = value || app.auth().currentUser || undefined;
-  const status = (() => {
-    if (metadata.isErrored) {
-      return UseUserStatus.Errored;
-    }
-    if (user) {
-      return UseUserStatus.Authenticated;
-    }
-    if ((metadata.isReceived || metadata.isCompleted) && user === undefined) {
-      return UseUserStatus.Unauthenticated;
-    }
-    return UseUserStatus.Authenticating;
-  })();
-
-  return [
-    user,
-    {
-      status,
-      error: metadata.error,
-      isAuthenticating: status === UseUserStatus.Authenticating,
-      isAuthenticated: status === UseUserStatus.Authenticated,
-      isUnauthenticated: status === UseUserStatus.Unauthenticated,
-      isErrored: status === UseUserStatus.Errored,
-    },
-  ];
+  const user = result.value || app.auth().currentUser || undefined;
+  const status = user
+    ? UseUserStatus.Authenticated
+    : UseUserStatus.Unauthenticated;
+  return {
+    status,
+    value: user,
+    error: result.error,
+    isAuthenticated: status === UseUserStatus.Authenticated,
+    isUnauthenticated: status === UseUserStatus.Unauthenticated,
+  };
 }

@@ -1,36 +1,41 @@
 import React from 'react';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import {decorator} from '../__utilities__/decorator';
 import {useUser, useSignInWithPopup, useSignOut} from '.';
 
 export default {
-  title: 'auth',
+  title: 'react-firebase/auth',
   decorators: [decorator],
 };
 
-export const Example: React.FC = () => {
-  const [user, {status, error}] = useUser();
-  const [signIn] = useSignInWithPopup();
-  const [signOut] = useSignOut();
+export const Status: React.FC = () => {
+  const {status} = useUser();
+  return <pre>{status}</pre>;
+};
 
-  function handleSignInOrOut(): void {
-    if (user) {
-      signOut();
-    } else {
-      signIn(new firebase.auth.GoogleAuthProvider());
-    }
-  }
+export const User: React.FC = () => {
+  const {value: user} = useUser();
+  return <pre>{JSON.stringify(user)}</pre>;
+};
 
+export const SignInWithPopup: React.FC = () => {
+  const {invoke: signIn} = useSignInWithPopup();
   return (
     <>
-      <p>{status}</p>
-      <p>{error && String(error)}</p>
-      <code>
-        <pre>{JSON.stringify(user, null, 2)}</pre>
-      </code>
-      <button onClick={handleSignInOrOut}>
-        {user ? 'sign out' : 'sign in'}
+      <button onClick={() => signIn(new firebase.auth.GoogleAuthProvider())}>
+        Sign in
       </button>
+    </>
+  );
+};
+
+export const SignOut: React.FC = () => {
+  const {invoke: signOut} = useSignOut();
+  console.log(signOut);
+  return (
+    <>
+      <button onClick={signOut}>Sign out</button>
     </>
   );
 };

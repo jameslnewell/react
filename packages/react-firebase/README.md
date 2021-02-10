@@ -2,7 +2,7 @@
 
 ![npm (scoped)](https://img.shields.io/npm/v/@jameslnewell/react-firebase.svg)
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-firebase)](https://bundlephobia.com/result?p=@jameslnewell/react-firebase)
-[![Actions Status](https://github.com/jameslnewell/react-firebase/workflows/main/badge.svg)](https://github.com/jameslnewell/react-firebase/actions)
+[![Actions Status](https://github.com/jameslnewell/react/workflows/main/badge.svg)](https://github.com/jameslnewell/react/actions)
 
 🎣 React hooks for working with firebase.
 
@@ -54,12 +54,12 @@ import firebase from 'firebase';
 import {useUser, useSignInWithPopup useSignOut} from '@jameslnewell/react-firebase/auth';
 
 export const Navbar = () => {
-  const [user] = useUser();
-  const [signIn] = useSignInWithPopup();
-  const [signOut] = useSignOut();
+  const {isAuthenticated} = useStatus();
+  const {invoke: signIn} = useSignInWithPopup();
+  const {invoke: signOut} = useSignOut();
 
   const handleSignInOrOut = () => {
-    if (user) {
+    if (isAuthenticated) {
       signOut();
     } else {
       signIn(new firebase.auth.GoogleAuthProvider());
@@ -68,7 +68,7 @@ export const Navbar = () => {
 
   return (
     <nav>
-      <button onClick={handleSignInOrOut}>{user ? 'Sign out' : Sign in}</button>
+      <button onClick={handleSignInOrOut}>{isAuthenticated ? 'Sign out' : Sign in}</button>
     </nav>
   );
 }
@@ -108,6 +108,8 @@ export const UserProfile = ({userId}) => {
 
 ### auth
 
+#### useStatus()
+
 #### useUser()
 
 #### useSignInWithPopup()
@@ -123,6 +125,8 @@ export const UserProfile = ({userId}) => {
 #### useCreateDocument()
 
 #### useUpdateDocument()
+
+#### useSetDocument()
 
 #### useDeleteDocument()
 

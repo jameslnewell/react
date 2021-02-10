@@ -1657,11 +1657,6 @@
     "@manypkg/get-packages" "^1.1.1"
     babel-jest "^26.5.2"
 
-"@jameslnewell/observable@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.3.0.tgz#7f5f8662430b7c6206ff58b2a0b535e48e467e57"
-  integrity sha512-pr+WxFCGdhMblr1Da8J+asfvhbLnYrxY+2FvpUKi527Y/Zg8MIPA21XmKHRZqCTa+PQkl46gh6B1H2CiksHPIQ==
-
 "@jameslnewell/observable@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@jameslnewell/observable/-/observable-1.5.0.tgz#26e1ffc56eebc5ab6a33861fa0f44dffa0ccd2d2"
@@ -1671,11 +1666,6 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@jameslnewell/prettier-config/-/prettier-config-1.0.1.tgz#5bd6b247198d7a6148a1a605c9ff94ce51f3da1a"
   integrity sha512-GeiPM7JhbZuFx2gjoZh1jB6tk8atEdS529Bqbweo/exSAaESW/7jsqJ5rkDy1Trm31dYQnQG0ef1EBmtWxixdg==
-
-"@jameslnewell/react-promise@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@jameslnewell/react-promise/-/react-promise-3.3.0.tgz#8174095ac28ffc6d9938265ed1e020c617fcdbdb"
-  integrity sha512-qxov9i5DT9FufOuzPNtQVq8HwEGFKFR2jYt3k8dqRc5X+f3ZJ1K9NPXxrxxVqn77m0W5tDMsYHJeR6Ct7aQuGA==
 
 "@jameslnewell/typescript-config@^3.0.0":
   version "3.0.0"
@@ -6769,11 +6759,6 @@ fast-safe-stringify@^2.0.4:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
   integrity sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
-
-fast-shallow-equal@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fast-shallow-equal/-/fast-shallow-equal-1.0.0.tgz#d4dcaf6472440dcefa6f88b98e3251e27f25628b"
-  integrity sha512-HPtaa38cPgWvaCFmRNhlc6NG7pv6NUHqjPgVAkWGoB9mQMwYB27/K0CvOM5Czy+qpT3e8XJ6Q4aPAnzpNpzNaw==
 
 fast-text-encoding@^1.0.0, fast-text-encoding@^1.0.3:
   version "1.0.3"
@@ -11893,15 +11878,15 @@ react-hotkeys@2.0.0:
   dependencies:
     prop-types "^15.6.1"
 
-"react-is@^16.12.0 || ^17.0.0", react-is@^17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
-  integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
-
 react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-is@^17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
+  integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
@@ -11930,14 +11915,6 @@ react-refresh@^0.8.3:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.8.3.tgz#721d4657672d400c5e3c75d063c4a85fb2d5d68f"
   integrity sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==
 
-react-shallow-renderer@^16.13.1:
-  version "16.14.1"
-  resolved "https://registry.yarnpkg.com/react-shallow-renderer/-/react-shallow-renderer-16.14.1.tgz#bf0d02df8a519a558fd9b8215442efa5c840e124"
-  integrity sha512-rkIMcQi01/+kxiTE9D3fdS959U1g7gs+/rborw++42m1O9FAQiNI/UNRZExVUoAOprn4umcXf+pFRou8i4zuBg==
-  dependencies:
-    object-assign "^4.1.1"
-    react-is "^16.12.0 || ^17.0.0"
-
 react-sizeme@^2.6.7:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/react-sizeme/-/react-sizeme-2.6.12.tgz#ed207be5476f4a85bf364e92042520499455453e"
@@ -11958,16 +11935,6 @@ react-syntax-highlighter@^13.5.0:
     lowlight "^1.14.0"
     prismjs "^1.21.0"
     refractor "^3.1.0"
-
-react-test-renderer@^17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-17.0.1.tgz#3187e636c3063e6ae498aedf21ecf972721574c7"
-  integrity sha512-/dRae3mj6aObwkjCcxZPlxDFh73XZLgvwhhyON2haZGUEhiaY5EjfAdw+d/rQmlcFwdTpMXCSGVk374QbCTlrA==
-  dependencies:
-    object-assign "^4.1.1"
-    react-is "^17.0.1"
-    react-shallow-renderer "^16.13.1"
-    scheduler "^0.20.1"
 
 react-textarea-autosize@^8.1.1:
   version "8.3.0"

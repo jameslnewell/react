@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React from 'react';
-import {useDocument, useUpdateDocument} from '../firestore';
-import {useInput} from '../__utilities__/useInput';
+import {useDocument, useUpdateDocument} from '..';
+import {useInput} from '../../__utilities__/useInput';
 
 const collection = `users`;
 const id = `DgzaP4btqMqB4fK29YQk`;

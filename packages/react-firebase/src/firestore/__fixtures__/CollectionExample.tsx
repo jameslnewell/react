@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React from 'react';
-import {useCollection, useAddDocument, useDeleteDocument} from '../firestore';
-import {decorator} from '../__utilities__/decorator';
-import {useInput} from '../__utilities__/useInput';
+import {useCollection, useAddDocument, useDeleteDocument} from '..';
+import {decorator} from '../../__utilities__/decorator';
+import {useInput} from '../../__utilities__/useInput';
 
 export default {
   title: 'firestore',

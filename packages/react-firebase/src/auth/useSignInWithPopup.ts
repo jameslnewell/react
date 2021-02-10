@@ -1,27 +1,25 @@
 import firebase from 'firebase';
 import {
-  useInvokablePromise,
-  UseInvokablePromiseMetadata,
+  useDeferredPromise,
+  UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
 export type UseSignInWithPopupProvider = firebase.auth.AuthProvider;
 export type UseSignInWithPopupUser = firebase.auth.UserCredential;
-export type UseSignInWithPopupMetadata = UseInvokablePromiseMetadata & {
-  value: UseSignInWithPopupUser | undefined;
-};
-
-export type UseSignInInvocator = (
-  provider: UseSignInWithPopupProvider,
-) => Promise<UseSignInWithPopupUser>;
-export type UseSignInResult = [UseSignInInvocator, UseSignInWithPopupMetadata];
+export type UseSignInResult = UseDeferredPromiseResult<
+  [UseSignInWithPopupProvider],
+  UseSignInWithPopupUser
+>;
 
 export function useSignInWithPopup(): UseSignInResult {
   const app = useApp();
-  const [invoke, value, metadata] = useInvokablePromise(
-    (provider: UseSignInWithPopupProvider) =>
-      app.auth().signInWithPopup(provider),
-    [app],
+  return useDeferredPromise(
+    useCallback(
+      (provider: UseSignInWithPopupProvider) =>
+        app.auth().signInWithPopup(provider),
+      [app],
+    ),
   );
-  return [invoke, {...metadata, value}];
 }
