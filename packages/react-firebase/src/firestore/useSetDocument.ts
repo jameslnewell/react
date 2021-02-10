@@ -1,30 +1,29 @@
 import firebase from 'firebase';
 import {
-  useInvokablePromise,
-  UseInvokablePromiseStatus,
-  UseInvokablePromiseMetadata,
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
-export const UseSetDocumentStatus = UseInvokablePromiseStatus;
-export type UseSetDocumentStatus = UseInvokablePromiseStatus;
-export type UseSetDocumentData = firebase.firestore.DocumentData;
-export type UseSetDocumentMetadata = UseInvokablePromiseMetadata;
-
-export type UseSetDocumentResult = [
-  (data: UseSetDocumentData) => Promise<void>,
-  UseSetDocumentMetadata,
-];
+export interface UseSetDocumentOptions extends UseDeferredPromiseOptions {}
+export type UseSetDocumentResult = UseDeferredPromiseResult<
+  [data: firebase.firestore.DocumentData],
+  void
+>;
 
 export function useSetDocument(
-  document: string | undefined,
+  document: string,
+  options?: UseSetDocumentOptions,
 ): UseSetDocumentResult {
   const app = useApp();
-  const [invoke, , meta] = useInvokablePromise(
-    document
-      ? (data: UseSetDocumentData) => app.firestore().doc(document).set(data)
-      : undefined,
-    [app],
+  return useDeferredPromise(
+    useCallback(
+      (data: firebase.firestore.DocumentData) =>
+        app.firestore().doc(document).set(data),
+      [app, document],
+    ),
+    options,
   );
-  return [invoke, meta];
 }

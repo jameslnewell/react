@@ -1,28 +1,28 @@
 import firebase from 'firebase';
 import {create} from '@jameslnewell/observable';
 import {
-  UseObservableStatus,
-  UseObservableMetadata,
   useObservable,
+  UseObservableOptions,
+  UseObservableResult,
 } from '@jameslnewell/react-observable';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
-export const UseDocumentStatus = UseObservableStatus;
-export type UseDocumentStatus = UseObservableStatus;
-export type UseDocumentSnapshot = firebase.firestore.DocumentSnapshot;
-export type UseDocumentMetadata = UseObservableMetadata<Error>;
+export type UseDocumentOptions = UseObservableOptions;
+export type UseDocumentResult = UseObservableResult<firebase.firestore.DocumentSnapshot>;
 
 export function useDocument(
   document: string | undefined,
-): [UseDocumentSnapshot | undefined, UseDocumentMetadata] {
+  options?: UseDocumentOptions,
+): UseDocumentResult {
   const app = useApp();
-  return useObservable(
-    document
-      ? () =>
-          create((observer) =>
-            app.firestore().doc(document).onSnapshot(observer),
-          )
-      : undefined,
+  const factory = useCallback(
+    () =>
+      create<firebase.firestore.DocumentSnapshot>((observer) =>
+        app.firestore().doc(document).onSnapshot(observer),
+      ),
     [app, document],
   );
+
+  return useObservable(document ? factory : undefined, options);
 }

@@ -1,28 +1,21 @@
 import {
-  useInvokablePromise,
-  UseInvokablePromiseStatus,
-  UseInvokablePromiseMetadata,
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
-import firebase from 'firebase';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
-export const UseDeleteDocumentStatus = UseInvokablePromiseStatus;
-export type UseDeleteDocumentStatus = UseInvokablePromiseStatus;
-export type UseDeleteDocumentReference = firebase.firestore.DocumentReference;
-export type UseDeleteDocumentMetadata = UseInvokablePromiseMetadata;
-
-export type UseDeleteDocumentResult = [
-  () => Promise<void>,
-  UseDeleteDocumentMetadata,
-];
+export interface UseDeleteDocumentOptions extends UseDeferredPromiseOptions {}
+export type UseDeleteDocumentResult = UseDeferredPromiseResult<[], void>;
 
 export function useDeleteDocument(
-  document: string | undefined,
+  document: string,
+  options?: UseDeleteDocumentOptions,
 ): UseDeleteDocumentResult {
   const app = useApp();
-  const [invoke, , meta] = useInvokablePromise(
-    document ? () => app.firestore().doc(document).delete() : undefined,
-    [app, document],
+  return useDeferredPromise(
+    useCallback(() => app.firestore().doc(document).delete(), [app, document]),
+    options,
   );
-  return [invoke, {...meta}];
 }

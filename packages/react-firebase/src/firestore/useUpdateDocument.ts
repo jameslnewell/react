@@ -1,31 +1,29 @@
 import firebase from 'firebase';
 import {
-  useInvokablePromise,
-  UseInvokablePromiseStatus,
-  UseInvokablePromiseMetadata,
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
-export const UseUpdateDocumentStatus = UseInvokablePromiseStatus;
-export type UseUpdateDocumentStatus = UseInvokablePromiseStatus;
-export type UseUpdateDocumentData = firebase.firestore.DocumentData;
-export type UseUpdateDocumentMetadata = UseInvokablePromiseMetadata;
-
-export type UseUpdateDocumentResult = [
-  (data: UseUpdateDocumentData) => Promise<void>,
-  UseUpdateDocumentMetadata,
-];
+export interface UseUpdateDocumentOptions extends UseDeferredPromiseOptions {}
+export type UseUpdateDocumentResult = UseDeferredPromiseResult<
+  [data: firebase.firestore.DocumentData],
+  void
+>;
 
 export function useUpdateDocument(
-  document: string | undefined,
+  document: string,
+  options?: UseUpdateDocumentOptions,
 ): UseUpdateDocumentResult {
   const app = useApp();
-  const [invoke, , meta] = useInvokablePromise(
-    document
-      ? (data: UseUpdateDocumentData) =>
-          app.firestore().doc(document).update(data)
-      : undefined,
-    [app],
+  return useDeferredPromise(
+    useCallback(
+      (data: firebase.firestore.DocumentData) =>
+        app.firestore().doc(document).update(data),
+      [app, document],
+    ),
+    options,
   );
-  return [invoke, meta];
 }

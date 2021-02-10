@@ -12,9 +12,9 @@
     "paths": {
       "testing-utilities": ["packages/testing-utilities/src"],
       "@jameslnewell/react-promise": ["packages/react-promise/src"],
-      "@jameslnewell/react-observable": ["packages/react-observable/src"]
+      "@jameslnewell/react-observable": ["packages/react-observable/src"],
+      "@jameslnewell/react-firebase": ["packages/react-firebase/src"]
     }
   },
-  "exclude": ["packages/react-firebase"],
   "include": ["packages/*/src"]
 }

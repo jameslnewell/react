@@ -9,25 +9,19 @@ import {useApp} from '../app';
 import {useCallback} from 'react';
 
 export type UseCollectionOptions = UseObservableOptions;
-export type UseCollectionResult<T> = UseObservableResult<
-  firebase.firestore.QuerySnapshot<T>
->;
+export type UseCollectionResult = UseObservableResult<firebase.firestore.QuerySnapshot>;
 
-export function useCollection<T = unknown>(
-  collection: string,
+export function useCollection(
+  collection: string | undefined,
   options?: UseCollectionOptions,
-): UseCollectionResult<T> {
+): UseCollectionResult {
   const app = useApp();
   const factory = useCallback(
     () =>
-      create<firebase.firestore.QuerySnapshot<T>>((observer) =>
+      create<firebase.firestore.QuerySnapshot>((observer) =>
         app.firestore().collection(collection).onSnapshot(observer),
       ),
     [app, collection],
   );
-  const result = useObservable<firebase.firestore.QuerySnapshot<T>>(
-    factory,
-    options,
-  );
-  return result;
+  return useObservable(collection ? factory : undefined, options);
 }
