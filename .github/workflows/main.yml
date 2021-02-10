@@ -35,7 +35,7 @@ jobs:
         run: |
           yarn run check:dependencies
 
-  check_typings:
+  check_typing:
     runs-on: ubuntu-latest
 
     strategy:
@@ -63,9 +63,9 @@ jobs:
         run: |
           yarn install
 
-      - name: check typings
+      - name: check typing
         run: |
-          yarn run check:typings
+          yarn run check:typing
 
   check_linting:
     runs-on: ubuntu-latest
@@ -204,6 +204,14 @@ jobs:
 
     if: github.ref == 'refs/heads/main'
 
+    needs:
+      - check_dependencies
+      - check_typing
+      - check_linting
+      - check_formatting
+      - build
+      - test
+
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
@@ -227,4 +235,4 @@ jobs:
 
       - name: publish
         run: |
-          yarn workspace run publish-if-not-published
+          yarn workspaces run publish-if-not-published

@@ -1,29 +1,29 @@
 import firebase from 'firebase';
 import {
-  useInvokablePromise,
-  UseInvokablePromiseStatus,
-  UseInvokablePromiseMetadata,
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
+import {useCallback} from 'react';
 
-export const UseAddDocumentStatus = UseInvokablePromiseStatus;
-export type UseAddDocumentStatus = UseInvokablePromiseStatus;
-export type UseAddDocumentData = firebase.firestore.DocumentData;
-export type UseAddDocumentReference = firebase.firestore.DocumentReference;
-export type UseAddDocumentMetadata = UseInvokablePromiseMetadata;
+export interface UseAddDocumentOptions extends UseDeferredPromiseOptions {}
+export type UseAddDocumentResult = UseDeferredPromiseResult<
+  [data: firebase.firestore.DocumentData],
+  firebase.firestore.DocumentReference
+>;
 
-export type UseAddDocumentResult = [
-  (data: UseAddDocumentData) => Promise<UseAddDocumentReference>,
-  UseAddDocumentReference | undefined,
-  UseAddDocumentMetadata,
-];
-
-export function useAddDocument(collection: string): UseAddDocumentResult {
+export function useAddDocument(
+  collection: string,
+  options?: UseAddDocumentOptions,
+): UseAddDocumentResult {
   const app = useApp();
-  const [invoke, ref, meta] = useInvokablePromise(
-    (data: UseAddDocumentData) =>
-      app.firestore().collection(collection).add(data),
-    [app, collection],
+  return useDeferredPromise(
+    useCallback(
+      (data: firebase.firestore.DocumentData) =>
+        app.firestore().collection(collection).add(data),
+      [app, collection],
+    ),
+    options,
   );
-  return [invoke, ref, meta];
 }
