@@ -5,7 +5,6 @@ import {
   UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
-import {useCallback} from 'react';
 
 export interface UseAddDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseAddDocumentResult = UseDeferredPromiseResult<
@@ -19,11 +18,9 @@ export function useAddDocument(
 ): UseAddDocumentResult {
   const app = useApp();
   return useDeferredPromise(
-    useCallback(
-      (data: firebase.firestore.DocumentData) =>
-        app.firestore().collection(collection).add(data),
-      [app, collection],
-    ),
+    (data: firebase.firestore.DocumentData) =>
+      app.firestore().collection(collection).add(data),
+    [app, collection],
     options,
   );
 }

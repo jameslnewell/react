@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   UnknownState,
   PendingState,
@@ -72,47 +71,3 @@ export async function createEventuallyRejectedPromise(): Promise<unknown> {
     setTimeout(() => reject(error), 3000),
   );
 }
-
-export interface ErrorBoundaryProps {}
-
-export interface ErrorBoundaryState {
-  error: unknown | undefined;
-}
-
-export class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  public state = {error: undefined};
-
-  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
-    return {error};
-  }
-
-  public componentDidCatch(): void {
-    /* do nothing */
-  }
-
-  public render(): React.ReactElement {
-    if (this.state.error) {
-      return <>Thrown</>;
-    }
-    return <>{this.props.children}</>;
-  }
-}
-
-export const Fallback: React.FC = () => {
-  return <p>Loading...</p>;
-};
-
-export interface RenderJSONProps {
-  value: unknown;
-}
-
-export const RenderJSON: React.FC<RenderJSONProps> = ({value}) => {
-  return (
-    <code>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
-    </code>
-  );
-};

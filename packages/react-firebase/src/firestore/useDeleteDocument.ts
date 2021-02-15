@@ -4,7 +4,6 @@ import {
   UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
-import {useCallback} from 'react';
 
 export interface UseDeleteDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseDeleteDocumentResult = UseDeferredPromiseResult<[], void>;
@@ -15,7 +14,8 @@ export function useDeleteDocument(
 ): UseDeleteDocumentResult {
   const app = useApp();
   return useDeferredPromise(
-    useCallback(() => app.firestore().doc(document).delete(), [app, document]),
+    () => app.firestore().doc(document).delete(),
+    [app, document],
     options,
   );
 }

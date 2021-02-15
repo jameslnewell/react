@@ -1,8 +1,10 @@
 import React, {Suspense} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
+import {RenderJSON} from 'testing-utilities';
 import {Factory} from './types';
 import {
   useDeferredObservable,
+  UseDeferredObservableDependencies,
   UseDeferredObservableOptions,
 } from './useDeferredObservable';
 import {
@@ -12,7 +14,6 @@ import {
   createEventuallyErroredObservable,
   createReceivedObservable,
   createWaitingObservable,
-  RenderJSON,
 } from './__fixtures__';
 
 export default {
@@ -20,17 +21,19 @@ export default {
 };
 interface UseDeferredObservableProps {
   factory?: Factory<unknown[], unknown>;
+  deps?: UseDeferredObservableDependencies;
   options?: UseDeferredObservableOptions;
 }
 
 const UseDeferredObservable: React.FC<UseDeferredObservableProps> = ({
   factory,
+  deps = [],
   options,
 }) => {
-  const result = useDeferredObservable(factory, options);
+  const result = useDeferredObservable(factory, deps, options);
   return (
     <>
-      <button onClick={() => result.invoke()}>Invoke</button>
+      <button onClick={() => result.invokeSilently()}>Invoke</button>
       <RenderJSON value={result} />
     </>
   );

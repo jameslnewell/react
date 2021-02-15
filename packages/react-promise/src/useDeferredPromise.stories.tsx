@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react';
-import {ErrorBoundary} from 'react-error-boundary';
+import {RenderJSON, withSuspense, withErrorBoundary} from 'testing-utilities';
 import {Factory} from './types';
 import {
   useDeferredPromise,
@@ -11,7 +11,6 @@ import {
   createFulfilledPromise,
   createPendingPromise,
   createRejectedPromise,
-  RenderJSON,
 } from './__fixtures__';
 
 export default {
@@ -59,27 +58,23 @@ export const EventuallyRejected: React.FC = () => {
   return <UseDeferredPromise factory={createEventuallyRejectedPromise} />;
 };
 
-export const Suspended: React.FC = () => {
+export const Suspended: React.FC = withSuspense()(() => {
   return (
-    <Suspense fallback={<p>Suspended!</p>}>
-      <UseDeferredPromise
-        factory={createPendingPromise}
-        options={{suspendWhenPending: true}}
-      />
-    </Suspense>
+    <UseDeferredPromise
+      factory={createPendingPromise}
+      options={{suspendWhenPending: true}}
+    />
   );
-};
+});
 
-export const Thrown: React.FC = () => {
+export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UseDeferredPromise
-        factory={createRejectedPromise}
-        options={{throwWhenRejected: true}}
-      />
-    </ErrorBoundary>
+    <UseDeferredPromise
+      factory={createRejectedPromise}
+      options={{throwWhenRejected: true}}
+    />
   );
-};
+});
 
 export const SuspendedEventuallyFulfilled: React.FC = () => {
   return (
@@ -92,13 +87,11 @@ export const SuspendedEventuallyFulfilled: React.FC = () => {
   );
 };
 
-export const ThrownEventuallyRejected: React.FC = () => {
+export const ThrownEventuallyRejected: React.FC = withErrorBoundary()(() => {
   return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UseDeferredPromise
-        factory={createEventuallyRejectedPromise}
-        options={{throwWhenRejected: true}}
-      />
-    </ErrorBoundary>
+    <UseDeferredPromise
+      factory={createEventuallyRejectedPromise}
+      options={{throwWhenRejected: true}}
+    />
   );
-};
+});

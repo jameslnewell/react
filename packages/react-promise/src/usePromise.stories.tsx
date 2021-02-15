@@ -1,5 +1,5 @@
-import React, {Suspense} from 'react';
-import {ErrorBoundary} from 'react-error-boundary';
+import React from 'react';
+import {RenderJSON, withErrorBoundary, withSuspense} from 'testing-utilities';
 import {Factory} from './types';
 import {usePromise, UsePromiseOptions} from './usePromise';
 import {
@@ -8,7 +8,6 @@ import {
   createFulfilledPromise,
   createPendingPromise,
   createRejectedPromise,
-  RenderJSON,
 } from './__fixtures__';
 
 export default {
@@ -49,46 +48,38 @@ export const EventuallyRejected: React.FC = () => {
   return <UsePromise factory={createEventuallyRejectedPromise} />;
 };
 
-export const Suspended: React.FC = () => {
+export const Suspended: React.FC = withSuspense()(() => {
   return (
-    <Suspense fallback={<p>Suspended!</p>}>
-      <UsePromise
-        factory={createPendingPromise}
-        options={{suspendWhenPending: true}}
-      />
-    </Suspense>
+    <UsePromise
+      factory={createPendingPromise}
+      options={{suspendWhenPending: true}}
+    />
   );
-};
+});
 
-export const Thrown: React.FC = () => {
+export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UsePromise
-        factory={createRejectedPromise}
-        options={{throwWhenRejected: true}}
-      />
-    </ErrorBoundary>
+    <UsePromise
+      factory={createRejectedPromise}
+      options={{throwWhenRejected: true}}
+    />
   );
-};
+});
 
-export const SuspendedEventuallyFulfilled: React.FC = () => {
+export const SuspendedEventuallyFulfilled: React.FC = withSuspense()(() => {
   return (
-    <Suspense fallback={<p>Suspended!</p>}>
-      <UsePromise
-        factory={createEventuallyFulfilledPromise}
-        options={{suspendWhenPending: true}}
-      />
-    </Suspense>
+    <UsePromise
+      factory={createEventuallyFulfilledPromise}
+      options={{suspendWhenPending: true}}
+    />
   );
-};
+});
 
-export const ThrownEventuallyRejected: React.FC = () => {
+export const ThrownEventuallyRejected: React.FC = withErrorBoundary()(() => {
   return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UsePromise
-        factory={createEventuallyRejectedPromise}
-        options={{throwWhenRejected: true}}
-      />
-    </ErrorBoundary>
+    <UsePromise
+      factory={createEventuallyRejectedPromise}
+      options={{throwWhenRejected: true}}
+    />
   );
-};
+});

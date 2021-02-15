@@ -40,6 +40,10 @@
     "react-error-boundary": "^3.1.0",
     "wait-for-expect": "^3.0.2"
   },
+  "jest": {
+    "displayName": "react-promise",
+    "preset": "@jameslnewell/jest-preset"
+  },
   "scripts": {
     "start": "start-storybook -p 1234"
   },

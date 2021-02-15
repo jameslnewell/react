@@ -1,7 +1,6 @@
 import {fromArray} from '@jameslnewell/observable';
 import {fromError} from '@jameslnewell/observable';
 import {create, delay, Observable} from '@jameslnewell/observable';
-import React from 'react';
 import {
   CompletedState,
   WaitingState,
@@ -80,19 +79,3 @@ export function createEventuallyErroredObservable(): Observable<
 > {
   return delay(3000)(fromError(error));
 }
-
-export const Fallback: React.FC = () => {
-  return <p>Loading...</p>;
-};
-
-export interface RenderJSONProps {
-  value: unknown;
-}
-
-export const RenderJSON: React.FC<RenderJSONProps> = ({value}) => {
-  return (
-    <code>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
-    </code>
-  );
-};

@@ -9,6 +9,8 @@ import {Observable} from '@jameslnewell/observable';
 
 const invokablesByFactoryByParametersMap = createInvokableByFactoryByParamtersMap();
 
+export type UseDeferredObservableDependencies = unknown[];
+
 export interface UseDeferredObservableOptions {
   suspendWhenWaiting?: boolean;
   throwWhenErrored?: boolean;
@@ -18,8 +20,8 @@ export type UseDeferredObservableResult<
   Parameters extends unknown[],
   Value
 > = State<Value> & {
-  invoke(...params: Parameters): void;
-  invokeAsync(...params: Parameters): Observable<Value>;
+  invokeSilently(...params: Parameters): void;
+  invoke(...params: Parameters): Observable<Value>;
   isWaiting: boolean;
   isReceived: boolean;
   isCompleted: boolean;
@@ -34,6 +36,7 @@ const unknownState: UnknownState = {
 
 export function useDeferredObservable<Parameters extends unknown[], Value>(
   factory: Factory<Parameters, Value> | undefined,
+  deps: UseDeferredObservableDependencies,
   {
     suspendWhenWaiting = false,
     throwWhenErrored = false,
@@ -65,44 +68,44 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
       // clear the invokable
       invokableRef.current = undefined;
 
-      // TODO: reset state?
+      // TODO: reset state
     },
-    [factory],
+    deps,
   );
 
-  const invokeAsync = useCallback(
-    (...parameters: Parameters): Observable<Value> => {
-      if (!factory) {
-        throw new Error('No factory provided.');
-      }
+  const invoke = useCallback((...parameters: Parameters): Observable<Value> => {
+    if (!factory) {
+      throw new Error('No factory provided.');
+    }
 
-      // unsubscribe if we're subscribed
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = undefined;
-      }
+    // unsubscribe if we're subscribed
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+      unsubscribeRef.current = undefined;
+    }
 
-      // get the invokable
-      invokableRef.current = invokablesByFactoryByParametersMap
-        .get(factory)
-        .get(parameters);
+    // get the invokable
+    invokableRef.current = invokablesByFactoryByParametersMap
+      .get(factory)
+      .get(parameters);
 
-      // invoke the invokable
-      const result = invokableRef.current.invoke();
+    // invoke the invokable
+    const result = invokableRef.current.invoke();
 
-      // subscribe to the invokable
-      unsubscribeRef.current = invokableRef.current.subscribe((newState) =>
-        setState(newState || unknownState),
-      );
+    // subscribe to the invokable
+    unsubscribeRef.current = invokableRef.current.subscribe((newState) =>
+      setState(newState || unknownState),
+    );
 
-      return result;
+    return result;
+  }, deps);
+
+  const invokeSilently = useCallback(
+    (...parameters: Parameters): void => {
+      invoke(...parameters);
     },
-    [],
+    [invoke],
   );
-
-  const invoke = useCallback((...parameters: Parameters): void => {
-    invokeAsync(...parameters);
-  }, []);
 
   // create the result
   return {
@@ -111,7 +114,7 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
     isReceived: state.status === Status.Received,
     isCompleted: state.status === Status.Completed,
     isErrored: state.status === Status.Errored,
+    invokeSilently,
     invoke,
-    invokeAsync,
   };
 }

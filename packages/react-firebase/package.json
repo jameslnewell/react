@@ -29,17 +29,23 @@
   },
   "peerDependencies": {
     "@types/react": ">=16.9.0",
-    "firebase": "^8.2.2",
+    "firebase": "^8.2.6",
     "react": ">=16.9.0"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
     "@testing-library/react-hooks": "^5.0.0",
+    "@types/dotenv": "^8.2.0",
     "@types/react": "^17.0.0",
-    "firebase": "^8.2.2",
-    "firebase-tools": "^9.2.1",
+    "dotenv": "^8.2.0",
+    "firebase": "^8.2.6",
+    "firebase-tools": "^9.3.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
+  },
+  "jest": {
+    "displayName": "react-firebase",
+    "preset": "@jameslnewell/jest-preset"
   },
   "preconstruct": {
     "entrypoints": [

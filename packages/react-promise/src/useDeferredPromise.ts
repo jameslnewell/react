@@ -1,12 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {Status, Factory, UnknownState, State} from './types';
-import {
-  createInvokableByFactoryByParamtersMap,
-  Invokable,
-  InvokableUbsubscribe,
-} from './createInvokable';
-
-const invokablesByFactoryByParametersMap = createInvokableByFactoryByParamtersMap();
+import {Factory, State, Status} from './types';
+import {InvokableManager} from './manager';
+import {ReferenceCountedInvokableCache} from './cache';
 
 export interface UseDeferredPromiseOptions {
   suspendWhenPending?: boolean;
@@ -17,102 +12,72 @@ export type UseDeferredPromiseResult<
   Parameters extends unknown[],
   Value
 > = State<Value> & {
-  invoke(...params: Parameters): void;
-  invokeAsync(...params: Parameters): Promise<Value>;
-  isPending: boolean;
-  isFulfilled: boolean;
-  isRejected: boolean;
+  invoke(...parameters: Parameters): Promise<Value>;
 };
 
-const noop = (): void => {
-  /* do nothing */
-};
+export const hookCache = new ReferenceCountedInvokableCache();
 
-const unknownState: UnknownState = {
-  status: undefined,
-  value: undefined,
-  error: undefined,
-};
-
-export function useDeferredPromise<Parameters extends unknown[], Value>(
-  factory: Factory<Parameters, Value> | undefined,
+export function useDeferredPromise<Value>(
+  factory: Factory<[], Value> | undefined,
   {
     suspendWhenPending = false,
     throwWhenRejected = false,
   }: UseDeferredPromiseOptions = {},
-): UseDeferredPromiseResult<Parameters, Value> {
-  const [state, setState] = useState<State<Value>>(unknownState);
-  const invokableRef = useRef<Invokable<Value> | undefined>(undefined);
-  const unsubscribeRef = useRef<InvokableUbsubscribe | undefined>(undefined);
+): UseDeferredPromiseResult<[], Value> {
+  const mountedRef = useRef(false);
+  const managerRef = useRef<InvokableManager<[], Value> | undefined>(undefined);
 
-  // suspend
-  if (suspendWhenPending && state.status === Status.Pending) {
-    throw invokableRef.current?.getSuspender();
+  if (!managerRef.current) {
+    managerRef.current = new InvokableManager(hookCache);
+    if (factory) {
+      managerRef.current.init(factory, []);
+    }
   }
 
-  // throw
-  if (throwWhenRejected && state.status === Status.Rejected) {
-    throw state.error;
-  }
+  const state = managerRef.current.getState();
+  const [, setState] = useState(managerRef.current.getState());
 
-  // unsubscribe from the invokable when the factory changes or we unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  });
+
+  useEffect(() => {
+    managerRef.current?.subscribe((state) => {
+      if (mountedRef.current) {
+        setState(state);
+      }
+    });
+  }, []);
+
   useEffect(
     () => () => {
-      // unsubscribe if we're subscribed
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = undefined;
-      }
-
-      // clear the invokable
-      invokableRef.current = undefined;
-
-      // TODO: reset state?
+      managerRef.current?.reset();
     },
     [factory],
   );
 
-  const invokeAsync = useCallback(
-    (...parameters: Parameters): Promise<Value> => {
-      if (!factory) {
-        throw new Error('No factory provided.');
-      }
+  const invoke = useCallback(async (): Promise<Value> => {
+    if (!managerRef.current || !factory) {
+      throw new Error('No factory provided.');
+    }
+    return managerRef.current.invoke(factory, []);
+  }, [factory]);
 
-      // unsubscribe if we're subscribed
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = undefined;
-      }
+  // suspend when pending
+  if (suspendWhenPending && state?.status === Status.Pending) {
+    throw managerRef.current?.getSuspender();
+  }
 
-      // get the invokable
-      invokableRef.current = invokablesByFactoryByParametersMap
-        .get(factory)
-        .get(parameters);
+  // throw when errored
+  if (throwWhenRejected && state?.status === Status.Rejected) {
+    throw state.error;
+  }
 
-      // invoke the invokable
-      const result = invokableRef.current.invoke();
-
-      // subscribe to the invokable
-      unsubscribeRef.current = invokableRef.current.subscribe((newState) =>
-        setState(newState || unknownState),
-      );
-
-      return result;
-    },
-    [],
-  );
-
-  const invoke = useCallback((...parameters: Parameters): void => {
-    invokeAsync(...parameters).catch(noop);
-  }, []);
-
-  // create the result
   return {
     ...state,
-    isPending: state.status === Status.Pending,
-    isFulfilled: state.status === Status.Fulfilled,
-    isRejected: state.status === Status.Rejected,
     invoke,
-    invokeAsync,
   };
 }

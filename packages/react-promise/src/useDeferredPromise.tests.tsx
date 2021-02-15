@@ -5,6 +5,7 @@ import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {
   useDeferredPromise,
+  UseDeferredPromiseDependencies,
   UseDeferredPromiseOptions,
   UseDeferredPromiseResult,
 } from './useDeferredPromise';
@@ -29,30 +30,29 @@ function renderUseDeferredPromiseHook<
   Value = unknown
 >(
   factory: Factory<Parameters, Value> | undefined,
+  deps: UseDeferredPromiseDependencies,
   options?: UseDeferredPromiseOptions,
 ): RenderHookResult<unknown, UseDeferredPromiseResult<Parameters, Value>> {
-  return renderHook(() => useDeferredPromise(factory, options));
+  return renderHook(() => useDeferredPromise(factory, deps, options));
 }
 
 describe('useDeferredPromise()', () => {
   test('state is undefined when mounted', () => {
-    const {result} = renderUseDeferredPromiseHook(createPendingPromise);
+    const {result} = renderUseDeferredPromiseHook(createPendingPromise, []);
     expect(result.current).toEqual(expect.objectContaining(unknownState));
   });
 
   test('throws an error when invoked without a fn', () => {
-    const {result} = renderUseDeferredPromiseHook(undefined);
+    const {result} = renderUseDeferredPromiseHook(undefined, []);
     act(() => {
-      expect(() => result.current.invokeAsync()).toThrow(
-        `No factory provided.`,
-      );
+      expect(() => result.current.invoke()).toThrow(`No factory provided.`);
     });
   });
 
   test('state is pending when invoked', () => {
-    const {result} = renderUseDeferredPromiseHook(createPendingPromise);
+    const {result} = renderUseDeferredPromiseHook(createPendingPromise, []);
     act(() => {
-      result.current.invokeAsync();
+      result.current.invoke();
     });
     expect(result.current).toEqual(expect.objectContaining(pendingState));
   });
@@ -60,9 +60,10 @@ describe('useDeferredPromise()', () => {
   test('state transitions to fulfilled when invoked', async () => {
     const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(
       createFulfilledPromise,
+      [],
     );
     act(() => {
-      result.current.invokeAsync();
+      result.current.invoke();
     });
     await waitForNextUpdate();
     expect(result.current).toEqual(expect.objectContaining(fulfilledState));
@@ -71,25 +72,26 @@ describe('useDeferredPromise()', () => {
   test('state transitions to rejected when invoked', async () => {
     const {result, waitForNextUpdate} = renderUseDeferredPromiseHook(
       createRejectedPromise,
+      [],
     );
     act(() => {
-      result.current.invokeAsync().catch(noop);
+      result.current.invoke().catch(noop);
     });
     await waitForNextUpdate();
     expect(result.current).toEqual(expect.objectContaining(rejectedState));
   });
 
   test('returns a value when invoked and fulfilled', async () => {
-    const {result} = renderUseDeferredPromiseHook(createFulfilledPromise);
+    const {result} = renderUseDeferredPromiseHook(createFulfilledPromise, []);
     await act(async () => {
-      await expect(result.current.invokeAsync()).resolves.toEqual(value);
+      await expect(result.current.invoke()).resolves.toEqual(value);
     });
   });
 
   test('throws an error when invoked and rejected', async () => {
-    const {result} = renderUseDeferredPromiseHook(createRejectedPromise);
+    const {result} = renderUseDeferredPromiseHook(createRejectedPromise, []);
     await act(async () => {
-      await expect(result.current.invokeAsync()).rejects.toEqual(error);
+      await expect(result.current.invoke()).rejects.toEqual(error);
     });
   });
 
@@ -98,10 +100,10 @@ describe('useDeferredPromise()', () => {
       .fn()
       .mockImplementationOnce(createDelay(() => Promise.resolve(1), 100))
       .mockImplementationOnce(createDelay(() => Promise.resolve(2), 50));
-    const {result, waitFor} = renderUseDeferredPromiseHook(fn);
+    const {result, waitFor} = renderUseDeferredPromiseHook(fn, []);
     act(() => {
-      result.current.invokeAsync();
-      result.current.invokeAsync();
+      result.current.invoke();
+      result.current.invoke();
     });
     await waitFor(() =>
       expect(result.current).toEqual(expect.objectContaining({value: 2})),
@@ -113,10 +115,10 @@ describe('useDeferredPromise()', () => {
       .fn()
       .mockImplementationOnce(createDelay(() => Promise.reject(3), 100))
       .mockImplementationOnce(createDelay(() => Promise.reject(4), 50));
-    const {result, waitFor} = renderUseDeferredPromiseHook(fn);
+    const {result, waitFor} = renderUseDeferredPromiseHook(fn, []);
     act(() => {
-      result.current.invokeAsync().catch(noop);
-      result.current.invokeAsync().catch(noop);
+      result.current.invoke().catch(noop);
+      result.current.invoke().catch(noop);
     });
     await waitFor(() =>
       expect(result.current).toEqual(expect.objectContaining({error: 4})),
@@ -125,9 +127,13 @@ describe('useDeferredPromise()', () => {
 
   test('suspends when pending and suspendWhenPending=true', async () => {
     const Component: React.FC = () => {
-      const {invoke} = useDeferredPromise(createPendingPromise, {
-        suspendWhenPending: true,
-      });
+      const {invokeSilently: invoke} = useDeferredPromise(
+        createPendingPromise,
+        [],
+        {
+          suspendWhenPending: true,
+        },
+      );
       useEffect(() => invoke(), [invoke]);
       return <h1>Loaded!</h1>;
     };
@@ -145,9 +151,13 @@ describe('useDeferredPromise()', () => {
   test.only('throws when rejected and throwWhenRejected=true', async () => {
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {
-      const {invoke} = useDeferredPromise(createPendingPromise, {
-        suspendWhenPending: true,
-      });
+      const {invokeSilently: invoke} = useDeferredPromise(
+        createPendingPromise,
+        [],
+        {
+          suspendWhenPending: true,
+        },
+      );
       useEffect(() => invoke(), [invoke]);
       return <h1>Loaded!</h1>;
     };

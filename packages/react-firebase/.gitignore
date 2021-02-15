@@ -14,3 +14,4 @@ firestore-debug.log
 /packages/react-firebase/auth/dist/
 /packages/react-firebase/firestore/dist/
 /packages/react-firebase/storage/dist/
+

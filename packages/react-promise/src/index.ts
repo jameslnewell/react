@@ -1,3 +1,3 @@
-export * from './createResource';
+export * from './types';
+// export * from './createResource';
 export * from './usePromise';
-export * from './useDeferredPromise';

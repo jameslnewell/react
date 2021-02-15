@@ -20,7 +20,7 @@ export const User: React.FC = () => {
 };
 
 export const SignInWithPopup: React.FC = () => {
-  const {invoke: signIn} = useSignInWithPopup();
+  const {invokeSilently: signIn} = useSignInWithPopup();
   return (
     <>
       <button onClick={() => signIn(new firebase.auth.GoogleAuthProvider())}>
@@ -31,7 +31,7 @@ export const SignInWithPopup: React.FC = () => {
 };
 
 export const SignOut: React.FC = () => {
-  const {invoke: signOut} = useSignOut();
+  const {invokeSilently: signOut} = useSignOut();
   console.log(signOut);
   return (
     <>

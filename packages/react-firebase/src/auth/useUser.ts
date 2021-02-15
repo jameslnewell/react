@@ -5,7 +5,6 @@ import {
   UseObservableOptions,
 } from '@jameslnewell/react-observable';
 import {useApp} from '../app';
-import {useCallback} from 'react';
 
 export enum UseUserStatus {
   Authenticated = 'authenticated',
@@ -25,13 +24,11 @@ export type UseUserResult = {
 export function useUser(options?: UseUserOptions): UseUserResult {
   const app = useApp();
   const result = useObservable(
-    useCallback(
-      () =>
-        create<firebase.User | null>((observer) => {
-          return app.auth().onAuthStateChanged(observer);
-        }),
-      [app],
-    ),
+    () =>
+      create<firebase.User | null>((observer) => {
+        return app.auth().onAuthStateChanged(observer);
+      }),
+    [app],
     options,
   );
   const user = result.value || app.auth().currentUser || undefined;

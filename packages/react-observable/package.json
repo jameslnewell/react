@@ -35,5 +35,9 @@
     "react-dom": "^17.0.1",
     "wait-for-expect": "^3.0.2"
   },
+  "jest": {
+    "displayName": "react-observable",
+    "preset": "@jameslnewell/jest-preset"
+  },
   "license": "MIT"
 }

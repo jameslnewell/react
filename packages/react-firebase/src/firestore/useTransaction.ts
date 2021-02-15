@@ -5,7 +5,6 @@ import {
   UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
-import {useCallback} from 'react';
 
 export interface UseTransactionOptions extends UseDeferredPromiseOptions {}
 export type UseTransactionResult = UseDeferredPromiseResult<
@@ -21,9 +20,9 @@ export function useTransaction(
   options?: UseTransactionOptions,
 ): UseTransactionResult {
   const app = useApp();
-  const factory = useCallback(() => app.firestore().runTransaction(fn), [
-    app,
-    fn,
-  ]);
-  return useDeferredPromise(fn ? factory : undefined, options);
+  return useDeferredPromise(
+    fn ? () => app.firestore().runTransaction(fn) : undefined,
+    [app],
+    options,
+  );
 }

@@ -1,49 +1,98 @@
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import {Factory} from './types';
-import {
-  useDeferredPromise,
-  UseDeferredPromiseOptions,
-  UseDeferredPromiseResult,
-} from './useDeferredPromise';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {Factory, State, Status} from './types';
+import {InvokableManager} from './manager';
+import {ReferenceCountedInvokableCache} from './cache';
 
-export interface UsePromiseOptions extends UseDeferredPromiseOptions {
+export interface UsePromiseOptions {
+  suspendWhenPending?: boolean;
+  throwWhenRejected?: boolean;
   invokeWhenMounted?: boolean;
-  invokeWhenChanged?: boolean;
 }
 
-export type UsePromiseResult<Value> = UseDeferredPromiseResult<never[], Value>;
+export type UsePromiseResult<
+  Parameters extends unknown[],
+  Value
+> = State<Value> & {
+  invoke(...parameters: Parameters): Promise<Value>;
+};
+
+const noop = (): void => {
+  /* do nothing */
+};
+
+export const hookCache = new ReferenceCountedInvokableCache();
 
 export function usePromise<Value>(
-  factory: Factory<never[], Value> | undefined,
+  factory: Factory<[], Value> | undefined,
   {
     invokeWhenMounted = true,
-    invokeWhenChanged = true,
     suspendWhenPending = false,
     throwWhenRejected = false,
   }: UsePromiseOptions = {},
-): UsePromiseResult<Value> {
-  const result = useDeferredPromise(factory, {
-    suspendWhenPending,
-    throwWhenRejected,
-  });
-  const isFirstLayoutEffectRef = useRef(true);
-  const isFirstEffectRef = useRef(true);
+): UsePromiseResult<[], Value> {
+  const mountedRef = useRef(false);
+  const managerRef = useRef<InvokableManager<[], Value> | undefined>(undefined);
 
-  // invoke on mount
-  useLayoutEffect(() => {
-    if (invokeWhenMounted && factory && isFirstEffectRef.current) {
-      result.invoke();
+  if (!managerRef.current) {
+    managerRef.current = new InvokableManager(hookCache);
+    if (factory) {
+      managerRef.current.init(factory, []);
     }
-    isFirstLayoutEffectRef.current = false;
-  }, [invokeWhenMounted, invokeWhenChanged, factory, result.invoke]);
+  }
 
-  // invoke on change
+  let state = managerRef.current.getState();
+  const [, setState] = useState(managerRef.current.getState());
+
   useEffect(() => {
-    if (invokeWhenChanged && factory && !isFirstEffectRef.current) {
-      result.invoke();
-    }
-    isFirstEffectRef.current = false;
-  }, [invokeWhenChanged, factory, result.invoke]);
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  });
 
-  return result;
+  useEffect(() => {
+    managerRef.current?.subscribe((state) => {
+      if (mountedRef.current) {
+        setState(state);
+      }
+    });
+  }, []);
+
+  useEffect(
+    () => () => {
+      managerRef.current?.reset();
+    },
+    [factory],
+  );
+
+  const invoke = useCallback(async (): Promise<Value> => {
+    if (!managerRef.current || !factory) {
+      throw new Error('No factory provided.');
+    }
+    return managerRef.current.invoke(factory, []);
+  }, [factory]);
+
+  // suspend when pending
+  if (suspendWhenPending && state?.status === Status.Pending) {
+    throw managerRef.current?.getSuspender();
+  }
+
+  // throw when errored
+  if (throwWhenRejected && state?.status === Status.Rejected) {
+    throw state.error;
+  }
+
+  if (invokeWhenMounted && state.status === undefined) {
+    if (suspendWhenPending) {
+      throw invoke();
+    } else {
+      invoke().then(noop, noop);
+    }
+    state = managerRef.current.getState();
+  }
+
+  return {
+    ...state,
+    invoke,
+  };
 }

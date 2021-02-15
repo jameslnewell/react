@@ -1,27 +1,71 @@
 import firebase from 'firebase';
-import {create} from '@jameslnewell/observable';
+import {create, map} from '@jameslnewell/observable';
 import {
+  Status,
   useObservable,
   UseObservableOptions,
   UseObservableResult,
 } from '@jameslnewell/react-observable';
 import {useApp} from '../app';
-import {useCallback} from 'react';
+import {useCallback, useMemo} from 'react';
 
-export type UseCollectionOptions = UseObservableOptions;
-export type UseCollectionResult = UseObservableResult<firebase.firestore.QuerySnapshot>;
+type CollectionSnapshot = firebase.firestore.QuerySnapshot;
 
-export function useCollection(
+export type UseCollectionSnapshotOptions = UseObservableOptions;
+export type UseCollectionSnapshotResult = UseObservableResult<CollectionSnapshot>;
+
+export function useCollectionSnapshot(
+  collection: string | undefined,
+  options?: UseCollectionSnapshotOptions,
+): UseCollectionSnapshotResult {
+  const app = useApp();
+  return useObservable(
+    collection
+      ? () =>
+          create<CollectionSnapshot>((observer) =>
+            app.firestore().collection(collection).onSnapshot(observer),
+          )
+      : undefined,
+    [app, collection],
+    options,
+  );
+}
+
+export type UseCollectionOptions = UseCollectionSnapshotOptions;
+export type UseCollectionResult<Data = unknown> = UseObservableResult<
+  [string, Data][]
+>;
+
+export function useCollection<Data = unknown>(
   collection: string | undefined,
   options?: UseCollectionOptions,
 ): UseCollectionResult {
-  const app = useApp();
-  const factory = useCallback(
+  const result = useCollectionSnapshot(collection, options);
+
+  const invokeAsync = useCallback(() => {
+    return map((snapshot: CollectionSnapshot) =>
+      snapshot.docs.map<[string, Data]>((doc) => [doc.id, doc.data() as Data]),
+    )(result.invoke());
+  }, [result.invoke]);
+
+  const value = useMemo(
     () =>
-      create<firebase.firestore.QuerySnapshot>((observer) =>
-        app.firestore().collection(collection).onSnapshot(observer),
-      ),
-    [app, collection],
+      result.value &&
+      result.value.docs.map((doc) => [doc.id, doc.data() as Data]),
+    [result.value],
   );
-  return useObservable(collection ? factory : undefined, options);
+
+  if (result.status === Status.Received || result.status === Status.Completed) {
+    return {
+      ...result,
+      invoke: invokeAsync,
+      value: value as [string, Data][],
+    };
+  } else {
+    return {
+      ...result,
+      invoke: invokeAsync,
+      value: result.value,
+    };
+  }
 }

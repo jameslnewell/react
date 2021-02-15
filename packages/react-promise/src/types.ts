@@ -8,32 +8,36 @@ export interface Factory<Parameters extends unknown[], Value> {
   (...parameters: Parameters): Promise<Value>;
 }
 
-export interface UnknownState {
-  status: undefined;
-  value: undefined;
-  error: undefined;
-}
-
-export interface PendingState {
-  status: Status.Pending;
-  value: undefined;
-  error: undefined;
-}
-
-export interface FulfilledState<Value> {
-  status: Status.Fulfilled;
-  value: Value;
-  error: undefined;
-}
-
-export interface RejectedState {
-  status: Status.Rejected;
-  value: undefined;
-  error: unknown;
-}
-
 export type State<Value> =
-  | UnknownState
-  | PendingState
-  | FulfilledState<Value>
-  | RejectedState;
+  | {
+      status: undefined;
+      value: undefined;
+      error: undefined;
+      isPending: false;
+      isFulfilled: false;
+      isRejected: false;
+    }
+  | {
+      status: Status.Pending;
+      value: undefined;
+      error: undefined;
+      isPending: true;
+      isFulfilled: false;
+      isRejected: false;
+    }
+  | {
+      status: Status.Fulfilled;
+      value: Value;
+      error: undefined;
+      isPending: false;
+      isFulfilled: true;
+      isRejected: false;
+    }
+  | {
+      status: Status.Rejected;
+      value: undefined;
+      error: unknown;
+      isPending: false;
+      isFulfilled: false;
+      isRejected: true;
+    };

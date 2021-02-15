@@ -17,10 +17,13 @@ import {
 import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
 
-function renderUseDeferredPromiseHook<Value = unknown>(
+function renderUseDeferredPromiseHook<
+  Parameters extends unknown[],
+  Value = unknown
+>(
   factory: Factory<never, Value> | undefined,
   options?: UsePromiseOptions,
-): RenderHookResult<unknown, UsePromiseResult<Value>> {
+): RenderHookResult<unknown, UsePromiseResult<Parameters, Value>> {
   return renderHook(() => usePromise(factory, options));
 }
 
@@ -61,7 +64,7 @@ describe('usePromise()', () => {
     );
     await waitForExpect(() => {
       expect(queryByText('Loading...')).toBeVisible();
-      expect(queryByText('Loaded!')).not.toBeVisible();
+      expect(queryByText('Loaded!')).toBeNull();
     });
   });
 

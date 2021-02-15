@@ -1,10 +1,14 @@
 import React, {Suspense} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
+import {RenderJSON} from 'testing-utilities';
 import {Factory} from './types';
-import {useObservable, UseObservableOptions} from './useObservable';
+import {
+  useObservable,
+  UseObservableDependencies,
+  UseObservableOptions,
+} from './useObservable';
 import {
   createEventuallyErroredObservable,
-  RenderJSON,
   createWaitingObservable,
   createCompletedObservable,
   createReceivedObservable,
@@ -18,11 +22,16 @@ export default {
 
 interface UsePromiseProps {
   factory?: Factory<unknown[], unknown>;
+  deps?: UseObservableDependencies;
   options?: UseObservableOptions;
 }
 
-const UsePromise: React.FC<UsePromiseProps> = ({factory, options}) => {
-  const result = useObservable(factory, options);
+const UsePromise: React.FC<UsePromiseProps> = ({
+  factory,
+  deps = [],
+  options,
+}) => {
+  const result = useObservable(factory, deps, options);
   return <RenderJSON value={result} />;
 };
 

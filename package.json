@@ -22,7 +22,9 @@
     }
   },
   "jest": {
-    "preset": "@jameslnewell/jest-preset"
+    "projects": [
+      "<rootDir>/packages/*"
+    ]
   },
   "prettier": "@jameslnewell/prettier-config",
   "preconstruct": {
