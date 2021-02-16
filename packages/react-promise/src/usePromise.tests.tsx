@@ -62,21 +62,20 @@ describe('usePromise()', () => {
   });
 
   test('throws when rejected and throwWhenRejected=true', async () => {
+    const symbol = Symbol();
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {
-      usePromise([], createRejectedPromise, {
+      usePromise([symbol], createRejectedPromise, {
         throwWhenRejected: true,
       });
       return <h1>Loaded!</h1>;
     };
-    const {result, queryByText, debug} = render(
+    const {queryByText} = render(
       <ErrorBoundary fallback={<h1>Error!</h1>}>
         <Component />
       </ErrorBoundary>,
     );
-    console.log(result);
     await waitForExpect(() => {
-      debug();
       expect(queryByText('Error!')).toBeVisible();
       expect(queryByText('Loaded!')).toBeNull();
     });
