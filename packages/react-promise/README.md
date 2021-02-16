@@ -28,9 +28,23 @@ yarn add @jameslnewell/react-promise
 
 ### usePromise
 
-A hook implementing the [Fetch-on-Render](https://reactjs.org/docs/concurrent-mode-suspense.html#approach-1-fetch-on-render-not-using-suspense) pattern.
+Start resolving a promise as soon as the component mounts.
 
-Starts resolving the promise immediately e.g. fetch data from the server when a component is mounted
+#### Parameters:
+
+- `keys` - A unique set of keys for the promise.
+- `factory` - A function which creates the promise.
+- `options` - Options to configure the behaviour of the hook.
+
+#### Returns:
+
+- `.status` - Whether the promise is pending, fulfilled or rejected.
+- `.value` - The value of the promise after it is fulfilled.
+- `.error` - The value of the promise after it is rejected.
+- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
+- `.isFulfilled` - Whether the promise has been fulfilled.
+- `.isRejected`- Whether the promise has rejected.
+- `.invoke`- A function to invoke the promise again.
 
 ```jsx
 import React from 'react';
@@ -43,33 +57,43 @@ const getUser = async (id) => {
 };
 
 const UserProfile = ({id}) => {
-  const {id} = useParams();
-  const {error, value}] = usePromise(() => getUser(id), [id]);
+  const {value} = usePromise([id], () => getUser(id));
   switch (true) {
     case error:
-      return (
-        <>
-          Sorry, something went wrong.
-        <>
-      );
+      return <p>Sorry, something went wrong.</p>;
     case value:
       return (
-        <>
+        <p>
           Hello <strong>{user.name}</strong>!
-        </>
+        </p>
       );
     default:
-      return <>Loading...</>;
+      return <p>Loading...</p>;
   }
 };
-
 ```
 
 ### useDeferredPromise
 
-Start resolving a promise when triggered e.g. change data on the server after the user clicks a button
+Start resolving a promise when invoked manually.
 
-```js
+#### Parameters:
+
+- `keys` - A unique set of keys for the promise.
+- `factory` - A function which creates the promise.
+- `options` - Options to configure the behaviour of the hook.
+
+#### Returns:
+
+- `.status` - Whether the promise is pending, fulfilled or rejected.
+- `.value` - The value of the promise after it is fulfilled.
+- `.error` - The value of the promise after it is rejected.
+- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
+- `.isFulfilled` - Whether the promise has been fulfilled.
+- `.isRejected`- Whether the promise has rejected.
+- `.invoke`- A function to invoke the promise again.
+
+```jsx
 import React, {useState, useEffect} from 'react';
 import {useDeferredPromise} from '@jameslnewell/react-promise';
 
@@ -82,60 +106,18 @@ const putUser = async (id, data) => {
 
 const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
-  const {isPending, invoke: save} = useDeferredPromise(
-    (data) => putUser(id, data),
-    [id],
+  const {isPending, invoke: save} = useDeferredPromise([id], (data) =>
+    putUser(id, data),
   );
-  const handleSave = async (event) => save(id, {name: input.current.value});
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    save({name: input.current.value});
+  };
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <input ref={input} />
-      <button disabled={isPending} onClick={handleSave}>
-        Save
-      </button>
-    </>
+      <button disabled={isPending}>Save</button>
+    </form>
   );
 };
 ```
-
-## API
-
-### usePromise()
-
-Immediately executes an operation.
-
-#### Parameters:
-
-- `fn` - A function that returns the promise to be fulfilled.
-- `opts` - Options to configure the behaviour of the hook.
-
-#### Returns:
-
-- `.value` - The value returned by the operation.
-- `.status` - Whether the promise is pending, fulfilled or rejected.
-- `.error` - The reason why the promise was rejected.
-- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
-- `.isFulfilled` - Whether the promise has been fulfilled.
-- `.isRejected`- Whether the promise has rejected.
-- `.invoke`- A fn to execute the operation again.
-- `.invokeAsync`- A fn to execute the operation again.
-
-### useInvokablePromise()
-
-Executes an operation when the `invoke` method is called.
-
-#### Parameters:
-
-- `fn` - A function that returns the observable to be observed.
-- `opts` - Options to configure the behaviour of the hook
-
-#### Returns:
-
-- `.value` - The value returned by the operatio.
-- `.status` - Whether the promise is pending, fulfilled or rejected.
-- `.error` - The reason why the promise was rejected.
-- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
-- `.isFulfilled` - Whether the promise has been fulfilled.
-- `.isRejected`- Whether the promise has rejected.
-- `.invoke` - A function to invoke the operation.
-- `.invokeAsync` - A function to invoke the operation.

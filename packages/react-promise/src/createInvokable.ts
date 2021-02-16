@@ -1,8 +1,5 @@
 import {Status, Factory, State} from './types';
-
-const noop = (): void => {
-  /* do nothing */
-};
+import {noop} from './noop';
 
 export interface SubscriberFunction<Value> {
   (state: State<Value>): void;
@@ -12,20 +9,23 @@ export interface UnsubscribeFunction {
   (): void;
 }
 
-export interface Invokable<Value> {
-  invoke(): Promise<Value>;
-  getState(): State<Value>;
-  getSuspender(): Promise<void> | undefined;
+export interface Invokable<Parameters extends unknown[], Value> {
+  readonly state: State<Value>;
+  readonly suspender: Promise<void> | undefined;
+  invoke(
+    factory: Factory<Parameters, Value>,
+    parameters: Parameters,
+  ): Promise<Value>;
   subscribe(subscriber: SubscriberFunction<Value>): UnsubscribeFunction;
 }
 
-export function createInvokable<Parameters extends unknown[], Value>(
-  invoke: Factory<Parameters, Value>,
-  parameters: Parameters,
-): Invokable<Value> {
+export function createInvokable<
+  Parameters extends unknown[],
+  Value
+>(): Invokable<Parameters, Value> {
   const subscribers: Set<SubscriberFunction<Value>> = new Set();
 
-  let state: State<Value> = {
+  let currentState: State<Value> = {
     status: undefined,
     value: undefined,
     error: undefined,
@@ -34,28 +34,29 @@ export function createInvokable<Parameters extends unknown[], Value>(
     isRejected: false,
   };
 
-  let suspender: Promise<void> | undefined = undefined;
+  let currentSuspender: Promise<void> | undefined = undefined;
 
   const notifySubscribers = (): void => {
     for (const subscriber of subscribers) {
-      subscriber(state);
+      subscriber(currentState);
     }
   };
 
   return {
-    getState() {
-      return state;
+    get state() {
+      return currentState;
     },
 
-    getSuspender() {
-      return suspender;
+    get suspender() {
+      // TODO: promise that resolves when the last invoke resolves
+      return currentSuspender;
     },
 
-    invoke() {
-      const promise: Promise<Value> = invoke(...parameters).then(
+    invoke(factory, parameters) {
+      const promise: Promise<Value> = factory(...parameters).then(
         (value) => {
-          if (nextSuspender === suspender) {
-            state = {
+          if (nextSuspender === currentSuspender) {
+            currentState = {
               status: Status.Fulfilled,
               value,
               error: undefined,
@@ -63,14 +64,14 @@ export function createInvokable<Parameters extends unknown[], Value>(
               isFulfilled: true,
               isRejected: false,
             };
-            suspender = undefined;
+            currentSuspender = undefined;
             notifySubscribers();
           }
           return value;
         },
         (error) => {
-          if (nextSuspender === suspender) {
-            state = {
+          if (nextSuspender === currentSuspender) {
+            currentState = {
               status: Status.Rejected,
               value: undefined,
               error,
@@ -78,14 +79,14 @@ export function createInvokable<Parameters extends unknown[], Value>(
               isFulfilled: false,
               isRejected: true,
             };
-            suspender = undefined;
+            currentSuspender = undefined;
             notifySubscribers();
           }
           throw error;
         },
       );
 
-      state = {
+      currentState = {
         status: Status.Pending,
         value: undefined,
         error: undefined,
@@ -94,7 +95,7 @@ export function createInvokable<Parameters extends unknown[], Value>(
         isRejected: false,
       };
       const nextSuspender = promise.then(noop, noop);
-      suspender = nextSuspender;
+      currentSuspender = nextSuspender;
       notifySubscribers();
 
       return promise;
@@ -105,7 +106,7 @@ export function createInvokable<Parameters extends unknown[], Value>(
       subscribers.add(subscriber);
 
       // initialise the subscriber
-      subscriber(state);
+      subscriber(currentState);
 
       // unsubscribe
       return () => {

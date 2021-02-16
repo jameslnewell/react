@@ -5,6 +5,8 @@ import {
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
 
+const symbol = Symbol();
+
 export interface UseDeleteDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseDeleteDocumentResult = UseDeferredPromiseResult<[], void>;
 
@@ -14,8 +16,8 @@ export function useDeleteDocument(
 ): UseDeleteDocumentResult {
   const app = useApp();
   return useDeferredPromise(
+    [symbol, app, document],
     () => app.firestore().doc(document).delete(),
-    [app, document],
     options,
   );
 }

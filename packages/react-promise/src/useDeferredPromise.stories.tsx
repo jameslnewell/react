@@ -17,15 +17,17 @@ export default {
   title: 'react-promise/useDeferredPromise',
 };
 interface UseDeferredPromiseProps {
-  factory?: Factory<unknown[], unknown>;
+  keys: unknown[];
+  factory: Factory<unknown[], unknown>;
   options?: UseDeferredPromiseOptions;
 }
 
 const UseDeferredPromise: React.FC<UseDeferredPromiseProps> = ({
+  keys,
   factory,
   options,
 }) => {
-  const result = useDeferredPromise(factory, options);
+  const result = useDeferredPromise(keys, factory, options);
   return (
     <>
       <button onClick={() => result.invoke()}>Invoke</button>
@@ -34,33 +36,46 @@ const UseDeferredPromise: React.FC<UseDeferredPromiseProps> = ({
   );
 };
 
-export const NoFactory: React.FC = () => {
-  return <UseDeferredPromise factory={undefined} />;
-};
-
 export const Pending: React.FC = () => {
-  return <UseDeferredPromise factory={createPendingPromise} />;
+  return (
+    <UseDeferredPromise keys={[Symbol()]} factory={createPendingPromise} />
+  );
 };
 
 export const Fulfilled: React.FC = () => {
-  return <UseDeferredPromise factory={createFulfilledPromise} />;
+  return (
+    <UseDeferredPromise keys={[Symbol()]} factory={createFulfilledPromise} />
+  );
 };
 
 export const Rejected: React.FC = () => {
-  return <UseDeferredPromise factory={createRejectedPromise} />;
+  return (
+    <UseDeferredPromise keys={[Symbol()]} factory={createRejectedPromise} />
+  );
 };
 
 export const EventuallyFulfilled: React.FC = () => {
-  return <UseDeferredPromise factory={createEventuallyFulfilledPromise} />;
+  return (
+    <UseDeferredPromise
+      keys={[Symbol()]}
+      factory={createEventuallyFulfilledPromise}
+    />
+  );
 };
 
 export const EventuallyRejected: React.FC = () => {
-  return <UseDeferredPromise factory={createEventuallyRejectedPromise} />;
+  return (
+    <UseDeferredPromise
+      keys={[Symbol()]}
+      factory={createEventuallyRejectedPromise}
+    />
+  );
 };
 
 export const Suspended: React.FC = withSuspense()(() => {
   return (
     <UseDeferredPromise
+      keys={[Symbol()]}
       factory={createPendingPromise}
       options={{suspendWhenPending: true}}
     />
@@ -70,6 +85,7 @@ export const Suspended: React.FC = withSuspense()(() => {
 export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
     <UseDeferredPromise
+      keys={[Symbol()]}
       factory={createRejectedPromise}
       options={{throwWhenRejected: true}}
     />
@@ -80,6 +96,7 @@ export const SuspendedEventuallyFulfilled: React.FC = () => {
   return (
     <Suspense fallback={<p>Suspended!</p>}>
       <UseDeferredPromise
+        keys={[Symbol()]}
         factory={createEventuallyFulfilledPromise}
         options={{suspendWhenPending: true}}
       />
@@ -90,6 +107,7 @@ export const SuspendedEventuallyFulfilled: React.FC = () => {
 export const ThrownEventuallyRejected: React.FC = withErrorBoundary()(() => {
   return (
     <UseDeferredPromise
+      keys={[Symbol()]}
       factory={createEventuallyRejectedPromise}
       options={{throwWhenRejected: true}}
     />

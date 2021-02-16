@@ -6,6 +6,8 @@ import {
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
 
+const symbol = Symbol();
+
 export interface UseTransactionOptions extends UseDeferredPromiseOptions {}
 export type UseTransactionResult = UseDeferredPromiseResult<
   [transaction: firebase.firestore.Transaction],
@@ -13,7 +15,7 @@ export type UseTransactionResult = UseDeferredPromiseResult<
 >;
 
 export function useTransaction(
-  fn:
+  factory:
     | ((transaction: firebase.firestore.Transaction) => Promise<void>)
     | undefined,
 
@@ -21,8 +23,8 @@ export function useTransaction(
 ): UseTransactionResult {
   const app = useApp();
   return useDeferredPromise(
-    fn ? () => app.firestore().runTransaction(fn) : undefined,
-    [app],
+    [symbol, app],
+    () => app.firestore().runTransaction(factory!), // TODO: make conditional
     options,
   );
 }

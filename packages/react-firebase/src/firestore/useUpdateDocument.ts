@@ -6,6 +6,8 @@ import {
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
 
+const symbol = Symbol();
+
 export interface UseUpdateDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseUpdateDocumentResult = UseDeferredPromiseResult<
   [data: firebase.firestore.DocumentData],
@@ -18,9 +20,9 @@ export function useUpdateDocument(
 ): UseUpdateDocumentResult {
   const app = useApp();
   return useDeferredPromise(
+    [symbol, app, document],
     (data: firebase.firestore.DocumentData) =>
       app.firestore().doc(document).update(data),
-    [app, document],
     options,
   );
 }

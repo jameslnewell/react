@@ -1,98 +1,37 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {Factory, State, Status} from './types';
-import {InvokableManager} from './manager';
-import {ReferenceCountedInvokableCache} from './cache';
+import {Factory, Status} from './types';
+import {noop} from './noop';
+import {
+  useDeferredPromise,
+  UseDeferredPromiseOptions,
+  UseDeferredPromiseResult,
+} from './useDeferredPromise';
 
-export interface UsePromiseOptions {
-  suspendWhenPending?: boolean;
-  throwWhenRejected?: boolean;
+export interface UsePromiseOptions extends UseDeferredPromiseOptions {
   invokeWhenMounted?: boolean;
 }
 
-export type UsePromiseResult<
-  Parameters extends unknown[],
-  Value
-> = State<Value> & {
-  invoke(...parameters: Parameters): Promise<Value>;
-};
-
-const noop = (): void => {
-  /* do nothing */
-};
-
-export const hookCache = new ReferenceCountedInvokableCache();
+export type UsePromiseResult<Value> = UseDeferredPromiseResult<[], Value>;
 
 export function usePromise<Value>(
-  factory: Factory<[], Value> | undefined,
-  {
-    invokeWhenMounted = true,
-    suspendWhenPending = false,
-    throwWhenRejected = false,
-  }: UsePromiseOptions = {},
-): UsePromiseResult<[], Value> {
-  const mountedRef = useRef(false);
-  const managerRef = useRef<InvokableManager<[], Value> | undefined>(undefined);
+  keys: unknown[],
+  factory: Factory<[], Value>,
+  {invokeWhenMounted = true, ...otherOptions}: UsePromiseOptions = {},
+): UsePromiseResult<Value> {
+  const result = useDeferredPromise(keys, factory, otherOptions);
 
-  if (!managerRef.current) {
-    managerRef.current = new InvokableManager(hookCache);
-    if (factory) {
-      managerRef.current.init(factory, []);
-    }
-  }
-
-  let state = managerRef.current.getState();
-  const [, setState] = useState(managerRef.current.getState());
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  });
-
-  useEffect(() => {
-    managerRef.current?.subscribe((state) => {
-      if (mountedRef.current) {
-        setState(state);
-      }
-    });
-  }, []);
-
-  useEffect(
-    () => () => {
-      managerRef.current?.reset();
-    },
-    [factory],
-  );
-
-  const invoke = useCallback(async (): Promise<Value> => {
-    if (!managerRef.current || !factory) {
-      throw new Error('No factory provided.');
-    }
-    return managerRef.current.invoke(factory, []);
-  }, [factory]);
-
-  // suspend when pending
-  if (suspendWhenPending && state?.status === Status.Pending) {
-    throw managerRef.current?.getSuspender();
-  }
-
-  // throw when errored
-  if (throwWhenRejected && state?.status === Status.Rejected) {
-    throw state.error;
-  }
-
-  if (invokeWhenMounted && state.status === undefined) {
-    if (suspendWhenPending) {
-      throw invoke();
+  // invoke on mount
+  if (invokeWhenMounted && result.status === undefined) {
+    if (otherOptions.suspendWhenPending) {
+      throw result.invoke();
     } else {
-      invoke().then(noop, noop);
+      result.invoke().then(noop, noop);
+      return {
+        ...result,
+        status: Status.Pending,
+        isPending: true,
+      };
     }
-    state = managerRef.current.getState();
   }
 
-  return {
-    ...state,
-    invoke,
-  };
+  return result;
 }
