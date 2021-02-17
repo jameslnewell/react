@@ -14,19 +14,21 @@ type CollectionSnapshot = firebase.firestore.QuerySnapshot;
 export type UseCollectionSnapshotOptions = UseObservableOptions;
 export type UseCollectionSnapshotResult = UseObservableResult<CollectionSnapshot>;
 
+const symbol = Symbol();
+
 export function useCollectionSnapshot(
   collection: string | undefined,
   options?: UseCollectionSnapshotOptions,
 ): UseCollectionSnapshotResult {
   const app = useApp();
   return useObservable(
+    [symbol, app, collection],
     collection
       ? () =>
           create<CollectionSnapshot>((observer) =>
             app.firestore().collection(collection).onSnapshot(observer),
           )
       : undefined,
-    [app, collection],
     options,
   );
 }

@@ -12,11 +12,13 @@ export type UseSignInResult = UseDeferredPromiseResult<
   UseSignInWithPopupUser
 >;
 
+const symbol = Symbol();
+
 export function useSignInWithPopup(): UseSignInResult {
   const app = useApp();
   return useDeferredPromise(
+    [symbol, app],
     (provider: UseSignInWithPopupProvider) =>
       app.auth().signInWithPopup(provider),
-    [app],
   );
 }

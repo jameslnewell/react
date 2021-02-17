@@ -14,13 +14,13 @@ export type UsePromiseResult<Value> = UseDeferredPromiseResult<[], Value>;
 
 export function usePromise<Value>(
   keys: unknown[],
-  factory: Factory<[], Value>,
+  factory: Factory<[], Value> | undefined,
   {invokeWhenMounted = true, ...otherOptions}: UsePromiseOptions = {},
 ): UsePromiseResult<Value> {
   const result = useDeferredPromise(keys, factory, otherOptions);
 
   // invoke on mount
-  if (invokeWhenMounted && result.status === undefined) {
+  if (invokeWhenMounted && result.status === undefined && factory) {
     if (otherOptions.suspendWhenPending) {
       throw result.invoke();
     } else {

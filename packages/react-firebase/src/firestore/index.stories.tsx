@@ -2,6 +2,9 @@ import {decorator} from '../__utilities__/decorator';
 import {useDocument, useCollection, useAddDocument, useSetDocument} from '.';
 
 import React, {useState, Suspense} from 'react';
+import {RenderJSON, withSuspense} from 'testing-utilities';
+import {useRef} from 'react';
+import {useDeleteDocument} from './useDeleteDocument';
 
 export default {
   title: 'react-firebase/firestore',
@@ -12,6 +15,31 @@ interface Animal {
   name: string;
   species: string;
 }
+
+interface SelectAnimalIdProps {
+  onSelect: (id: string) => void;
+}
+
+const SelectAnimalId: React.FC<SelectAnimalIdProps> = ({onSelect}) => {
+  const idRef = useRef<HTMLInputElement>(null);
+  const handleSubmit = (event: React.FormEvent): void => {
+    event.preventDefault();
+    if (idRef.current && idRef.current?.value) {
+      onSelect(idRef.current.value);
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <fieldset>
+        <legend>Select animial</legend>
+        <label>
+          Animal ID: <input ref={idRef} />
+        </label>
+        <button>Select</button>
+      </fieldset>
+    </form>
+  );
+};
 
 interface AnimalFormProps {
   isSubmitting: boolean;
@@ -45,6 +73,7 @@ const AnimalForm: React.FC<AnimalFormProps> = ({
 
     onSubmit({name, species});
   };
+  console.log('defaultValue', defaultValue);
 
   return (
     <>
@@ -116,13 +145,14 @@ export const Collection: React.FC = () => {
 };
 
 export const Document: React.FC = () => {
-  const result = useDocument('animals/fido');
-  return <pre>{JSON.stringify(result.value)}</pre>;
-};
-
-export const DocumentDoesNotExist: React.FC = () => {
-  const result = useDocument('animals/thelma');
-  return <pre>{JSON.stringify(result.value)}</pre>;
+  const [name, setName] = useState('fido');
+  const result = useDocument(`animals/${name}`);
+  return (
+    <>
+      <SelectAnimalId onSelect={setName} />
+      <RenderJSON value={result.value} />
+    </>
+  );
 };
 
 export const AddDocument: React.FC = () => {
@@ -137,16 +167,12 @@ export const AddDocument: React.FC = () => {
   );
 };
 
-interface SetDocumentFormProps {
-  id: string;
-}
-
-const SetDocumentForm: React.FC<SetDocumentFormProps> = ({id}) => {
+export const SetDocument: React.FC = withSuspense()(() => {
+  const [id, setId] = useState('fido');
   const document = useDocument<Animal>(`animals/${id}`, {
     suspendWhenWaiting: true,
   });
   const setDocument = useSetDocument(`animals/${id}`);
-  console.log('set document form', document);
   return (
     <AnimalForm
       isSubmitting={setDocument.isPending}
@@ -156,13 +182,15 @@ const SetDocumentForm: React.FC<SetDocumentFormProps> = ({id}) => {
       onSubmit={setDocument.invoke}
     />
   );
-};
+});
 
-export const SetDocument: React.FC = () => {
-  const [id, setId] = useState('fido');
+export const DeleteDocument: React.FC = () => {
+  const [name, setName] = useState('fido');
+  const result = useDeleteDocument(`animals/${name}`);
   return (
-    <Suspense fallback={null}>
-      <SetDocumentForm id={id} />
-    </Suspense>
+    <>
+      <SelectAnimalId onSelect={setName} />
+      <RenderJSON value={result.value} />
+    </>
   );
 };

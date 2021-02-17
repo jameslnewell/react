@@ -6,7 +6,9 @@ import {useApp} from '../app';
 
 export type UseSignOutResult = UseDeferredPromiseResult<never[], void>;
 
+const symbol = Symbol();
+
 export function useSignOut(): UseSignOutResult {
   const app = useApp();
-  return useDeferredPromise(() => app.auth().signOut(), [app]);
+  return useDeferredPromise([symbol, app], () => app.auth().signOut());
 }

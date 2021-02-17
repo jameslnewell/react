@@ -23,8 +23,8 @@ export function useTransaction(
 ): UseTransactionResult {
   const app = useApp();
   return useDeferredPromise(
-    [symbol, app],
-    () => app.firestore().runTransaction(factory!), // TODO: make conditional
+    [symbol, app, factory],
+    factory ? () => app.firestore().runTransaction(factory) : undefined,
     options,
   );
 }

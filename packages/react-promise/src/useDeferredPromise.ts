@@ -29,7 +29,7 @@ const cache = createInvokableCache();
 
 export function useDeferredPromise<Parameters extends unknown[], Value>(
   keys: unknown[],
-  factory: Factory<Parameters, Value>,
+  factory: Factory<Parameters, Value> | undefined,
   {suspendWhenPending, throwWhenRejected}: UseDeferredPromiseOptions = {},
 ): UseDeferredPromiseResult<Parameters, Value> {
   const mountedRef = useRef(false);
@@ -78,11 +78,12 @@ export function useDeferredPromise<Parameters extends unknown[], Value>(
       if (mountedRef.current) {
         // avoid unnecessary state changes e.g. usePromse invoke on render
         if (
-          state.status !== Status.Pending &&
-          nextState.status !== Status.Pending
+          state.status === Status.Pending &&
+          nextState.status === Status.Pending
         ) {
-          setState(nextState);
+          return;
         }
+        setState(nextState);
       }
     });
   }, [invokable]);

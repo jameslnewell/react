@@ -1,17 +1,11 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {Status, Factory, UnknownState, State} from './types';
-import {
-  createInvokableByFactoryByParamtersMap,
-  Invokable,
-  InvokableUbsubscribe,
-} from './createInvokable';
+import {Factory, State, Status, UnknownState} from './types';
+import {cache} from './cache';
+import {createInvokable, Invokable} from './createInvokable';
 import {Observable} from '@jameslnewell/observable';
 
-const invokablesByFactoryByParametersMap = createInvokableByFactoryByParamtersMap();
-
-export type UseDeferredObservableDependencies = unknown[];
-
 export interface UseDeferredObservableOptions {
+  enabled?: boolean;
   suspendWhenWaiting?: boolean;
   throwWhenErrored?: boolean;
 }
@@ -20,101 +14,91 @@ export type UseDeferredObservableResult<
   Parameters extends unknown[],
   Value
 > = State<Value> & {
-  invokeSilently(...params: Parameters): void;
-  invoke(...params: Parameters): Observable<Value>;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  invoke(...parameters: Parameters): Observable<Value>;
 };
 
 const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
+  isWaiting: false,
+  isReceived: false,
+  isCompleted: false,
+  isErrored: false,
 };
 
 export function useDeferredObservable<Parameters extends unknown[], Value>(
+  keys: unknown[],
   factory: Factory<Parameters, Value> | undefined,
-  deps: UseDeferredObservableDependencies,
-  {
-    suspendWhenWaiting = false,
-    throwWhenErrored = false,
-  }: UseDeferredObservableOptions = {},
+  {suspendWhenWaiting, throwWhenErrored}: UseDeferredObservableOptions = {},
 ): UseDeferredObservableResult<Parameters, Value> {
-  const [state, setState] = useState<State<Value>>(unknownState);
-  const invokableRef = useRef<Invokable<Value> | undefined>(undefined);
-  const unsubscribeRef = useRef<InvokableUbsubscribe | undefined>(undefined);
-
-  // suspend
-  if (suspendWhenWaiting && state.status === Status.Waiting) {
-    throw invokableRef.current?.getSuspender();
+  const mountedRef = useRef(false);
+  let invokable: Invokable<Parameters, Value> | undefined = cache.get(keys);
+  if (!invokable) {
+    invokable = createInvokable<Parameters, Value>();
+    cache.set(keys, invokable);
   }
 
-  // throw
+  const state = invokable.state || unknownState;
+  const [, setState] = useState(state);
+
+  // suspend when pending
+  if (suspendWhenWaiting && state.status === Status.Waiting) {
+    throw invokable.suspender;
+  }
+
+  // throw when errored
   if (throwWhenErrored && state.status === Status.Errored) {
     throw state.error;
   }
 
-  // unsubscribe from the invokable when the factory changes or we unmount
-  useEffect(
-    () => () => {
-      // unsubscribe if we're subscribed
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = undefined;
-      }
-
-      // clear the invokable
-      invokableRef.current = undefined;
-
-      // TODO: reset state
-    },
-    deps,
-  );
-
   const invoke = useCallback((...parameters: Parameters): Observable<Value> => {
     if (!factory) {
-      throw new Error('No factory provided.');
+      throw new Error('Unable to invoke. No factory provided.');
     }
-
-    // unsubscribe if we're subscribed
-    if (unsubscribeRef.current) {
-      unsubscribeRef.current();
-      unsubscribeRef.current = undefined;
+    if (!invokable) {
+      throw new Error(
+        'Something is wrong, the invokable should never be undefined!',
+      );
     }
+    return invokable.invoke(factory, parameters);
+  }, keys);
 
-    // get the invokable
-    invokableRef.current = invokablesByFactoryByParametersMap
-      .get(factory)
-      .get(parameters);
+  // keep track of whether the component is mounted
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  });
 
-    // invoke the invokable
-    const result = invokableRef.current.invoke();
+  // update the state when the invokable state changes and the component is mounted
+  useEffect(() => {
+    return invokable?.subscribe((nextState) => {
+      if (mountedRef.current) {
+        // avoid unnecessary state changes e.g. useObservable invoke on render
+        if (
+          state.status === Status.Waiting &&
+          nextState.status === Status.Waiting
+        ) {
+          return;
+        }
+        setState(nextState);
+      }
+    });
+  }, [invokable]);
 
-    // subscribe to the invokable
-    unsubscribeRef.current = invokableRef.current.subscribe((newState) =>
-      setState(newState || unknownState),
-    );
-
-    return result;
-  }, deps);
-
-  const invokeSilently = useCallback(
-    (...parameters: Parameters): void => {
-      invoke(...parameters);
+  // garbage collect from cache when the key cahnges
+  useEffect(
+    () => () => {
+      setState(unknownState);
+      cache.dereference(keys);
     },
-    [invoke],
+    keys,
   );
 
-  // create the result
   return {
     ...state,
-    isWaiting: state.status === Status.Waiting,
-    isReceived: state.status === Status.Received,
-    isCompleted: state.status === Status.Completed,
-    isErrored: state.status === Status.Errored,
-    invokeSilently,
     invoke,
   };
 }

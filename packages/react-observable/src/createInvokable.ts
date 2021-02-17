@@ -1,126 +1,131 @@
-import {Subscription} from '@jameslnewell/observable';
+import {Status, Factory, State} from './types';
+import {noop} from './noop';
 import {firstValueFrom, Observable} from '@jameslnewell/observable';
-import {
-  Factory,
-  Status,
-  WaitingState,
-  ReceivedState,
-  CompletedState,
-  ErroredState,
-} from './types';
 
-export type InvokableState<Value> =
-  | WaitingState
-  | ReceivedState<Value>
-  | CompletedState<Value>
-  | ErroredState;
-
-export interface InvokableSubscriber<Value> {
-  (state: InvokableState<Value> | undefined): void;
+export interface SubscriberFunction<Value> {
+  (state: State<Value>): void;
 }
 
-export interface InvokableUbsubscribe {
+export interface UnsubscribeFunction {
   (): void;
 }
 
-export interface Invokable<Value> {
-  getState(): InvokableState<Value> | undefined;
-  getSuspender(): Promise<void> | undefined;
-  reset(): void;
-  invoke(): Observable<Value>;
-  subscribe(subscriber: InvokableSubscriber<Value>): () => void;
+export interface Invokable<Parameters extends unknown[], Value> {
+  readonly state: State<Value>;
+  readonly suspender: Promise<void> | undefined;
+  invoke(
+    factory: Factory<Parameters, Value>,
+    parameters: Parameters,
+  ): Observable<Value>;
+  subscribe(subscriber: SubscriberFunction<Value>): UnsubscribeFunction;
 }
 
-function noop(): void {
-  // do nothing
-}
+export function createInvokable<
+  Parameters extends unknown[],
+  Value
+>(): Invokable<Parameters, Value> {
+  const subscribers: Set<SubscriberFunction<Value>> = new Set();
 
-export function createInvokable<Parameters extends unknown[], Value>(
-  factory: Factory<Parameters, Value>,
-  parameters: Parameters,
-): Invokable<Value> {
-  let state: InvokableState<Value> | undefined = undefined;
-  let suspender: Promise<void> | undefined = undefined;
-  let subscription: Subscription;
-  const subscribers: Set<InvokableSubscriber<Value>> = new Set();
+  let currentState: State<Value> = {
+    status: undefined,
+    value: undefined,
+    error: undefined,
+    isWaiting: false,
+    isReceived: false,
+    isCompleted: false,
+    isErrored: false,
+  };
+
+  let currentSuspender: Promise<void> | undefined = undefined;
 
   const notifySubscribers = (): void => {
     for (const subscriber of subscribers) {
-      subscriber(state);
+      subscriber(currentState);
     }
   };
 
   return {
-    getState() {
-      return state;
+    get state() {
+      return currentState;
     },
 
-    getSuspender() {
-      return suspender;
+    get suspender() {
+      // TODO: promise that resolves when the last invoke resolves
+      return currentSuspender;
     },
 
-    reset() {
-      state = undefined;
-      suspender = undefined;
-      subscription?.unsubscribe();
-      notifySubscribers();
-    },
-
-    invoke() {
-      // clear any previous subscriptions
-      subscription?.unsubscribe();
-
+    invoke(factory, parameters) {
       // create the observable
-      const observable: Observable<Value> = factory(...parameters);
+      const observable = factory(...parameters);
 
-      if (state?.status !== Status.Waiting) {
-        state = {
-          status: Status.Waiting,
-          value: undefined,
-          error: undefined,
-        };
-        notifySubscribers();
-      }
+      currentState = {
+        status: Status.Waiting,
+        value: undefined,
+        error: undefined,
+        isWaiting: true,
+        isReceived: false,
+        isCompleted: false,
+        isErrored: false,
+      };
+      const nextSuspender = firstValueFrom(observable).then(noop, noop);
+      currentSuspender = nextSuspender;
+      notifySubscribers();
 
-      const thisSuspender = firstValueFrom(observable).then(noop, noop);
-      suspender = thisSuspender;
-
-      subscription = observable.subscribe({
+      // TODO: unsubscribe when no subscribers left
+      const unsubscribe = observable.subscribe({
         next: (value) => {
-          if (thisSuspender === suspender) {
-            state = {
+          if (nextSuspender === currentSuspender) {
+            currentState = {
               status: Status.Received,
               value,
               error: undefined,
+              isWaiting: false,
+              isReceived: true,
+              isCompleted: false,
+              isErrored: false,
             };
             notifySubscribers();
           }
         },
         complete: () => {
-          if (thisSuspender === suspender) {
-            if (state?.status !== Status.Received) {
-              state = {
-                status: Status.Errored,
-                value: undefined,
-                error: new Error('No value was received'),
+          if (nextSuspender === currentSuspender) {
+            if (currentState.status === Status.Received) {
+              currentState = {
+                status: Status.Completed,
+                value: currentState.value,
+                error: undefined,
+                isWaiting: false,
+                isReceived: true,
+                isCompleted: false,
+                isErrored: false,
               };
             } else {
-              state = {
-                status: Status.Completed,
-                value: state.value,
-                error: undefined,
+              currentState = {
+                status: Status.Errored,
+                value: undefined,
+                error: 'Observable completed without a value.',
+                isWaiting: false,
+                isReceived: false,
+                isCompleted: false,
+                isErrored: true,
               };
             }
+            currentSuspender = undefined;
             notifySubscribers();
           }
         },
         error: (error) => {
-          if (thisSuspender === suspender) {
-            state = {
+          if (nextSuspender === currentSuspender) {
+            currentState = {
               status: Status.Errored,
               value: undefined,
               error,
+              isWaiting: false,
+              isReceived: false,
+              isCompleted: false,
+              isErrored: true,
             };
+            currentSuspender = undefined;
             notifySubscribers();
           }
         },
@@ -134,7 +139,7 @@ export function createInvokable<Parameters extends unknown[], Value>(
       subscribers.add(subscriber);
 
       // initialise the subscriber
-      subscriber(state);
+      subscriber(currentState);
 
       // unsubscribe
       return () => {
@@ -142,88 +147,4 @@ export function createInvokable<Parameters extends unknown[], Value>(
       };
     },
   };
-}
-
-export interface InvokableByParamtersMap<Parameters extends unknown[], Value> {
-  get(parameters: Parameters): Invokable<Value>;
-  delete(parameters: Parameters): void;
-}
-
-export function createInvokableByParametersMap<
-  Parameters extends unknown[],
-  Value
->(
-  factory: Factory<Parameters, Value>,
-): InvokableByParamtersMap<Parameters, Value> {
-  const invokables: Map<string, Invokable<Value>> = new Map();
-  return {
-    get(parameters) {
-      const key = createKey(parameters);
-      let invokable = invokables.get(key);
-      if (!invokable) {
-        invokable = createInvokable(factory, parameters);
-        invokables.set(key, invokable);
-      }
-      return invokable;
-    },
-
-    delete(parameters) {
-      const key = createKey(parameters);
-      invokables.delete(key);
-    },
-  };
-}
-
-export interface InvokableByFactoryByParamtersMap {
-  get<Parameters extends unknown[], Value>(
-    factory: Factory<Parameters, Value>,
-  ): InvokableByParamtersMap<Parameters, Value>;
-  delete<Parameters extends unknown[], Value>(
-    factory: Factory<Parameters, Value>,
-  ): void;
-}
-
-export function createInvokableByFactoryByParamtersMap(): InvokableByFactoryByParamtersMap {
-  const invokablesByFactoryByParameters: Map<
-    Factory<unknown[], unknown>,
-    InvokableByParamtersMap<unknown[], unknown>
-  > = new Map();
-  return {
-    get<Parameters extends unknown[], Value>(
-      factory: Factory<Parameters, Value>,
-    ): InvokableByParamtersMap<Parameters, Value> {
-      let invokablesByParameters = invokablesByFactoryByParameters.get(
-        factory as Factory<unknown[], unknown>,
-      );
-      if (!invokablesByParameters) {
-        invokablesByParameters = createInvokableByParametersMap(factory);
-        invokablesByFactoryByParameters.set(
-          factory as Factory<unknown[], unknown>,
-          invokablesByParameters,
-        );
-      }
-      return invokablesByParameters as InvokableByParamtersMap<
-        Parameters,
-        Value
-      >;
-    },
-
-    delete(factory) {
-      invokablesByFactoryByParameters.delete(
-        factory as Factory<unknown[], unknown>,
-      );
-    },
-  };
-}
-
-function createKey(parameters: unknown[]): string {
-  const key = JSON.stringify(
-    parameters.map((parameter) => {
-      if (typeof parameter === 'function') {
-        return `[function ${parameter}]`;
-      }
-      return parameter;
-    }),
-  );
-  return key;
 }

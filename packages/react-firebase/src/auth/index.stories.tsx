@@ -3,6 +3,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import {decorator} from '../__utilities__/decorator';
 import {useUser, useSignInWithPopup, useSignOut} from '.';
+import {RenderJSON} from 'testing-utilities';
 
 export default {
   title: 'react-firebase/auth',
@@ -11,16 +12,16 @@ export default {
 
 export const Status: React.FC = () => {
   const {status} = useUser();
-  return <pre>{status}</pre>;
+  return <RenderJSON value={status} />;
 };
 
 export const User: React.FC = () => {
   const {value: user} = useUser();
-  return <pre>{JSON.stringify(user)}</pre>;
+  return <RenderJSON value={user} />;
 };
 
 export const SignInWithPopup: React.FC = () => {
-  const {invokeSilently: signIn} = useSignInWithPopup();
+  const {invoke: signIn} = useSignInWithPopup();
   return (
     <>
       <button onClick={() => signIn(new firebase.auth.GoogleAuthProvider())}>
@@ -31,8 +32,7 @@ export const SignInWithPopup: React.FC = () => {
 };
 
 export const SignOut: React.FC = () => {
-  const {invokeSilently: signOut} = useSignOut();
-  console.log(signOut);
+  const {invoke: signOut} = useSignOut();
   return (
     <>
       <button onClick={signOut}>Sign out</button>

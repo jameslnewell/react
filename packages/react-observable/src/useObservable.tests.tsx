@@ -5,71 +5,53 @@ import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {
   useObservable,
-  UseObservableDependencies,
-  UseObservableOptions,
-  UseObservableResult,
+  UsePromiseOptions,
+  UsePromiseResult,
 } from './useObservable';
 import {
-  createWaitingObservable,
-  createReceivedObservable,
-  createCompletedObservable,
-  createErroredObservable,
+  createFulfilledPromise,
+  createPendingPromise,
+  createRejectedPromise,
   noop,
-  receivedState,
-  waitingState,
   unknownState,
-  completedState,
-  erroredState,
+  rejectedState,
+  fulfilledState,
+  pendingState,
 } from './__fixtures__';
 import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
 
 function renderUseDeferredPromiseHook<Value = unknown>(
-  factory: Factory<never, Value> | undefined,
-  deps: UseObservableDependencies,
-  options?: UseObservableOptions,
-): RenderHookResult<unknown, UseObservableResult<Value>> {
-  return renderHook(() => useObservable(factory, deps, options));
+  keys: unknown[],
+  factory: Factory<never, Value>,
+  options?: UsePromiseOptions,
+): RenderHookResult<unknown, UsePromiseResult<Value>> {
+  return renderHook(() => useObservable(keys, factory, options));
 }
 
-describe('useObservable()', () => {
-  test('state is unknown when mounted without a fn', () => {
-    const {result} = renderUseDeferredPromiseHook(undefined, []);
-    expect(result.current).toEqual(expect.objectContaining(unknownState));
+describe('usePromise()', () => {
+  test('state is pending when mounted with a fn', () => {
+    const {result} = renderUseDeferredPromiseHook([], createPendingPromise);
+    expect(result.current).toEqual(expect.objectContaining(pendingState));
   });
 
-  test('state is waiting when mounted with a fn', () => {
-    const {result} = renderUseDeferredPromiseHook(createWaitingObservable, []);
-    expect(result.current).toEqual(expect.objectContaining(waitingState));
-  });
-
-  test('state transitions to received when mounted', async () => {
-    const {result} = renderUseDeferredPromiseHook(createReceivedObservable, []);
+  test('state transitions to fulfilled when mounted', async () => {
+    const {result} = renderUseDeferredPromiseHook([], createFulfilledPromise);
     await waitForExpect(() => {
-      expect(result.current).toEqual(expect.objectContaining(receivedState));
+      expect(result.current).toEqual(expect.objectContaining(fulfilledState));
     });
   });
 
-  test('state transitions to cmpleted when mounted', async () => {
-    const {result} = renderUseDeferredPromiseHook(
-      createCompletedObservable,
-      [],
-    );
+  test('state transitions to rejected when mounted', async () => {
+    const {result} = renderUseDeferredPromiseHook([], createRejectedPromise);
     await waitForExpect(() => {
-      expect(result.current).toEqual(expect.objectContaining(completedState));
+      expect(result.current).toEqual(expect.objectContaining(rejectedState));
     });
   });
 
-  test('state transitions to errored when mounted', async () => {
-    const {result} = renderUseDeferredPromiseHook(createErroredObservable, []);
-    await waitForExpect(() => {
-      expect(result.current).toEqual(expect.objectContaining(erroredState));
-    });
-  });
-
-  test('suspends when pending and suspendWhenWaiting=true', () => {
+  test('suspends when pending and suspendWhenPending=true', async () => {
     const Component: React.FC = () => {
-      useObservable(createWaitingObservable, [], {suspendWhenWaiting: true});
+      useObservable([], createPendingPromise, {suspendWhenWaiting: true});
       return <h1>Loaded!</h1>;
     };
     const {queryByText} = render(
@@ -77,22 +59,29 @@ describe('useObservable()', () => {
         <Component />
       </React.Suspense>,
     );
-    expect(queryByText('Loading...')).toBeVisible();
-    expect(queryByText('Loaded!')).not.toBeVisible();
+    await waitForExpect(() => {
+      expect(queryByText('Loading...')).toBeVisible();
+      expect(queryByText('Loaded!')).toBeNull();
+    });
   });
 
-  test('throws when rejected and throwWhenErrored=true', () => {
+  test('throws when rejected and throwWhenRejected=true', async () => {
+    const symbol = Symbol();
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {
-      useObservable(createErroredObservable, [], {throwWhenErrored: true});
+      useObservable([symbol], createRejectedPromise, {
+        throwWhenErrored: true,
+      });
       return <h1>Loaded!</h1>;
     };
     const {queryByText} = render(
-      <ErrorBoundary fallbackRender={() => <h1>Error!</h1>}>
+      <ErrorBoundary fallback={<h1>Error!</h1>}>
         <Component />
       </ErrorBoundary>,
     );
-    expect(queryByText('Error!')).toBeVisible();
-    expect(queryByText('Loaded!')).toBeNull();
+    await waitForExpect(() => {
+      expect(queryByText('Error!')).toBeVisible();
+      expect(queryByText('Loaded!')).toBeNull();
+    });
   });
 });

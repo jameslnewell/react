@@ -1,108 +1,135 @@
-import React, {Suspense} from 'react';
-import {ErrorBoundary} from 'react-error-boundary';
-import {RenderJSON} from 'testing-utilities';
+import React, {useRef, useState} from 'react';
+import {RenderJSON, withErrorBoundary, withSuspense} from 'testing-utilities';
 import {Factory} from './types';
+import {useObservable, UseObservableOptions} from './useObservable';
 import {
-  useObservable,
-  UseObservableDependencies,
-  UseObservableOptions,
-} from './useObservable';
-import {
-  createEventuallyErroredObservable,
-  createWaitingObservable,
-  createCompletedObservable,
-  createReceivedObservable,
-  createErroredObservable,
   createEventuallyCompletedObservable,
+  createEventuallyErroredObservable,
+  createCompletedObservable,
+  createWaitingObservable,
+  createErroredObservable,
+  createReceivedObservable,
 } from './__fixtures__';
 
 export default {
   title: 'react-observable/useObservable',
 };
 
-interface UsePromiseProps {
-  factory?: Factory<unknown[], unknown>;
-  deps?: UseObservableDependencies;
+interface UseObservableProps {
+  keys: unknown[];
+  factory: Factory<unknown[], unknown> | undefined;
   options?: UseObservableOptions;
 }
 
-const UsePromise: React.FC<UsePromiseProps> = ({
+const UseObservable: React.FC<UseObservableProps> = ({
+  keys,
   factory,
-  deps = [],
   options,
 }) => {
-  const result = useObservable(factory, deps, options);
+  const result = useObservable(keys, factory, options);
   return <RenderJSON value={result} />;
 };
 
-export const NoFactory: React.FC = () => {
-  return <UsePromise factory={undefined} />;
+export const WithoutAFactory: React.FC = () => {
+  return <UseObservable keys={[Symbol()]} factory={undefined} />;
 };
 
 export const Waiting: React.FC = () => {
-  return <UsePromise factory={createWaitingObservable} />;
+  return <UseObservable keys={[Symbol()]} factory={createWaitingObservable} />;
 };
 
 export const Received: React.FC = () => {
-  return <UsePromise factory={createReceivedObservable} />;
+  return <UseObservable keys={[Symbol()]} factory={createReceivedObservable} />;
 };
 
 export const Completed: React.FC = () => {
-  return <UsePromise factory={createCompletedObservable} />;
+  return (
+    <UseObservable keys={[Symbol()]} factory={createCompletedObservable} />
+  );
 };
 
 export const Errored: React.FC = () => {
-  return <UsePromise factory={createErroredObservable} />;
+  return <UseObservable keys={[Symbol()]} factory={createErroredObservable} />;
 };
 
 export const EventuallyCompleted: React.FC = () => {
-  return <UsePromise factory={createEventuallyCompletedObservable} />;
+  return (
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createEventuallyCompletedObservable}
+    />
+  );
 };
 
 export const EventuallyErrored: React.FC = () => {
-  return <UsePromise factory={createEventuallyErroredObservable} />;
-};
-
-export const Suspended: React.FC = () => {
   return (
-    <Suspense fallback={<p>Suspended!</p>}>
-      <UsePromise
-        factory={createWaitingObservable}
-        options={{suspendWhenWaiting: true}}
-      />
-    </Suspense>
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createEventuallyErroredObservable}
+    />
   );
 };
 
-export const Thrown: React.FC = () => {
+export const Suspended: React.FC = withSuspense()(() => {
   return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UsePromise
-        factory={createErroredObservable}
-        options={{throwWhenErrored: true}}
-      />
-    </ErrorBoundary>
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createWaitingObservable}
+      options={{suspendWhenWaiting: true}}
+    />
   );
-};
+});
 
-export const SuspendedEventuallyCompleted: React.FC = () => {
+export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
-    <Suspense fallback={<p>Suspended!</p>}>
-      <UsePromise
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createErroredObservable}
+      options={{throwWhenErrored: true}}
+    />
+  );
+});
+
+export const SuspendedEventuallyCompleted: React.FC = withSuspense()(() => {
+  return (
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createEventuallyCompletedObservable}
+      options={{suspendWhenWaiting: true}}
+    />
+  );
+});
+
+export const ThrownEventuallyErrored: React.FC = withErrorBoundary()(() => {
+  return (
+    <UseObservable
+      keys={[Symbol()]}
+      factory={createEventuallyErroredObservable}
+      options={{throwWhenErrored: true}}
+    />
+  );
+});
+
+export const KeyChange: React.FC = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [key, setKey] = useState('foobar');
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    setKey(inputRef.current!.value);
+  };
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Key
+          <input ref={inputRef} defaultValue="foobar" />
+        </label>
+        <button>Change</button>
+      </form>
+      <UseObservable
+        keys={[key]}
         factory={createEventuallyCompletedObservable}
-        options={{suspendWhenWaiting: true}}
       />
-    </Suspense>
-  );
-};
-
-export const ThrownEventuallyErrored: React.FC = () => {
-  return (
-    <ErrorBoundary fallbackRender={() => <p>Error!</p>}>
-      <UsePromise
-        factory={createEventuallyErroredObservable}
-        options={{throwWhenErrored: true}}
-      />
-    </ErrorBoundary>
+    </>
   );
 };

@@ -14,19 +14,21 @@ type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 export type UseDocumentSnapshotOptions = UseObservableOptions;
 export type UseDocumentSnapshotResult = UseObservableResult<DocumentSnapshot>;
 
+const symbol = Symbol();
+
 export function useDocumentSnapshot(
   document: string | undefined,
   options?: UseDocumentSnapshotOptions,
 ): UseDocumentSnapshotResult {
   const app = useApp();
   return useObservable(
+    [symbol, app, document],
     document
       ? () =>
           create<DocumentSnapshot>((observer) =>
             app.firestore().doc(document).onSnapshot(observer),
           )
       : undefined,
-    [app, document],
     options,
   );
 }
@@ -37,7 +39,7 @@ export type UseDocumentResult<Data = unknown> = UseObservableResult<Data>;
 export function useDocument<Data = unknown>(
   document: string | undefined,
   options?: UseDocumentOptions,
-): UseDocumentResult {
+): UseDocumentResult<Data> {
   const result = useDocumentSnapshot(document, options);
 
   const invokeAsync = useCallback(() => {

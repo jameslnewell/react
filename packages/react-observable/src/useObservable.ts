@@ -1,56 +1,38 @@
-import {useEffect, useLayoutEffect, useRef} from 'react';
-import {Factory} from './types';
+import {Factory, Status} from './types';
+import {cache} from './cache';
 import {
   useDeferredObservable,
-  UseDeferredObservableDependencies,
   UseDeferredObservableOptions,
   UseDeferredObservableResult,
 } from './useDeferredObservable';
 
-export type UseObservableDependencies = UseDeferredObservableDependencies;
-
 export interface UseObservableOptions extends UseDeferredObservableOptions {
   invokeWhenMounted?: boolean;
-  invokeWhenChanged?: boolean;
 }
 
-export type UseObservableResult<Value> = UseDeferredObservableResult<
-  never[],
-  Value
->;
+export type UseObservableResult<Value> = UseDeferredObservableResult<[], Value>;
 
 export function useObservable<Value>(
-  factory: Factory<never[], Value> | undefined,
-  deps: UseObservableDependencies,
-  {
-    invokeWhenMounted = true,
-    invokeWhenChanged = true,
-    suspendWhenWaiting = false,
-    throwWhenErrored = false,
-  }: UseObservableOptions = {},
+  keys: unknown[],
+  factory: Factory<[], Value> | undefined,
+  {invokeWhenMounted = true, ...otherOptions}: UseObservableOptions = {},
 ): UseObservableResult<Value> {
-  const result = useDeferredObservable(factory, deps, {
-    suspendWhenWaiting,
-    throwWhenErrored,
-  });
-  const isFirstLayoutEffectRef = useRef(true);
-  const isFirstEffectRef = useRef(true);
+  const result = useDeferredObservable(keys, factory, otherOptions);
 
   // invoke on mount
-  useLayoutEffect(() => {
-    if (invokeWhenMounted && factory && isFirstEffectRef.current) {
-      result.invokeSilently();
+  if (invokeWhenMounted && result.status === undefined && factory) {
+    if (otherOptions.suspendWhenWaiting) {
+      result.invoke();
+      throw cache.get(keys)?.suspender;
+    } else {
+      result.invoke();
+      return {
+        ...result,
+        status: Status.Waiting,
+        isWaiting: true,
+      };
     }
-    isFirstLayoutEffectRef.current = false;
-  }, [invokeWhenMounted, invokeWhenChanged, ...deps, result.invokeSilently]);
-
-  // invoke on change
-  useEffect(() => {
-    if (invokeWhenChanged && factory && !isFirstEffectRef.current) {
-      result.invokeSilently();
-    }
-    isFirstEffectRef.current = false;
-  }, [invokeWhenChanged, ...deps, result.invokeSilently]);
+  }
 
   return result;
 }

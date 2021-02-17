@@ -28,7 +28,24 @@ yarn add @jameslnewell/react-observable
 
 ### useObservable()
 
-Start observing an observable immediately e.g. fetch data from the server when a component is mounted
+Start observing an observable as soon as the component mounts.
+
+#### Parameters:
+
+- `keys` - A unique set of keys for the observable.
+- `factory` - A function which creates the observable.
+- `options` - Options to configure the behaviour of the hook.
+
+#### Returns:
+
+- `.status` - Whether we are waiting to receive a value from the observable, whether we have received a value, or the observable has completed or errored.
+- `.value` - The most recent value received from the observable.
+- `.error` - The error received from the observable.
+- `.isWaiting` - Whether we're waiting to receive a value from the observable.
+- `.isReceived` - Whether a value has been received from the observable.
+- `.isCompleted` - Whether the observable has completed.
+- `.isErrored` - Whether the observable has errored.
+- `.invoke` - A function to invoke the observable again.
 
 ```js
 import React from 'react';
@@ -44,33 +61,47 @@ const getUser = (id) => {
 };
 
 const UserProfile = ({id}) => {
-  const [user, {status, error}] = useObservable(() => getUser(id), [id]);
-  switch (status) {
-    case 'waiting':
-      return <>Loading...</>;
-    case 'received':
-    case 'completed':
+  const {value, error} = useObservable([id], () => getUser(id));
+  switch (true) {
+    case error:
+      return <p>Sorry, something went wrong.</p>;
+    case value:
       return (
-        <>
-          Hello <strong>{user}</strong>!
-        </>
+        <p>
+          Hello <strong>{user.name}</strong>!
+        </p>
       );
-    case 'errored':
-      return <>Sorry, we couldn't find that user.</>;
     default:
-      return null;
+      return <p>Loading...</p>;
   }
 };
 ```
 
-### useInvokableObservable()
+### useDeferredObservable()
 
-Start observing an observable when triggered e.g. change data on the server after the user clicks a button
+Start observing an observable when invoked manually.
+
+#### Parameters:
+
+- `keys` - A unique set of keys for the observable.
+- `factory` - A function which creates the observable.
+- `options` - Options to configure the behaviour of the hook.
+
+#### Returns:
+
+- `.status` - Whether we are waiting to receive a value from the observable, whether we have received a value, or the observable has completed or errored.
+- `.value` - The most recent value received from the observable.
+- `.error` - The error received from the observable.
+- `.isWaiting` - Whether we're waiting to receive a value from the observable.
+- `.isReceived` - Whether a value has been received from the observable.
+- `.isCompleted` - Whether the observable has completed.
+- `.isErrored` - Whether the observable has errored.
+- `.invoke` - A function to invoke the observable again.
 
 ```js
 import * as React from 'react';
 import {fromFetch} from 'rxjs/fetch';
-import {useInvokableObservable} from '@jameslnewell/react-observable';
+import {useDeferredObservable} from '@jameslnewell/react-observable';
 
 const putUser = (id, data) => {
   return fromFetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
@@ -81,59 +112,19 @@ const putUser = (id, data) => {
 
 const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
-  const [save, , {isReceiving}] = useInvokableObservable(
+  const {isReceiving, invoke: save} = useDeferredObservable(
     (data) => putUser(id, data),
     [id],
   );
-  const handleSave = async (event) => save(id, {name: input.current.value});
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    save({name: input.current.value});
+  };
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <input ref={input} />
-      <button disabled={isReceiving} onClick={handleSave}>
-        Save
-      </button>
-    </>
+      <button disabled={isReceiving}>Save</button>
+    </form>
   );
 };
 ```
-
-## API
-
-### useObservable()
-
-Immediately subscribes to an observable.
-
-#### Parameters:
-
-- `fn` - A function that returns the observable to be observed.
-- `deps` - Any value that the function is dependent on and should trigger a new subscription on a new observable.
-
-#### Returns:
-
-- `[0]` - The value observed from the observable.
-- `[1].status` - Whether the observable is waiting, recieved, completed or errored.
-- `[1].error` - The error observed from the observable.
-- `[1].isWaiting` - Whether we're waiting on a value from the observable.
-- `[1].isReceieved` - Whether we've recevied a value from the observable.
-- `[1].isCompleted`- Whether the observable has completed.
-- `[1].isErrored`- Whether the observable has errored.
-
-### useInvokableObservable()
-
-Subscribes to an observable when the `invoke` method is called.
-
-#### Parameters:
-
-- `fn` - A function that returns the observable to be observed.
-- `deps` - Any value that the function is dependent on and should trigger a new subscription on a new observable.
-
-#### Returns:
-
-- `[0]` - A function to invoke the observable.
-- `[1]` - The value observed from the observable.
-- `[2].status` - Whether the observable is waiting, recieved, completed or errored.
-- `[2].error` - The error observed from the observable.
-- `[2].isWaiting` - Whether we're waiting on a value from the observable.
-- `[2].isReceieved` - Whether we've recevied a value from the observable.
-- `[2].isCompleted`- Whether the observable has completed.
-- `[2].isErrored`- Whether the observable has errored.

@@ -21,14 +21,16 @@ export type UseUserResult = {
   isUnauthenticated: boolean;
 };
 
+const symbol = Symbol();
+
 export function useUser(options?: UseUserOptions): UseUserResult {
   const app = useApp();
   const result = useObservable(
+    [symbol, app],
     () =>
       create<firebase.User | null>((observer) => {
         return app.auth().onAuthStateChanged(observer);
       }),
-    [app],
     options,
   );
   const user = result.value || app.auth().currentUser || undefined;
