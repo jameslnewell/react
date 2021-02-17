@@ -51,8 +51,7 @@
     "entrypoints": [
       "app/index.tsx",
       "auth/index.ts",
-      "firestore/index.ts",
-      "storage/index.ts"
+      "firestore/index.ts"
     ]
   },
   "scripts": {

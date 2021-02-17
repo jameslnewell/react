@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "main": "dist/testing-utilities.cjs.js",
   "private": true,
+  "dependencies": {
+    "react-error-boundary": "^3.1.0"
+  },
+  "peerDependencies": {
+    "@types/react": ">=16.9.0",
+    "react": ">=16.9.0"
+  },
   "jest": {
     "displayName": "testing-utilities"
   }
