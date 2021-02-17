@@ -9,7 +9,6 @@ import {
   createPendingPromise,
   createRejectedPromise,
   noop,
-  unknownState,
   rejectedState,
   fulfilledState,
   pendingState,

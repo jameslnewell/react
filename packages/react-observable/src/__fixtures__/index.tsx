@@ -17,30 +17,50 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
+  isWaiting: false,
+  isReceived: false,
+  isCompleted: false,
+  isErrored: false,
 };
 
 export const waitingState: WaitingState = {
   status: Status.Waiting,
   value: undefined,
   error: undefined,
+  isWaiting: true,
+  isReceived: false,
+  isCompleted: false,
+  isErrored: false,
 };
 
 export const receivedState: ReceivedState<typeof value> = {
   status: Status.Received,
   value,
   error: undefined,
+  isWaiting: false,
+  isReceived: true,
+  isCompleted: false,
+  isErrored: false,
 };
 
 export const completedState: CompletedState<typeof value> = {
   status: Status.Completed,
   value,
   error: undefined,
+  isWaiting: false,
+  isReceived: false,
+  isCompleted: true,
+  isErrored: false,
 };
 
 export const erroredState: ErroredState = {
   status: Status.Errored,
   value: undefined,
   error,
+  isWaiting: false,
+  isReceived: false,
+  isCompleted: false,
+  isErrored: true,
 };
 
 export const noop = (): void => {

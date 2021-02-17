@@ -1,6 +1,10 @@
 import {Status, Factory, State} from './types';
 import {noop} from './noop';
-import {firstValueFrom, Observable} from '@jameslnewell/observable';
+import {
+  firstValueFrom,
+  Observable,
+  Subscription,
+} from '@jameslnewell/observable';
 
 export interface SubscriberFunction<Value> {
   (state: State<Value>): void;
@@ -24,6 +28,7 @@ export function createInvokable<
   Parameters extends unknown[],
   Value
 >(): Invokable<Parameters, Value> {
+  let subscription: Subscription | undefined = undefined;
   const subscribers: Set<SubscriberFunction<Value>> = new Set();
 
   let currentState: State<Value> = {
@@ -71,8 +76,7 @@ export function createInvokable<
       currentSuspender = nextSuspender;
       notifySubscribers();
 
-      // TODO: unsubscribe when no subscribers left
-      const unsubscribe = observable.subscribe({
+      subscription = observable.subscribe({
         next: (value) => {
           if (nextSuspender === currentSuspender) {
             currentState = {
@@ -144,6 +148,9 @@ export function createInvokable<
       // unsubscribe
       return () => {
         subscribers.delete(subscriber);
+        if (subscribers.size === 0) {
+          subscription?.unsubscribe();
+        }
       };
     },
   };

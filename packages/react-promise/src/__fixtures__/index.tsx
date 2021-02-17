@@ -14,24 +14,36 @@ export const unknownState: UnknownState = {
   status: undefined,
   value: undefined,
   error: undefined,
+  isPending: false,
+  isFulfilled: false,
+  isRejected: false,
 };
 
 export const pendingState: PendingState = {
   status: Status.Pending,
   value: undefined,
   error: undefined,
+  isPending: true,
+  isFulfilled: false,
+  isRejected: false,
 };
 
 export const fulfilledState: FulfilledState<typeof value> = {
   status: Status.Fulfilled,
   value,
   error: undefined,
+  isPending: false,
+  isFulfilled: true,
+  isRejected: false,
 };
 
 export const rejectedState: RejectedState = {
   status: Status.Rejected,
   value: undefined,
   error,
+  isPending: false,
+  isFulfilled: false,
+  isRejected: true,
 };
 
 export const noop = (): void => {

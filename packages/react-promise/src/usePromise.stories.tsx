@@ -94,7 +94,9 @@ export const KeyChange: React.FC = () => {
   const [key, setKey] = useState('foobar');
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    setKey(inputRef.current!.value);
+    if (inputRef.current) {
+      setKey(inputRef.current.value);
+    }
   };
   return (
     <>

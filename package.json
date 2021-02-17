@@ -60,6 +60,7 @@
     "check:typing": "tsc --noEmit --project tsconfig.json",
     "check:linting": "eslint --ext .ts,.tsx .",
     "check:formatting": "prettier --check '**/*.{js,json,md,ts,tsx}'",
+    "check": "yarn run check:dependencies && yarn run check:typing && yarn run check:linting && yarn run check:formatting",
     "build": "preconstruct build",
     "test": "jest",
     "start": "yarn workspace storybook run start",

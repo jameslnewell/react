@@ -5,7 +5,6 @@ import {render} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {
   useDeferredPromise,
-  UseDeferredPromiseDependencies,
   UseDeferredPromiseOptions,
   UseDeferredPromiseResult,
 } from './useDeferredPromise';
@@ -120,14 +119,12 @@ describe('useDeferredPromise()', () => {
 
   test('suspends when pending and suspendWhenPending=true', async () => {
     const Component: React.FC = () => {
-      const {invokeSilently: invoke} = useDeferredPromise(
-        [],
-        createPendingPromise,
-        {
-          suspendWhenPending: true,
-        },
-      );
-      useEffect(() => invoke(), [invoke]);
+      const {invoke} = useDeferredPromise([], createPendingPromise, {
+        suspendWhenPending: true,
+      });
+      useEffect(() => {
+        invoke();
+      }, [invoke]);
       return <h1>Loaded!</h1>;
     };
     const {queryByText} = render(
@@ -144,14 +141,12 @@ describe('useDeferredPromise()', () => {
   test.only('throws when rejected and throwWhenRejected=true', async () => {
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {
-      const {invokeSilently: invoke} = useDeferredPromise(
-        [],
-        createPendingPromise,
-        {
-          suspendWhenPending: true,
-        },
-      );
-      useEffect(() => invoke(), [invoke]);
+      const {invoke} = useDeferredPromise([], createPendingPromise, {
+        suspendWhenPending: true,
+      });
+      useEffect(() => {
+        invoke();
+      }, [invoke]);
       return <h1>Loaded!</h1>;
     };
     const {queryByText} = render(

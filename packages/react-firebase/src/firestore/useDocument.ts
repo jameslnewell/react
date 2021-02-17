@@ -56,7 +56,7 @@ export function useDocument<Data = unknown>(
     return {
       ...result,
       invoke: invokeAsync,
-      value: value,
+      value: value as Data,
     };
   } else {
     return {

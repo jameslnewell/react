@@ -1,6 +1,7 @@
 {
   "extends": "./node_modules/@jameslnewell/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
@@ -16,5 +17,6 @@
       "@jameslnewell/react-firebase": ["packages/react-firebase/src"]
     }
   },
+  "exclude": ["packages/react-firebase/src/storage"],
   "include": ["packages/*/src"]
 }
