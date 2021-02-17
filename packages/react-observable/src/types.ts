@@ -15,50 +15,50 @@ export interface UnknownState {
   status: undefined;
   value: undefined;
   error: undefined;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  isWaiting: false;
+  isReceived: false;
+  isCompleted: false;
+  isErrored: false;
 }
 
 export interface WaitingState {
   status: Status.Waiting;
   value: undefined;
   error: undefined;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  isWaiting: true;
+  isReceived: false;
+  isCompleted: false;
+  isErrored: false;
 }
 
 export interface ReceivedState<Value> {
   status: Status.Received;
   value: Value;
   error: undefined;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  isWaiting: false;
+  isReceived: true;
+  isCompleted: false;
+  isErrored: false;
 }
 
 export interface CompletedState<Value> {
   status: Status.Completed;
   value: Value;
   error: undefined;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  isWaiting: false;
+  isReceived: false;
+  isCompleted: true;
+  isErrored: false;
 }
 
 export interface ErroredState {
   status: Status.Errored;
   value: undefined;
   error: unknown;
-  isWaiting: boolean;
-  isReceived: boolean;
-  isCompleted: boolean;
-  isErrored: boolean;
+  isWaiting: false;
+  isReceived: false;
+  isCompleted: false;
+  isErrored: true;
 }
 
 export type State<Value> =

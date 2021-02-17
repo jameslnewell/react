@@ -28,13 +28,13 @@ function renderUseDeferredPromiseHook<Value = unknown>(
   return renderHook(() => useObservable(keys, factory, options));
 }
 
-describe('usePromise()', () => {
+describe('useObservable()', () => {
   test('state is pending when mounted with a fn', () => {
     const {result} = renderUseDeferredPromiseHook([], createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(waitingState));
   });
 
-  test('state transitions to fulfilled when mounted', async () => {
+  test('state transitions to completed when mounted', async () => {
     const {result} = renderUseDeferredPromiseHook(
       [],
       createCompletedObservable,

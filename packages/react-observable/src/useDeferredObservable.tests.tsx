@@ -35,7 +35,7 @@ function renderUseDeferredPromiseHook<
   return renderHook(() => useDeferredObservable(keys, factory, options));
 }
 
-describe('useDeferredPromise()', () => {
+describe('useDeferredObservable()', () => {
   test('state is undefined when mounted', () => {
     const {result} = renderUseDeferredPromiseHook([], createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(unknownState));

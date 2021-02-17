@@ -99,8 +99,8 @@ export function createInvokable<
                 value: currentState.value,
                 error: undefined,
                 isWaiting: false,
-                isReceived: true,
-                isCompleted: false,
+                isReceived: false,
+                isCompleted: true,
                 isErrored: false,
               };
             } else {
