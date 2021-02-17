@@ -5,17 +5,9 @@ on: [push, pull_request]
 jobs:
   check_dependencies:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -37,17 +29,9 @@ jobs:
 
   check_typing:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -69,17 +53,9 @@ jobs:
 
   check_linting:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -101,17 +77,9 @@ jobs:
 
   check_formatting:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -133,17 +101,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -165,17 +125,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -198,12 +150,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x] #, 14.x, 16.x]
-
     if: github.ref == 'refs/heads/main'
-
     needs:
       - check_dependencies
       - check_typing
@@ -214,10 +161,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -235,4 +179,4 @@ jobs:
 
       - name: publish
         run: |
-          yarn workspaces run publish-if-not-published
+          yarn workspaces run publish-if-not-published --tag=next
