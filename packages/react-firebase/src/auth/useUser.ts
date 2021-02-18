@@ -7,6 +7,7 @@ import {
 import {useApp} from '../app';
 
 export enum UseUserStatus {
+  Authenticating = 'authenticating',
   Authenticated = 'authenticated',
   Unauthenticated = 'unauthenticated',
 }
@@ -36,7 +37,10 @@ export function useUser(options?: UseUserOptions): UseUserResult {
   const user = result.value || app.auth().currentUser || undefined;
   const status = user
     ? UseUserStatus.Authenticated
+    : result.isWaiting
+    ? UseUserStatus.Authenticating
     : UseUserStatus.Unauthenticated;
+
   return {
     status,
     value: user,

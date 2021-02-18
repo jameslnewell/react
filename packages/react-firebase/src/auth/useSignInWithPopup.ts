@@ -5,11 +5,9 @@ import {
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
 
-export type UseSignInWithPopupProvider = firebase.auth.AuthProvider;
-export type UseSignInWithPopupUser = firebase.auth.UserCredential;
 export type UseSignInResult = UseDeferredPromiseResult<
-  [UseSignInWithPopupProvider],
-  UseSignInWithPopupUser
+  [firebase.auth.AuthProvider],
+  firebase.auth.UserCredential
 >;
 
 const symbol = Symbol();
@@ -18,7 +16,7 @@ export function useSignInWithPopup(): UseSignInResult {
   const app = useApp();
   return useDeferredPromise(
     [symbol, app],
-    (provider: UseSignInWithPopupProvider) =>
+    (provider: firebase.auth.AuthProvider) =>
       app.auth().signInWithPopup(provider),
   );
 }
