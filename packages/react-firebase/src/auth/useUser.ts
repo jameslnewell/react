@@ -18,6 +18,7 @@ export type UseUserResult = {
   status: UseUserStatus;
   value: firebase.User | undefined;
   error: unknown | undefined;
+  isAuthenticating: boolean;
   isAuthenticated: boolean;
   isUnauthenticated: boolean;
 };
@@ -45,6 +46,7 @@ export function useUser(options?: UseUserOptions): UseUserResult {
     status,
     value: user,
     error: result.error,
+    isAuthenticating: status === UseUserStatus.isAuthenticating,
     isAuthenticated: status === UseUserStatus.Authenticated,
     isUnauthenticated: status === UseUserStatus.Unauthenticated,
   };
