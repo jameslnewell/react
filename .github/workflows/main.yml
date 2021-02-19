@@ -189,5 +189,7 @@ jobs:
           name: dist
 
       - name: publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: |
           yarn workspaces run -- publish-if-not-published -- -- --tag next
