@@ -123,6 +123,13 @@ jobs:
         run: |
           yarn run build
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: |
+            packages/*/dist
+            packages/*/*/dist
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -177,9 +184,9 @@ jobs:
         run: |
           yarn install
 
-      - name: build
-        run: |
-          yarn build
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
 
       - name: publish
         run: |
