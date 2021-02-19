@@ -183,4 +183,4 @@ jobs:
 
       - name: publish
         run: |
-          yarn workspaces run publish-if-not-published --tag=next
+          yarn workspaces run -- publish-if-not-published -- -- --tag next

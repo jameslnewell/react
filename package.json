@@ -64,7 +64,6 @@
     "build": "preconstruct build",
     "test": "jest",
     "start": "yarn workspace storybook run start",
-    "prepublishOnly": "yarn run build && yarn run test && yarn run check:*",
-    "publish": "manypkg exec publish-if-not-published --tag next"
+    "prepare-release": "yarn run build && yarn run test && yarn run check:*"
   }
 }
