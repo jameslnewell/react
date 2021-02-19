@@ -46,7 +46,7 @@ export function useUser(options?: UseUserOptions): UseUserResult {
     status,
     value: user,
     error: result.error,
-    isAuthenticating: status === UseUserStatus.isAuthenticating,
+    isAuthenticating: status === UseUserStatus.Authenticating,
     isAuthenticated: status === UseUserStatus.Authenticated,
     isUnauthenticated: status === UseUserStatus.Unauthenticated,
   };

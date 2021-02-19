@@ -1,10 +1,10 @@
 import {Factory, Status} from './types';
-import {noop} from './noop';
 import {
   useDeferredPromise,
   UseDeferredPromiseOptions,
   UseDeferredPromiseResult,
 } from './useDeferredPromise';
+import {noop} from './noop';
 
 export interface UsePromiseOptions extends UseDeferredPromiseOptions {
   invokeWhenMounted?: boolean;
@@ -22,7 +22,7 @@ export function usePromise<Value>(
   // invoke on mount
   if (invokeWhenMounted && result.status === undefined && factory) {
     if (otherOptions.suspendWhenPending) {
-      throw result.invoke();
+      throw result.invoke().then(noop, noop);
     } else {
       result.invoke().then(noop, noop);
       return {

@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-firebase",
-  "version": "0.12.0-preview.4",
+  "version": "0.12.0-preview.5",
   "description": "🎣 React hooks for working with firebase.",
   "main": "dist/react-firebase.cjs.js",
   "module": "dist/react-firebase.esm.js",
@@ -24,8 +24,8 @@
   ],
   "dependencies": {
     "@jameslnewell/observable": "^1.5.0",
-    "@jameslnewell/react-observable": "^3.0.0-preview.2",
-    "@jameslnewell/react-promise": "^4.0.0-preview.2"
+    "@jameslnewell/react-observable": "^3.0.0-preview.3",
+    "@jameslnewell/react-promise": "^4.0.0-preview.3"
   },
   "peerDependencies": {
     "@types/react": ">=16.9.0",

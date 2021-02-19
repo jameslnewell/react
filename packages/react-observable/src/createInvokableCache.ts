@@ -1,3 +1,4 @@
+import {createHash} from './createHash';
 import {Invokable} from './createInvokable';
 
 export interface InvokableCache {
@@ -14,18 +15,6 @@ export interface InvokableCache {
 
   reference(keys: unknown[]): void;
   dereference(keys: unknown[]): void;
-}
-
-function createHash(keys: unknown[]): string {
-  const key = JSON.stringify(
-    keys.map((key) => {
-      if (typeof key === 'function') {
-        return `[function ${key}]`;
-      }
-      return key;
-    }),
-  );
-  return key;
 }
 
 export function createInvokableCache(): InvokableCache {

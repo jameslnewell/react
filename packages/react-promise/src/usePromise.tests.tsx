@@ -60,7 +60,7 @@ describe('usePromise()', () => {
     });
   });
 
-  test('throws when rejected and throwWhenRejected=true', async () => {
+  test.only('throws when rejected and throwWhenRejected=true', async () => {
     const symbol = Symbol();
     jest.spyOn(console, 'error').mockImplementation(noop);
     const Component: React.FC = () => {

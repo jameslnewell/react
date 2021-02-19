@@ -55,11 +55,13 @@ export function createInvokable<
     },
 
     get suspender() {
-      // TODO: promise that resolves when the last invoke resolves
+      // TODO: promise that resolves when the last called invoke resolves
       return currentSuspender;
     },
 
     invoke(factory, parameters) {
+      // TODO: unsubscribe from previous observable
+
       // create the observable
       const observable = factory(...parameters);
 
@@ -141,9 +143,6 @@ export function createInvokable<
     subscribe(subscriber) {
       // subscribe
       subscribers.add(subscriber);
-
-      // initialise the subscriber
-      subscriber(currentState);
 
       // unsubscribe
       return () => {

@@ -48,13 +48,14 @@ export function createInvokable<
     },
 
     get suspender() {
-      // TODO: promise that resolves when the last invoke resolves
+      // TODO: promise that resolves when the last called invoke resolves
       return currentSuspender;
     },
 
     invoke(factory, parameters) {
       const promise: Promise<Value> = factory(...parameters).then(
         (value) => {
+          console.log('RESOLVED');
           if (nextSuspender === currentSuspender) {
             currentState = {
               status: Status.Fulfilled,
@@ -104,9 +105,6 @@ export function createInvokable<
     subscribe(subscriber) {
       // subscribe
       subscribers.add(subscriber);
-
-      // initialise the subscriber
-      subscriber(currentState);
 
       // unsubscribe
       return () => {

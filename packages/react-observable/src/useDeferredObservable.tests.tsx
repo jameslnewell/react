@@ -35,6 +35,8 @@ function renderUseDeferredPromiseHook<
   return renderHook(() => useDeferredObservable(keys, factory, options));
 }
 
+// TODO: add tests for keys/hashes
+
 describe('useDeferredObservable()', () => {
   test('state is undefined when mounted', () => {
     const {result} = renderUseDeferredPromiseHook([], createWaitingObservable);

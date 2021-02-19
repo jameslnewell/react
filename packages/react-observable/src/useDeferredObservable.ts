@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {Factory, State, Status, UnknownState} from './types';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {useCallback, useEffect, useState} from 'react';
+import {Factory, State, Status} from './types';
 import {cache} from './cache';
 import {createInvokable, Invokable} from './createInvokable';
 import {Observable} from '@jameslnewell/observable';
 
 export interface UseDeferredObservableOptions {
-  enabled?: boolean;
   suspendWhenWaiting?: boolean;
   throwWhenErrored?: boolean;
 }
@@ -17,30 +17,70 @@ export type UseDeferredObservableResult<
   invoke(...parameters: Parameters): Observable<Value>;
 };
 
-const unknownState: UnknownState = {
-  status: undefined,
-  value: undefined,
-  error: undefined,
-  isWaiting: false,
-  isReceived: false,
-  isCompleted: false,
-  isErrored: false,
-};
+function shouldUpdateState<Value>(
+  prevState: State<Value>,
+  nextState: State<Value>,
+): boolean {
+  return (
+    nextState !== prevState &&
+    !(
+      prevState.status === Status.Waiting && nextState.status === Status.Waiting
+    )
+  );
+}
 
 export function useDeferredObservable<Parameters extends unknown[], Value>(
   keys: unknown[],
   factory: Factory<Parameters, Value> | undefined,
   {suspendWhenWaiting, throwWhenErrored}: UseDeferredObservableOptions = {},
 ): UseDeferredObservableResult<Parameters, Value> {
-  const mountedRef = useRef(false);
+  // get or create the invokable
   let invokable: Invokable<Parameters, Value> | undefined = cache.get(keys);
   if (!invokable) {
     invokable = createInvokable<Parameters, Value>();
     cache.set(keys, invokable);
   }
 
-  const state = invokable.state || unknownState;
+  const state = invokable.state;
   const [, setState] = useState(state);
+
+  const invoke = useCallback(
+    (...parameters: Parameters): Observable<Value> => {
+      if (!factory) {
+        throw new Error('Unable to invoke. No factory provided.');
+      }
+      return invokable!.invoke(factory, parameters);
+    },
+    [invokable, factory],
+  );
+
+  useEffect(() => {
+    // update state now because state may have changed between render and mount
+    setState((prevState) => {
+      const nextState = invokable!.state;
+      if (shouldUpdateState(prevState, nextState)) {
+        return nextState;
+      } else {
+        return prevState;
+      }
+    });
+
+    // update state when notified
+    const unsubscribe = invokable!.subscribe((nextState) => {
+      setState((prevState) => {
+        if (shouldUpdateState(prevState, nextState)) {
+          return nextState;
+        } else {
+          return prevState;
+        }
+      });
+    });
+
+    return () => {
+      unsubscribe();
+      cache.dereference(keys);
+    };
+  }, [...keys, invokable]);
 
   // suspend when pending
   if (suspendWhenWaiting && state.status === Status.Waiting) {
@@ -51,51 +91,6 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
   if (throwWhenErrored && state.status === Status.Errored) {
     throw state.error;
   }
-
-  const invoke = useCallback((...parameters: Parameters): Observable<Value> => {
-    if (!factory) {
-      throw new Error('Unable to invoke. No factory provided.');
-    }
-    if (!invokable) {
-      throw new Error(
-        'Something is wrong, the invokable should never be undefined!',
-      );
-    }
-    return invokable.invoke(factory, parameters);
-  }, keys);
-
-  // keep track of whether the component is mounted
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  });
-
-  // update the state when the invokable state changes and the component is mounted
-  useEffect(() => {
-    return invokable?.subscribe((nextState) => {
-      if (mountedRef.current) {
-        // avoid unnecessary state changes e.g. useObservable invoke on render
-        if (
-          state.status === Status.Waiting &&
-          nextState.status === Status.Waiting
-        ) {
-          return;
-        }
-        setState(nextState);
-      }
-    });
-  }, [invokable]);
-
-  // garbage collect from cache when the key cahnges
-  useEffect(
-    () => () => {
-      setState(unknownState);
-      cache.dereference(keys);
-    },
-    keys,
-  );
 
   return {
     ...state,
