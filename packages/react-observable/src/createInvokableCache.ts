@@ -61,7 +61,7 @@ export function createInvokableCache(): InvokableCache {
       const nextCount = count ?? 1 - 1;
 
       // when count is 0 then remove from cache
-      if (nextCount == 0) {
+      if (nextCount === 0) {
         this.remove(keys);
         counts.delete(hash);
       } else {

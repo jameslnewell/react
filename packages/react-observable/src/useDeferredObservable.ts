@@ -39,6 +39,7 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
   if (!invokable) {
     invokable = createInvokable<Parameters, Value>();
     cache.set(keys, invokable);
+    cache.reference(keys);
   }
 
   const state = invokable.state;
