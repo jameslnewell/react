@@ -53,7 +53,7 @@
   },
   "scripts": {
     "postinstall": "preconstruct dev",
-    "clean": "rm -rf packages/*/node_modules",
+    "clean": "rm -rf packages/*/node_modules packages/*/dist packages/*/*/dist",
     "clean:node_modules": "rm -rf node_modules/ packages/*/node_modules",
     "format": "prettier --write '**/*.{js,json,md,ts,tsx}'",
     "check:dependencies": "manypkg check",

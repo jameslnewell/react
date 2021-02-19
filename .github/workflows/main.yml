@@ -188,6 +188,8 @@ jobs:
         with:
           name: dist
 
+      - runs: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+
       - name: publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
