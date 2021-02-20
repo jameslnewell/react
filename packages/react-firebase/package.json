@@ -28,9 +28,9 @@
     "@jameslnewell/react-promise": "^4.0.0-preview.5"
   },
   "peerDependencies": {
-    "@types/react": ">=16.9.0",
+    "@types/react": ">=16.8.0",
     "firebase": ">=8.2.6",
-    "react": ">=16.9.0"
+    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
