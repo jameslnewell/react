@@ -23,6 +23,7 @@ import {
 import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
 import {delay, fromArray} from '@jameslnewell/observable';
+import {cache} from './cache';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],
@@ -38,6 +39,10 @@ function renderUseDeferredPromiseHook<
 // TODO: add tests for keys/hashes
 
 describe('useDeferredObservable()', () => {
+  beforeEach(() => {
+    cache.clear();
+  });
+
   test('state is undefined when mounted', () => {
     const {result} = renderUseDeferredPromiseHook([], createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(unknownState));

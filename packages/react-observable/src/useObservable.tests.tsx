@@ -18,6 +18,7 @@ import {
   waitingState,
 } from './__fixtures__';
 import {Factory} from './types';
+import {cache} from './cache';
 import {waitForExpect} from 'testing-utilities';
 
 function renderUseDeferredPromiseHook<Value = unknown>(
@@ -29,6 +30,10 @@ function renderUseDeferredPromiseHook<Value = unknown>(
 }
 
 describe('useObservable()', () => {
+  beforeEach(() => {
+    cache.clear();
+  });
+
   test('state is pending when mounted with a fn', () => {
     const {result} = renderUseDeferredPromiseHook([], createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(waitingState));

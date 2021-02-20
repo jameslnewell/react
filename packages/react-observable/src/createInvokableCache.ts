@@ -2,6 +2,8 @@ import {createHash} from './createHash';
 import {Invokable} from './createInvokable';
 
 export interface InvokableCache {
+  clear(): void;
+
   get<Parameters extends unknown[], Value = unknown>(
     keys: unknown[],
   ): Invokable<Parameters, Value> | undefined;
@@ -22,6 +24,11 @@ export function createInvokableCache(): InvokableCache {
   const invokables: Map<string, Invokable<unknown[], unknown>> = new Map();
 
   return {
+    clear() {
+      invokables.clear();
+      counts.clear();
+    },
+
     get<Parameters extends unknown[], Value = unknown>(
       keys: unknown[],
     ): Invokable<Parameters, Value> | undefined {

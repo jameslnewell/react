@@ -23,6 +23,7 @@ import {
 } from './__fixtures__';
 import {Factory} from './types';
 import {waitForExpect} from 'testing-utilities';
+import {cache} from './cache';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],
@@ -36,6 +37,10 @@ function renderUseDeferredPromiseHook<
 }
 
 describe('useDeferredPromise()', () => {
+  beforeEach(() => {
+    cache.clear();
+  });
+
   test('state is undefined when mounted', () => {
     const {result} = renderUseDeferredPromiseHook([], createPendingPromise);
     expect(result.current).toEqual(expect.objectContaining(unknownState));
