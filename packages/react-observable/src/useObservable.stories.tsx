@@ -9,6 +9,8 @@ import {
   createWaitingObservable,
   createErroredObservable,
   createReceivedObservable,
+  completedState,
+  receivedState,
 } from './__fixtures__';
 
 export default {
@@ -132,6 +134,37 @@ export const KeyChange: React.FC = () => {
         keys={[key]}
         factory={createEventuallyCompletedObservable}
       />
+    </>
+  );
+};
+
+const commonSymbol = Symbol();
+
+const ScreenOne: React.FC = () => {
+  const {value} = useObservable([commonSymbol], createReceivedObservable);
+  return (
+    <>
+      <RenderJSON value={value} />
+    </>
+  );
+};
+
+const ScreenTwo: React.FC = () => {
+  const {value} = useObservable([commonSymbol], createReceivedObservable);
+  return (
+    <>
+      <RenderJSON value={value} />
+    </>
+  );
+};
+
+export const SwitchingScreensUsingTheSameKey: React.FC = () => {
+  const [screen, setScreen] = React.useState<1 | 2>(1);
+  return (
+    <>
+      {screen === 1 ? <ScreenOne /> : <ScreenTwo />}
+      <button onClick={() => setScreen(1)}>Screen One</button>
+      <button onClick={() => setScreen(2)}>Screen Two</button>
     </>
   );
 };

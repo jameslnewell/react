@@ -55,7 +55,6 @@ export function createInvokable<
     invoke(factory, parameters) {
       const promise: Promise<Value> = factory(...parameters).then(
         (value) => {
-          console.log('RESOLVED');
           if (nextSuspender === currentSuspender) {
             currentState = {
               status: Status.Fulfilled,

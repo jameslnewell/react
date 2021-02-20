@@ -39,7 +39,6 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
   if (!invokable) {
     invokable = createInvokable<Parameters, Value>();
     cache.set(keys, invokable);
-    cache.reference(keys);
   }
 
   const state = invokable.state;
@@ -56,6 +55,10 @@ export function useDeferredObservable<Parameters extends unknown[], Value>(
   );
 
   useEffect(() => {
+    // reference the object in cache so it doesn't get removed by this instance
+    // when its referenced in multiple places
+    cache.reference(keys);
+
     // update state now because state may have changed between render and mount
     setState((prevState) => {
       const nextState = invokable!.state;

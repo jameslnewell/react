@@ -107,8 +107,38 @@ export const KeyChange: React.FC = () => {
         </label>
         <button>Change</button>
       </form>
-      {console.log(key)}
       <UsePromise keys={[key]} factory={createEventuallyFulfilledPromise} />
+    </>
+  );
+};
+
+const commonSymbol = Symbol();
+
+const ScreenOne: React.FC = () => {
+  const {value} = usePromise([commonSymbol], createFulfilledPromise);
+  return (
+    <>
+      <RenderJSON value={value} />
+    </>
+  );
+};
+
+const ScreenTwo: React.FC = () => {
+  const {value} = usePromise([commonSymbol], createFulfilledPromise);
+  return (
+    <>
+      <RenderJSON value={value} />
+    </>
+  );
+};
+
+export const SwitchingScreensUsingTheSameKey: React.FC = () => {
+  const [screen, setScreen] = React.useState<1 | 2>(1);
+  return (
+    <>
+      {screen === 1 ? <ScreenOne /> : <ScreenTwo />}
+      <button onClick={() => setScreen(1)}>Screen One</button>
+      <button onClick={() => setScreen(2)}>Screen Two</button>
     </>
   );
 };

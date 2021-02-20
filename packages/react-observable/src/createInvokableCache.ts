@@ -40,6 +40,7 @@ export function createInvokableCache(): InvokableCache {
     remove(keys: unknown[]): void {
       const hash = createHash(keys);
       invokables.delete(hash);
+      counts.delete(hash);
     },
 
     // called on mount when a component is tracking
@@ -48,7 +49,7 @@ export function createInvokableCache(): InvokableCache {
 
       // increment count
       const count = counts.get(hash);
-      const nextCount = count ?? 0 + 1;
+      const nextCount = count ? count + 1 : 1;
       counts.set(hash, nextCount);
     },
 
@@ -58,15 +59,20 @@ export function createInvokableCache(): InvokableCache {
 
       // decrement count
       const count = counts.get(hash);
-      const nextCount = count ?? 1 - 1;
+      const nextCount = count ? count - 1 : 0;
+      counts.set(hash, nextCount);
 
-      // when count is 0 then remove from cache
-      if (nextCount === 0) {
-        this.remove(keys);
-        counts.delete(hash);
-      } else {
-        counts.set(hash, nextCount);
-      }
+      // React calls render() on the next component before unmount() on the
+      // previous component so when the next and previous components use the same
+      // key the next component reuses the previous invokable which is removed
+      // from the cache after render when the unmount effect runs, resulting in
+      // the invokable being recreated etc
+      setTimeout(() => {
+        // when count is 0 then remove from cache
+        if (counts.get(hash) === 0) {
+          this.remove(keys);
+        }
+      }, 0);
     },
   };
 }
