@@ -24,8 +24,8 @@
   ],
   "dependencies": {
     "@jameslnewell/observable": "^1.5.0",
-    "@jameslnewell/react-observable": "^3.0.0-preview.5",
-    "@jameslnewell/react-promise": "^4.0.0-preview.5"
+    "@jameslnewell/react-observable": "^3.0.0-preview.8",
+    "@jameslnewell/react-promise": "^4.0.0-preview.8"
   },
   "peerDependencies": {
     "@types/react": ">=16.8.0",
