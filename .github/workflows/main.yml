@@ -188,7 +188,7 @@ jobs:
         with:
           name: dist
 
-      - runs: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+      - run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
 
       - name: publish
         env:
