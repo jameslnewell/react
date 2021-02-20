@@ -1,6 +1,10 @@
 name: main
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   check_dependencies:
@@ -187,12 +191,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dist
+          path: packages
 
       - run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
 
       - name: publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
         run: |
           yarn workspaces run -- publish-if-not-published -- -- --registry=https://registry.npmjs.org/ --tag next
