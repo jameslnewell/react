@@ -226,4 +226,4 @@ jobs:
           name: dist
           path: packages
 
-      - run: ls -la
+      - run: ls -la packages/react-firebase/dist
