@@ -9,8 +9,6 @@ import {
   createWaitingObservable,
   createErroredObservable,
   createReceivedObservable,
-  completedState,
-  receivedState,
 } from './__fixtures__';
 
 export default {
