@@ -19,8 +19,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: check dependencies
@@ -39,8 +39,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: check typing
@@ -59,8 +59,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: check linting
@@ -79,8 +79,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: check formatting
@@ -99,8 +99,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: build
@@ -126,8 +126,8 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
+      # - if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - run: |
           yarn install
 
       - name: test
