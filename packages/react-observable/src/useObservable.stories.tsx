@@ -31,31 +31,33 @@ const UseObservable: React.FC<UseObservableProps> = ({
 };
 
 export const WithoutAFactory: React.FC = () => {
-  return <UseObservable keys={[Symbol()]} factory={undefined} />;
+  return <UseObservable keys={['WithoutAFactory']} factory={undefined} />;
 };
 
 export const Waiting: React.FC = () => {
-  return <UseObservable keys={[Symbol()]} factory={createWaitingObservable} />;
+  return <UseObservable keys={['Waiting']} factory={createWaitingObservable} />;
 };
 
 export const Received: React.FC = () => {
-  return <UseObservable keys={[Symbol()]} factory={createReceivedObservable} />;
+  return (
+    <UseObservable keys={['Received']} factory={createReceivedObservable} />
+  );
 };
 
 export const Completed: React.FC = () => {
   return (
-    <UseObservable keys={[Symbol()]} factory={createCompletedObservable} />
+    <UseObservable keys={['Completed']} factory={createCompletedObservable} />
   );
 };
 
 export const Errored: React.FC = () => {
-  return <UseObservable keys={[Symbol()]} factory={createErroredObservable} />;
+  return <UseObservable keys={['Errored']} factory={createErroredObservable} />;
 };
 
 export const EventuallyCompleted: React.FC = () => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['EventuallyCompleted']}
       factory={createEventuallyCompletedObservable}
     />
   );
@@ -64,7 +66,7 @@ export const EventuallyCompleted: React.FC = () => {
 export const EventuallyErrored: React.FC = () => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['EventuallyErrored']}
       factory={createEventuallyErroredObservable}
     />
   );
@@ -73,7 +75,7 @@ export const EventuallyErrored: React.FC = () => {
 export const Suspended: React.FC = withSuspense()(() => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['Suspended']}
       factory={createWaitingObservable}
       options={{suspendWhenWaiting: true}}
     />
@@ -83,7 +85,7 @@ export const Suspended: React.FC = withSuspense()(() => {
 export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['Thrown']}
       factory={createErroredObservable}
       options={{throwWhenErrored: true}}
     />
@@ -93,7 +95,7 @@ export const Thrown: React.FC = withErrorBoundary()(() => {
 export const SuspendedEventuallyCompleted: React.FC = withSuspense()(() => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['SuspendedEventuallyCompleted']}
       factory={createEventuallyCompletedObservable}
       options={{suspendWhenWaiting: true}}
     />
@@ -103,7 +105,7 @@ export const SuspendedEventuallyCompleted: React.FC = withSuspense()(() => {
 export const ThrownEventuallyErrored: React.FC = withErrorBoundary()(() => {
   return (
     <UseObservable
-      keys={[Symbol()]}
+      keys={['ThrownEventuallyErrored']}
       factory={createEventuallyErroredObservable}
       options={{throwWhenErrored: true}}
     />
@@ -136,10 +138,8 @@ export const KeyChange: React.FC = () => {
   );
 };
 
-const commonSymbol = Symbol();
-
 const ScreenOne: React.FC = () => {
-  const {value} = useObservable([commonSymbol], createReceivedObservable);
+  const {value} = useObservable(['common'], createReceivedObservable);
   return (
     <>
       <RenderJSON value={value} />
@@ -148,7 +148,7 @@ const ScreenOne: React.FC = () => {
 };
 
 const ScreenTwo: React.FC = () => {
-  const {value} = useObservable([commonSymbol], createReceivedObservable);
+  const {value} = useObservable(['common'], createReceivedObservable);
   return (
     <>
       <RenderJSON value={value} />

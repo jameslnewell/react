@@ -74,6 +74,7 @@ export function createInvokable<
         isCompleted: false,
         isErrored: false,
       };
+      // TODO: don't instanciate observable multiple times
       const nextSuspender = firstValueFrom(observable).then(noop, noop);
       currentSuspender = nextSuspender;
       notifySubscribers();

@@ -5,8 +5,7 @@ import {
   UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
-
-const symbol = Symbol();
+import {namespace} from './namespace';
 
 export interface UseAddDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseAddDocumentResult = UseDeferredPromiseResult<
@@ -20,7 +19,7 @@ export function useAddDocument(
 ): UseAddDocumentResult {
   const app = useApp();
   return useDeferredPromise(
-    [symbol, app, collection],
+    [namespace, 'useAddDocument', app.options, collection],
     (data: firebase.firestore.DocumentData) =>
       app.firestore().collection(collection).add(data),
     options,

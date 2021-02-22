@@ -8,13 +8,12 @@ import {
 } from '@jameslnewell/react-observable';
 import {useApp} from '../app';
 import {useCallback, useMemo} from 'react';
+import {namespace} from './namespace';
 
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 
 export type UseDocumentSnapshotOptions = UseObservableOptions;
 export type UseDocumentSnapshotResult = UseObservableResult<DocumentSnapshot>;
-
-const symbol = Symbol();
 
 export function useDocumentSnapshot(
   document: string | undefined,
@@ -22,7 +21,7 @@ export function useDocumentSnapshot(
 ): UseDocumentSnapshotResult {
   const app = useApp();
   return useObservable(
-    [symbol, app, document],
+    [namespace, 'useDocumentSnapshot', app.options, document],
     document
       ? () =>
           create<DocumentSnapshot>((observer) =>
@@ -42,7 +41,7 @@ export function useDocument<Data = unknown>(
 ): UseDocumentResult<Data> {
   const result = useDocumentSnapshot(document, options);
 
-  const invokeAsync = useCallback(() => {
+  const invoke = useCallback(() => {
     return map((snapshot: DocumentSnapshot) => snapshot.data() as Data)(
       result.invoke(),
     );
@@ -55,13 +54,13 @@ export function useDocument<Data = unknown>(
   if (result.status === Status.Received || result.status === Status.Completed) {
     return {
       ...result,
-      invoke: invokeAsync,
+      invoke: invoke,
       value: value as Data,
     };
   } else {
     return {
       ...result,
-      invoke: invokeAsync,
+      invoke: invoke,
       value: result.value,
     };
   }

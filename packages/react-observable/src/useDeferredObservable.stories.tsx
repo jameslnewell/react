@@ -38,13 +38,15 @@ const UseDeferredObservable: React.FC<UseDeferredObservableProps> = ({
 };
 
 export const WithoutAFactory: React.FC = () => {
-  return <UseDeferredObservable keys={[Symbol()]} factory={undefined} />;
+  return (
+    <UseDeferredObservable keys={['WithoutAFactory']} factory={undefined} />
+  );
 };
 
 export const Waiting: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Waiting']}
       factory={createWaitingObservable}
     />
   );
@@ -53,7 +55,7 @@ export const Waiting: React.FC = () => {
 export const Received: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Received']}
       factory={createReceivedObservable}
     />
   );
@@ -62,7 +64,7 @@ export const Received: React.FC = () => {
 export const Completed: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Completed']}
       factory={createCompletedObservable}
     />
   );
@@ -71,7 +73,7 @@ export const Completed: React.FC = () => {
 export const Errored: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Errored']}
       factory={createErroredObservable}
     />
   );
@@ -80,7 +82,7 @@ export const Errored: React.FC = () => {
 export const EventuallyCompleted: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['EventuallyCompleted']}
       factory={createEventuallyCompletedObservable}
     />
   );
@@ -89,7 +91,7 @@ export const EventuallyCompleted: React.FC = () => {
 export const EventuallyErrored: React.FC = () => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['EventuallyErrored']}
       factory={createEventuallyErroredObservable}
     />
   );
@@ -98,7 +100,7 @@ export const EventuallyErrored: React.FC = () => {
 export const Suspended: React.FC = withSuspense()(() => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Suspended']}
       factory={createWaitingObservable}
       options={{suspendWhenWaiting: true}}
     />
@@ -108,7 +110,7 @@ export const Suspended: React.FC = withSuspense()(() => {
 export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['Thrown']}
       factory={createErroredObservable}
       options={{throwWhenErrored: true}}
     />
@@ -119,7 +121,7 @@ export const SuspendedEventuallyCompleted: React.FC = () => {
   return (
     <Suspense fallback={<p>Suspended!</p>}>
       <UseDeferredObservable
-        keys={[Symbol()]}
+        keys={['SuspendedEventuallyCompleted']}
         factory={createEventuallyCompletedObservable}
         options={{suspendWhenWaiting: true}}
       />
@@ -130,7 +132,7 @@ export const SuspendedEventuallyCompleted: React.FC = () => {
 export const ThrownEventuallyErrored: React.FC = withErrorBoundary()(() => {
   return (
     <UseDeferredObservable
-      keys={[Symbol()]}
+      keys={['ThrownEventuallyErrored']}
       factory={createEventuallyErroredObservable}
       options={{throwWhenErrored: true}}
     />

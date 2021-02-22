@@ -156,6 +156,30 @@ export const Collection: React.FC = () => {
   );
 };
 
+export const CollectionWithQuery: React.FC = () => {
+  const result = useCollection('animals', {where: [['species', '==', 'dog']]});
+  return (
+    <>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {result.value?.map(([id, data]) => (
+            <tr key={id}>
+              <td>{id}</td>
+              <td>{JSON.stringify(data)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+};
+
 export const Document: React.FC = () => {
   const [id, setId] = useState('fido');
   const result = useDocument(`animals/${id}`);

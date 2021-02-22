@@ -5,8 +5,7 @@ import {
   UseDeferredPromiseResult,
 } from '@jameslnewell/react-promise';
 import {useApp} from '../app';
-
-const symbol = Symbol();
+import {namespace} from './namespace';
 
 export interface UseTransactionOptions extends UseDeferredPromiseOptions {}
 export type UseTransactionResult = UseDeferredPromiseResult<
@@ -15,7 +14,8 @@ export type UseTransactionResult = UseDeferredPromiseResult<
 >;
 
 export function useTransaction(
-  factory:
+  keys: unknown[],
+  createTransaction:
     | ((transaction: firebase.firestore.Transaction) => Promise<void>)
     | undefined,
 
@@ -23,8 +23,10 @@ export function useTransaction(
 ): UseTransactionResult {
   const app = useApp();
   return useDeferredPromise(
-    [symbol, app, factory],
-    factory ? () => app.firestore().runTransaction(factory) : undefined,
+    [namespace, 'useTransaction', app.options, ...keys],
+    createTransaction
+      ? () => app.firestore().runTransaction(createTransaction)
+      : undefined,
     options,
   );
 }

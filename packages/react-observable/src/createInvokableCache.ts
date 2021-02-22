@@ -1,22 +1,21 @@
-import {createHash} from './createHash';
 import {Invokable} from './createInvokable';
 
 export interface InvokableCache {
   clear(): void;
 
   get<Parameters extends unknown[], Value = unknown>(
-    keys: unknown[],
+    hash: string,
   ): Invokable<Parameters, Value> | undefined;
 
   set<Value = unknown>(
-    keys: unknown[],
-    invoker: Invokable<unknown[], Value>,
+    hash: string,
+    invokable: Invokable<unknown[], Value>,
   ): void;
 
-  remove(keys: unknown[]): void;
+  remove(hash: string): void;
 
-  reference(keys: unknown[]): void;
-  dereference(keys: unknown[]): void;
+  reference(hash: string): void;
+  dereference(hash: string): void;
 }
 
 export function createInvokableCache(): InvokableCache {
@@ -30,41 +29,30 @@ export function createInvokableCache(): InvokableCache {
     },
 
     get<Parameters extends unknown[], Value = unknown>(
-      keys: unknown[],
+      hash: string,
     ): Invokable<Parameters, Value> | undefined {
-      const hash = createHash(keys);
       return invokables.get(hash) as Invokable<Parameters, Value> | undefined;
     },
 
     set<Value = unknown>(
-      keys: unknown[],
-      invoker: Invokable<unknown[], Value>,
+      hash: string,
+      invkable: Invokable<unknown[], Value>,
     ): void {
-      const hash = createHash(keys);
-      invokables.set(hash, invoker);
+      invokables.set(hash, invkable);
     },
 
-    remove(keys: unknown[]): void {
-      const hash = createHash(keys);
+    remove(hash: string): void {
       invokables.delete(hash);
       counts.delete(hash);
     },
 
-    // called on mount when a component is tracking
-    reference(keys: unknown[]): void {
-      const hash = createHash(keys);
-
-      // increment count
+    reference(hash: string): void {
       const count = counts.get(hash);
       const nextCount = count ? count + 1 : 1;
       counts.set(hash, nextCount);
     },
 
-    // called on unmount when a component is tracking
-    dereference(keys: unknown[]): void {
-      const hash = createHash(keys);
-
-      // decrement count
+    dereference(hash: string): void {
       const count = counts.get(hash);
       const nextCount = count ? count - 1 : 0;
       counts.set(hash, nextCount);
@@ -77,7 +65,7 @@ export function createInvokableCache(): InvokableCache {
       setTimeout(() => {
         // when count is 0 then remove from cache
         if (counts.get(hash) === 0) {
-          this.remove(keys);
+          this.remove(hash);
         }
       }, 0);
     },

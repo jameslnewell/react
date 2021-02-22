@@ -32,7 +32,7 @@ Start observing an observable as soon as the component mounts.
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the observable.
+- `keys` - A unique set of keys for the observable. Keys should be serializable and shallow-equal.
 - `factory` - A function which creates the observable.
 - `options` - Options to configure the behaviour of the hook.
 
@@ -83,7 +83,7 @@ Start observing an observable when invoked manually.
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the observable.
+- `keys` - A unique set of keys for the observable. Keys should be serializable and shallow-equal.
 - `factory` - A function which creates the observable.
 - `options` - Options to configure the behaviour of the hook.
 
