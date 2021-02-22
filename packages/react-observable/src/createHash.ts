@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Copied from: https://github.com/jonschlinkert/is-plain-object
 export function isPlainObject(o: any): o is Record<string, unknown> {

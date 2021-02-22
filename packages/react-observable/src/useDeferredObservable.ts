@@ -2,9 +2,7 @@ import {Observable} from '@jameslnewell/observable';
 import {Factory, State} from './types';
 import {useInvokable, UseInvokableOptions} from './useInvokable';
 
-export interface UseDeferredObservableOptions extends UseInvokableOptions {
-  invokeWhenMounted?: boolean;
-}
+export interface UseDeferredObservableOptions extends UseInvokableOptions {}
 
 export type UseDeferredObservableResult<
   Parameters extends unknown[],
@@ -15,7 +13,7 @@ export type UseDeferredObservableResult<
 
 export function useDeferredObservable<Parameters extends unknown[], Value>(
   keys: unknown[],
-  factory: Factory<[], Value> | undefined,
+  factory: Factory<Parameters, Value> | undefined,
   options?: UseDeferredObservableOptions,
 ): UseDeferredObservableResult<Parameters, Value> {
   const [state, invoke] = useInvokable(keys, factory, options);

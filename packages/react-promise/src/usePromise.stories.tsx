@@ -26,33 +26,39 @@ const UsePromise: React.FC<UsePromiseProps> = ({keys, factory, options}) => {
 };
 
 export const Pending: React.FC = () => {
-  return <UsePromise keys={[Symbol()]} factory={createPendingPromise} />;
+  return <UsePromise keys={['Pending']} factory={createPendingPromise} />;
 };
 
 export const Fulfilled: React.FC = () => {
-  return <UsePromise keys={[Symbol()]} factory={createFulfilledPromise} />;
+  return <UsePromise keys={['Fulfilled']} factory={createFulfilledPromise} />;
 };
 
 export const Rejected: React.FC = () => {
-  return <UsePromise keys={[Symbol()]} factory={createRejectedPromise} />;
+  return <UsePromise keys={['Rejected']} factory={createRejectedPromise} />;
 };
 
 export const EventuallyFulfilled: React.FC = () => {
   return (
-    <UsePromise keys={[Symbol()]} factory={createEventuallyFulfilledPromise} />
+    <UsePromise
+      keys={['EventuallyFulfilled']}
+      factory={createEventuallyFulfilledPromise}
+    />
   );
 };
 
 export const EventuallyRejected: React.FC = () => {
   return (
-    <UsePromise keys={[Symbol()]} factory={createEventuallyRejectedPromise} />
+    <UsePromise
+      keys={['EventuallyRejected']}
+      factory={createEventuallyRejectedPromise}
+    />
   );
 };
 
 export const Suspended: React.FC = withSuspense()(() => {
   return (
     <UsePromise
-      keys={[Symbol()]}
+      keys={['Suspended']}
       factory={createPendingPromise}
       options={{suspendWhenPending: true}}
     />
@@ -62,7 +68,7 @@ export const Suspended: React.FC = withSuspense()(() => {
 export const Thrown: React.FC = withErrorBoundary()(() => {
   return (
     <UsePromise
-      keys={[Symbol()]}
+      keys={['Thrown']}
       factory={createRejectedPromise}
       options={{throwWhenRejected: true}}
     />
@@ -72,7 +78,7 @@ export const Thrown: React.FC = withErrorBoundary()(() => {
 export const SuspendedEventuallyFulfilled: React.FC = withSuspense()(() => {
   return (
     <UsePromise
-      keys={[Symbol()]}
+      keys={['SuspendedEventuallyFulfilled']}
       factory={createEventuallyFulfilledPromise}
       options={{suspendWhenPending: true}}
     />
@@ -82,7 +88,7 @@ export const SuspendedEventuallyFulfilled: React.FC = withSuspense()(() => {
 export const ThrownEventuallyRejected: React.FC = withErrorBoundary()(() => {
   return (
     <UsePromise
-      keys={[Symbol()]}
+      keys={['ThrownEventuallyRejected']}
       factory={createEventuallyRejectedPromise}
       options={{throwWhenRejected: true}}
     />
@@ -112,10 +118,10 @@ export const KeyChange: React.FC = () => {
   );
 };
 
-const commonSymbol = Symbol();
+const common = 'key';
 
 const ScreenOne: React.FC = () => {
-  const {value} = usePromise([commonSymbol], createFulfilledPromise);
+  const {value} = usePromise([common], createFulfilledPromise);
   return (
     <>
       <RenderJSON value={value} />
@@ -124,7 +130,7 @@ const ScreenOne: React.FC = () => {
 };
 
 const ScreenTwo: React.FC = () => {
-  const {value} = usePromise([commonSymbol], createFulfilledPromise);
+  const {value} = usePromise([common], createFulfilledPromise);
   return (
     <>
       <RenderJSON value={value} />

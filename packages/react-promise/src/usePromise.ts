@@ -1,37 +1,39 @@
-import {Factory, Status} from './types';
-import {
-  useDeferredPromise,
-  UseDeferredPromiseOptions,
-  UseDeferredPromiseResult,
-} from './useDeferredPromise';
-import {noop} from './noop';
+import {Factory, State, Status} from './types';
+import {useInvokable, UseInvokableOptions} from './useInvokable';
 
-export interface UsePromiseOptions extends UseDeferredPromiseOptions {
+export interface UsePromiseOptions extends UseInvokableOptions {
   invokeWhenMounted?: boolean;
 }
 
-export type UsePromiseResult<Value> = UseDeferredPromiseResult<[], Value>;
+export type UsePromiseResult<Value> = State<Value> & {
+  invoke(): Promise<Value>;
+};
 
 export function usePromise<Value>(
   keys: unknown[],
   factory: Factory<[], Value> | undefined,
-  {invokeWhenMounted = true, ...otherOptions}: UsePromiseOptions = {},
+  options?: UsePromiseOptions,
 ): UsePromiseResult<Value> {
-  const result = useDeferredPromise(keys, factory, otherOptions);
+  const {invokeWhenMounted = true, ...otherOptions} = options ?? {};
+  const [state, invoke, suspender] = useInvokable(keys, factory, otherOptions);
 
-  // invoke on mount
-  if (invokeWhenMounted && result.status === undefined && factory) {
+  if (invokeWhenMounted && state.status === undefined && factory) {
     if (otherOptions.suspendWhenPending) {
-      throw result.invoke().then(noop, noop);
+      invoke();
+      throw suspender;
     } else {
-      result.invoke().then(noop, noop);
+      invoke();
       return {
-        ...result,
+        ...state,
+        invoke,
         status: Status.Pending,
         isPending: true,
       };
     }
   }
 
-  return result;
+  return {
+    ...state,
+    invoke,
+  };
 }

@@ -1,7 +1,6 @@
 import {decorator} from '../__utilities__/decorator';
 import {
   useDocument,
-  useCollection,
   useAddDocument,
   useSetDocument,
   useUpdateDocument,
@@ -43,7 +42,7 @@ const SelectAnimalId: React.FC<SelectAnimalIdProps> = ({
   return (
     <form onSubmit={handleSubmit}>
       <fieldset>
-        <legend>Select animial</legend>
+        <legend>Select animal</legend>
         <label>
           Animal ID: <input ref={idRef} defaultValue={defaultValue} />
         </label>
@@ -128,54 +127,6 @@ const AnimalForm: React.FC<AnimalFormProps> = ({
       </form>
       {value && <pre>{JSON.stringify(value)}</pre>}
       {error && <pre>{JSON.stringify(error)}</pre>}
-    </>
-  );
-};
-
-export const Collection: React.FC = () => {
-  const result = useCollection('animals');
-  return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.value?.map(([id, data]) => (
-            <tr key={id}>
-              <td>{id}</td>
-              <td>{JSON.stringify(data)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-};
-
-export const CollectionWithQuery: React.FC = () => {
-  const result = useCollection('animals', {where: [['species', '==', 'dog']]});
-  return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.value?.map(([id, data]) => (
-            <tr key={id}>
-              <td>{id}</td>
-              <td>{JSON.stringify(data)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </>
   );
 };

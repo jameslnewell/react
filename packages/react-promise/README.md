@@ -32,7 +32,7 @@ Start resolving a promise as soon as the component mounts.
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the promise.
+- `keys` - A unique set of keys for the promise.Keys should be serializable and shallow-equal.
 - `factory` - A function which creates the promise.
 - `options` - Options to configure the behaviour of the hook.
 
@@ -79,7 +79,7 @@ Start resolving a promise when invoked manually.
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the promise.
+- `keys` - A unique set of keys for the promise. Keys should be serializable and shallow-equal.
 - `factory` - A function which creates the promise.
 - `options` - Options to configure the behaviour of the hook.
 

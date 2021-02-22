@@ -22,6 +22,8 @@ yarn add @jameslnewell/react-firebase
 
 ## Usage
 
+Provide your app with the firebase "app".
+
 `index.js`
 
 ```jsx
@@ -108,8 +110,6 @@ export const UserProfile = ({userId}) => {
 
 ### auth
 
-#### useStatus()
-
 #### useUser()
 
 #### useSignInWithPopup()
@@ -122,16 +122,12 @@ export const UserProfile = ({userId}) => {
 
 #### useDocument()
 
-#### useCreateDocument()
+#### useAddDocument()
 
 #### useUpdateDocument()
 
 #### useSetDocument()
 
 #### useDeleteDocument()
-
-#### &lt;Collection&gt;
-
-#### &lt;Document&gt;
 
 ### storage
