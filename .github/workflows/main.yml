@@ -127,6 +127,8 @@ jobs:
       - check_formatting
       - build
       - test
+    env:
+      DEBUG: '*'
 
     steps:
       - uses: actions/checkout@v1
