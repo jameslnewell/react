@@ -12,14 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
-          yarn install
-
+          yarn install --frozen-lockfile
       - name: check dependencies
         run: |
           yarn run check:dependencies
@@ -29,14 +32,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('yarn.lock') }}}
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
-          yarn install
-
+          yarn install --frozen-lockfile
       - name: check typing
         run: |
           yarn run check:typing
@@ -46,14 +52,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('yarn.lock') }}'
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
-          yarn install
-
+          yarn install --frozen-lockfile
       - name: check linting
         run: |
           yarn run check:linting
@@ -69,7 +78,7 @@ jobs:
           path: '**/node_modules'
           key: node_modules-${{ hashFiles('yarn.lock') }}
       - run: |
-          yarn install
+          yarn install --frozen-lockfile
 
       - name: check formatting
         run: |
@@ -80,13 +89,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
-          yarn install
+          yarn install --frozen-lockfile
 
       - name: build
         run: |
@@ -104,13 +117,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
-          yarn install
+          yarn install --frozen-lockfile
 
       - name: test
         run: |
@@ -133,16 +150,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - id: yarn-cache
-        uses: actions/cache@v1
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node_modules-
-      - if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: |
-          yarn install
+            ${{ runner.os }}-yarn-
+      - run: |
+          yarn install --frozen-lockfile
 
       - uses: actions/download-artifact@v2
         with:
