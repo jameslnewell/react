@@ -28,10 +28,13 @@ export function createInvokable<
   Parameters extends unknown[],
   Value
 >(): Invokable<Parameters, Value> {
-  let subscription: Subscription | undefined = undefined;
   const subscribers: Set<SubscriberFunction<Value>> = new Set();
 
-  let currentState: State<Value> = {
+  let resolver: (() => void) | undefined = undefined;
+  let suspender: Promise<void> | undefined = undefined;
+  let subscription: Subscription | undefined = undefined;
+
+  let state: State<Value> = {
     status: undefined,
     value: undefined,
     error: undefined,
@@ -41,31 +44,31 @@ export function createInvokable<
     isErrored: false,
   };
 
-  let currentSuspender: Promise<void> | undefined = undefined;
-
   const notifySubscribers = (): void => {
     for (const subscriber of subscribers) {
-      subscriber(currentState);
+      subscriber(state);
     }
   };
 
   return {
     get state() {
-      return currentState;
+      return state;
     },
 
     get suspender() {
-      // TODO: promise that resolves when the last called invoke resolves
-      return currentSuspender;
+      if (!suspender) {
+        suspender = new Promise<void>((r) => (resolver = r));
+      }
+      return suspender;
     },
 
     invoke(factory, parameters) {
-      // TODO: unsubscribe from previous observable
+      subscription?.unsubscribe();
 
       // create the observable
       const observable = factory(...parameters);
 
-      currentState = {
+      state = {
         status: Status.Waiting,
         value: undefined,
         error: undefined,
@@ -74,67 +77,67 @@ export function createInvokable<
         isCompleted: false,
         isErrored: false,
       };
-      // TODO: don't instanciate observable multiple times
-      const nextSuspender = firstValueFrom(observable).then(noop, noop);
-      currentSuspender = nextSuspender;
       notifySubscribers();
 
       subscription = observable.subscribe({
         next: (value) => {
-          if (nextSuspender === currentSuspender) {
-            currentState = {
-              status: Status.Received,
-              value,
-              error: undefined,
-              isWaiting: false,
-              isReceived: true,
-              isCompleted: false,
-              isErrored: false,
-            };
-            notifySubscribers();
-          }
+          state = {
+            status: Status.Received,
+            value,
+            error: undefined,
+            isWaiting: false,
+            isReceived: true,
+            isCompleted: false,
+            isErrored: false,
+          };
+          notifySubscribers();
+          resolver?.();
+          resolver = undefined;
+          suspender = undefined;
         },
         complete: () => {
-          if (nextSuspender === currentSuspender) {
-            if (currentState.status === Status.Received) {
-              currentState = {
-                status: Status.Completed,
-                value: currentState.value,
-                error: undefined,
-                isWaiting: false,
-                isReceived: false,
-                isCompleted: true,
-                isErrored: false,
-              };
-            } else {
-              currentState = {
-                status: Status.Errored,
-                value: undefined,
-                error: 'Observable completed without a value.',
-                isWaiting: false,
-                isReceived: false,
-                isCompleted: false,
-                isErrored: true,
-              };
-            }
-            currentSuspender = undefined;
-            notifySubscribers();
-          }
-        },
-        error: (error) => {
-          if (nextSuspender === currentSuspender) {
-            currentState = {
+          if (state.status === Status.Received) {
+            state = {
+              status: Status.Completed,
+              value: state.value,
+              error: undefined,
+              isWaiting: false,
+              isReceived: false,
+              isCompleted: true,
+              isErrored: false,
+            };
+          } else {
+            state = {
               status: Status.Errored,
               value: undefined,
-              error,
+              error: 'Observable completed without a value.',
               isWaiting: false,
               isReceived: false,
               isCompleted: false,
               isErrored: true,
             };
-            currentSuspender = undefined;
-            notifySubscribers();
           }
+          subscription = undefined;
+          notifySubscribers();
+          resolver?.();
+          resolver = undefined;
+          suspender = undefined;
+        },
+        error: (error) => {
+          state = {
+            status: Status.Errored,
+            value: undefined,
+            error,
+            isWaiting: false,
+            isReceived: false,
+            isCompleted: false,
+            isErrored: true,
+          };
+          subscription = undefined;
+          notifySubscribers();
+          resolver?.();
+          resolver = undefined;
+          suspender = undefined;
         },
       });
 
