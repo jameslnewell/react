@@ -9,9 +9,4 @@ firestore-debug.log
 
 # ignore distributable directories
 /packages/*/dist/
-/packages/*/storybook-static
-/packages/react-firebase/app/dist/
-/packages/react-firebase/auth/dist/
-/packages/react-firebase/firestore/dist/
-/packages/react-firebase/functions/dist/
-/packages/react-firebase/storage/dist/
+/packages/*/*/dist/

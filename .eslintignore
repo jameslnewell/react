@@ -1,4 +1,4 @@
 
 # ignore distributable directories
 /packages/*/dist/
-/packages/**/dist/
+/packages/*/*/dist/
