@@ -7,6 +7,15 @@ ui-debug.log
 firebase-debug.log
 firestore-debug.log
 
+# ignore yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
 # ignore distributable directories
 /packages/*/dist/
 /packages/*/*/dist/

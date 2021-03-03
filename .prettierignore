@@ -1,3 +1,7 @@
+
+# ignore yarn
+.yarn/*
+
 # ignore distributable directories
 /packages/*/dist/
 /packages/*/*/dist/
