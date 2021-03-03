@@ -18,7 +18,6 @@
   ],
   "main": "dist/jameslnewell-react-observable.cjs.js",
   "module": "dist/jameslnewell-react-observable.esm.js",
-  "types": "dist/index.d.ts",
   "sideEffects": false,
   "dependencies": {
     "@jameslnewell/observable": "^1.5.0"
