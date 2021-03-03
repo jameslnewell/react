@@ -22,7 +22,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check dependencies
         run: |
@@ -43,7 +43,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check typing
         run: |
@@ -64,7 +64,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check linting
         run: |
@@ -85,7 +85,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check formatting
         run: |
@@ -106,7 +106,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: build
         run: |
@@ -134,7 +134,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: test
         run: |
@@ -167,7 +167,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - uses: actions/download-artifact@v2
         with:
