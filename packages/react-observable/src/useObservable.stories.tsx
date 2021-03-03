@@ -1,3 +1,4 @@
+import {create, delay} from '@jameslnewell/observable';
 import React, {useRef, useState} from 'react';
 import {RenderJSON, withErrorBoundary, withSuspense} from 'testing-utilities';
 import {Factory} from './types';
@@ -163,6 +164,19 @@ export const SwitchingScreensUsingTheSameKey: React.FC = () => {
       {screen === 1 ? <ScreenOne /> : <ScreenTwo />}
       <button onClick={() => setScreen(1)}>Screen One</button>
       <button onClick={() => setScreen(2)}>Screen Two</button>
+    </>
+  );
+};
+
+export const TriggerOnKeyChange: React.FC = () => {
+  const [count, setCount] = React.useState<number>(0);
+  const {value} = useObservable<number>([count], () =>
+    delay(1000)(create((o) => o.next(count))),
+  );
+  return (
+    <>
+      <RenderJSON value={value} />
+      <button onClick={() => setCount((count) => count + 1)}>Increment</button>
     </>
   );
 };

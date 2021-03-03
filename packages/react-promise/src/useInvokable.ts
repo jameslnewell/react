@@ -95,7 +95,7 @@ export function useInvokable<Parameters extends unknown[], Value>(
   }
 
   // throw when errored
-  if (throwWhenRejected && state.status === Status.Pending) {
+  if (throwWhenRejected && state.status === Status.Rejected) {
     throw state.error;
   }
 
