@@ -20,17 +20,15 @@ export type UseCollectionSnapshotResult = UseObservableResult<firebase.firestore
 
 export function useCollectionSnapshot(
   keys: unknown[],
-  createCollection: UseCollectionSnapshotCreateCollectionFunction | undefined,
+  factory: UseCollectionSnapshotCreateCollectionFunction | undefined,
   options?: UseCollectionSnapshotOptions,
 ): UseCollectionSnapshotResult {
   const app = useApp();
   return useObservable(
     [namespace, 'useCollectionSnapshot', app.options, ...keys],
-    createCollection
+    factory
       ? () =>
-          create((observer) =>
-            createCollection(app.firestore()).onSnapshot(observer),
-          )
+          create((observer) => factory(app.firestore()).onSnapshot(observer))
       : undefined,
     options,
   );

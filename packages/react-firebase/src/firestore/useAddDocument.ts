@@ -14,14 +14,16 @@ export type UseAddDocumentResult = UseDeferredPromiseResult<
 >;
 
 export function useAddDocument(
-  collection: string,
+  collection: string | undefined,
   options?: UseAddDocumentOptions,
 ): UseAddDocumentResult {
   const app = useApp();
   return useDeferredPromise(
     [namespace, 'useAddDocument', app.options, collection],
-    (data: firebase.firestore.DocumentData) =>
-      app.firestore().collection(collection).add(data),
+    collection
+      ? (data: firebase.firestore.DocumentData) =>
+          app.firestore().collection(collection).add(data)
+      : undefined,
     options,
   );
 }

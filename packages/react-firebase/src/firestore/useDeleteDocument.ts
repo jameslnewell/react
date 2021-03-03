@@ -10,13 +10,13 @@ export interface UseDeleteDocumentOptions extends UseDeferredPromiseOptions {}
 export type UseDeleteDocumentResult = UseDeferredPromiseResult<[], void>;
 
 export function useDeleteDocument(
-  document: string,
+  document: string | undefined,
   options?: UseDeleteDocumentOptions,
 ): UseDeleteDocumentResult {
   const app = useApp();
   return useDeferredPromise(
     [namespace, 'useDeleteDocument', app.options, document],
-    () => app.firestore().doc(document).delete(),
+    document ? () => app.firestore().doc(document).delete() : undefined,
     options,
   );
 }

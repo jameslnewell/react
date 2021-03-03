@@ -14,14 +14,16 @@ export type UseSetDocumentResult = UseDeferredPromiseResult<
 >;
 
 export function useSetDocument(
-  document: string,
+  document: string | undefined,
   options?: UseSetDocumentOptions,
 ): UseSetDocumentResult {
   const app = useApp();
   return useDeferredPromise(
     [namespace, 'useSetDocument', app.options, document],
-    (data: firebase.firestore.DocumentData) =>
-      app.firestore().doc(document).set(data),
+    document
+      ? (data: firebase.firestore.DocumentData) =>
+          app.firestore().doc(document).set(data)
+      : undefined,
     options,
   );
 }

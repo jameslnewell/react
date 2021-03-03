@@ -15,14 +15,16 @@ export type UseUpdateDocumentResult = UseDeferredPromiseResult<
 >;
 
 export function useUpdateDocument(
-  document: string,
+  document: string | undefined,
   options?: UseUpdateDocumentOptions,
 ): UseUpdateDocumentResult {
   const app = useApp();
   return useDeferredPromise(
     [symbol, app, document],
-    (data: firebase.firestore.DocumentData) =>
-      app.firestore().doc(document).update(data),
+    document
+      ? (data: firebase.firestore.DocumentData) =>
+          app.firestore().doc(document).update(data)
+      : undefined,
     options,
   );
 }
