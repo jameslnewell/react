@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
+    "@babel/core": "^7.13.8",
     "@storybook/react": "^6.1.18",
     "@types/react": "^17.0.2",
     "react": "^17.0.1",
