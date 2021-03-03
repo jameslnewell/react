@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
+    "@storybook/react": "^6.1.18",
     "@testing-library/react-hooks": "^5.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/react": "^17.0.2",
