@@ -1,10 +1,5 @@
 import {Status, Factory, State} from './types';
-import {noop} from './noop';
-import {
-  firstValueFrom,
-  Observable,
-  Subscription,
-} from '@jameslnewell/observable';
+import {Observable, Subscription} from '@jameslnewell/observable';
 
 export interface SubscriberFunction<Value> {
   (state: State<Value>): void;
