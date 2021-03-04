@@ -1,4 +1,4 @@
-import {create, delay} from '@jameslnewell/observable';
+import {create, delay, fromArray} from '@jameslnewell/observable';
 import React, {useRef, useState} from 'react';
 import {RenderJSON, withErrorBoundary, withSuspense} from 'testing-utilities';
 import {Factory} from './types';
@@ -168,15 +168,32 @@ export const SwitchingScreensUsingTheSameKey: React.FC = () => {
   );
 };
 
-export const TriggerOnKeyChange: React.FC = () => {
-  const [count, setCount] = React.useState<number>(0);
-  const {value} = useObservable<number>([count], () =>
-    delay(1000)(create((o) => o.next(count))),
+const useDependent = () => {
+  const {value: value0} = useObservable<number>(
+    [0],
+    () => delay(1000)(fromArray([Math.random()])),
+    {suspendWhenWaiting: true, throwWhenErrored: true},
   );
-  return (
-    <>
-      <RenderJSON value={value} />
-      <button onClick={() => setCount((count) => count + 1)}>Increment</button>
-    </>
+  const {value: value1} = useObservable<number>(
+    [value0],
+    value0
+      ? () => delay(1000)(fromArray([Math.round(value0 * 100)]))
+      : undefined,
+    {suspendWhenWaiting: true, throwWhenErrored: true},
   );
+  return {
+    value0,
+    value1,
+  };
 };
+
+export const DependentInvocation: React.FC = withErrorBoundary()(
+  withSuspense()(() => {
+    const result = useDependent();
+    return (
+      <>
+        <RenderJSON value={result} />
+      </>
+    );
+  }),
+);
