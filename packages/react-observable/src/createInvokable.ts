@@ -143,12 +143,16 @@ export function createInvokable<
       // subscribe
       subscribers.add(subscriber);
 
+      // Question: should we handle the case where
+
       // unsubscribe
       return () => {
         subscribers.delete(subscriber);
-        if (subscribers.size === 0) {
-          subscription?.unsubscribe();
-        }
+        setTimeout(() => {
+          if (subscribers.size === 0) {
+            subscription?.unsubscribe();
+          }
+        }, 0);
       };
     },
   };

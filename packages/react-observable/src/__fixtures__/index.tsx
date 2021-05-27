@@ -99,3 +99,11 @@ export function createEventuallyErroredObservable(): Observable<
 > {
   return delay(3000)(fromError(error));
 }
+
+export function createReceivingObservable(): Observable<unknown, unknown> {
+  return create((observer) => {
+    let count = 0;
+    const interval = setInterval(() => observer.next(count++), 500);
+    return () => clearInterval(interval);
+  });
+}

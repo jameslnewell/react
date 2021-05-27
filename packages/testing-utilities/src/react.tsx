@@ -41,7 +41,7 @@ export interface RenderJSONProps {
 
 export const RenderJSON: React.FC<RenderJSONProps> = ({value}) => {
   return (
-    <code>
+    <code aria-label="json">
       <pre>{JSON.stringify(value, null, 2)}</pre>
     </code>
   );

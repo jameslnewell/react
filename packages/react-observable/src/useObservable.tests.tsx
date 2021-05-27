@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
 import {renderHook, RenderHookResult} from '@testing-library/react-hooks';
-import {render} from '@testing-library/react';
+import {render, fireEvent, waitFor} from '@testing-library/react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {
   useObservable,
@@ -20,6 +20,7 @@ import {
 import {Factory} from './types';
 import {cache} from './cache';
 import {waitForExpect} from 'testing-utilities';
+import {UnmountAndMount} from './useObservable.stories';
 
 function renderUseDeferredPromiseHook<Value = unknown>(
   keys: unknown[],
@@ -89,6 +90,30 @@ describe('useObservable()', () => {
     await waitForExpect(() => {
       expect(queryByText('Error!')).toBeVisible();
       expect(queryByText('Loaded!')).toBeNull();
+    });
+  });
+
+  test('remains subscribed when unmounting and remounting', async () => {
+    jest.spyOn(console, 'error').mockImplementation(noop);
+
+    const {getByLabelText, getByRole} = render(<UnmountAndMount />);
+
+    const getValue = (): string | null => getByLabelText('json').textContent;
+
+    await waitFor(async () => {
+      const value = getValue();
+      expect(value).not.toEqual('');
+    });
+
+    fireEvent.click(getByRole('button', {name: 'Screen Two'}));
+
+    // expect the value to update after clicking
+    const oldValue = getValue();
+    await waitFor(async () => {
+      const newValue = getValue();
+      expect(newValue).toBeDefined();
+      expect(newValue).not.toEqual('');
+      expect(newValue).not.toEqual(oldValue);
     });
   });
 });

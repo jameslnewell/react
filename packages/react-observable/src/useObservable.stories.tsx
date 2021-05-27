@@ -10,6 +10,7 @@ import {
   createWaitingObservable,
   createErroredObservable,
   createReceivedObservable,
+  createReceivingObservable,
 } from './__fixtures__';
 
 export default {
@@ -140,7 +141,7 @@ export const KeyChange: React.FC = () => {
 };
 
 const ScreenOne: React.FC = () => {
-  const {value} = useObservable(['common'], createReceivedObservable);
+  const {value} = useObservable(['common'], createReceivingObservable);
   return (
     <>
       <RenderJSON value={value} />
@@ -149,7 +150,7 @@ const ScreenOne: React.FC = () => {
 };
 
 const ScreenTwo: React.FC = () => {
-  const {value} = useObservable(['common'], createReceivedObservable);
+  const {value} = useObservable(['common'], createReceivingObservable);
   return (
     <>
       <RenderJSON value={value} />
@@ -157,42 +158,46 @@ const ScreenTwo: React.FC = () => {
   );
 };
 
-export const SwitchingScreensUsingTheSameKey: React.FC = () => {
+export const UnmountAndMount: React.FC = () => {
   const [screen, setScreen] = React.useState<1 | 2>(1);
   return (
     <>
+      When a hook with the same parameters is unmounted with one component and
+      mounted with another component, the subscription should remain active.
       {screen === 1 ? <ScreenOne /> : <ScreenTwo />}
-      <button onClick={() => setScreen(1)}>Screen One</button>
-      <button onClick={() => setScreen(2)}>Screen Two</button>
+      <button disabled={screen === 1} onClick={() => setScreen(1)}>
+        Screen One
+      </button>
+      <button disabled={screen === 2} onClick={() => setScreen(2)}>
+        Screen Two
+      </button>
     </>
   );
 };
 
-const useDependent = () => {
-  const {value: value0} = useObservable<number>(
-    [0],
-    () => delay(1000)(fromArray([Math.random()])),
-    {suspendWhenWaiting: true, throwWhenErrored: true},
-  );
-  const {value: value1} = useObservable<number>(
-    [value0],
-    value0
-      ? () => delay(1000)(fromArray([Math.round(value0 * 100)]))
-      : undefined,
-    {suspendWhenWaiting: true, throwWhenErrored: true},
-  );
-  return {
-    value0,
-    value1,
-  };
-};
-
-export const DependentInvocation: React.FC = withErrorBoundary()(
+export const Dependent: React.FC = withErrorBoundary()(
   withSuspense()(() => {
-    const result = useDependent();
+    const {value: value0} = useObservable<number>(
+      [0],
+      () => delay(1000)(fromArray([Math.random()])),
+      {suspendWhenWaiting: true, throwWhenErrored: true},
+    );
+    const {value: value1} = useObservable<number>(
+      [value0],
+      value0
+        ? () => delay(1000)(fromArray([Math.round(value0 * 100)]))
+        : undefined,
+      {suspendWhenWaiting: true, throwWhenErrored: true},
+    );
     return (
       <>
-        <RenderJSON value={result} />
+        The input to the second hook relies on the output of the first hook.
+        <RenderJSON
+          value={{
+            value0,
+            value1,
+          }}
+        />
       </>
     );
   }),
