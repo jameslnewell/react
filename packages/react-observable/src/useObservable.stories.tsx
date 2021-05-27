@@ -1,4 +1,4 @@
-import {create, delay, fromArray} from '@jameslnewell/observable';
+import {delay, fromArray} from '@jameslnewell/observable';
 import React, {useRef, useState} from 'react';
 import {RenderJSON, withErrorBoundary, withSuspense} from 'testing-utilities';
 import {Factory} from './types';
