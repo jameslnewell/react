@@ -1,7 +1,7 @@
 {
   "name": "@jameslnewell/react-observable",
-  "version": "3.0.0-preview.12",
-  "description": "🎣 React hooks for working with observables.",
+  "version": "4.0.0-preview.1",
+  "description": "🎣 React utilities for working with observables.",
   "keywords": [
     "react",
     "hooks",
@@ -19,12 +19,11 @@
   "main": "dist/jameslnewell-react-observable.cjs.js",
   "module": "dist/jameslnewell-react-observable.esm.js",
   "sideEffects": false,
-  "dependencies": {
-    "@jameslnewell/observable": "^1.5.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@types/react": ">=16.8.0",
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "rxjs": ">=7.0.0"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.0",
@@ -32,7 +31,7 @@
     "@types/react-dom": "^17.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "wait-for-expect": "^3.0.2"
+    "rxjs": "^7.1.0"
   },
   "jest": {
     "displayName": "react-observable",

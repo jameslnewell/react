@@ -16,7 +16,8 @@ export type UseCollectionSnapshotCreateCollectionFunction = (
   db: firebase.firestore.Firestore,
 ) => firebase.firestore.Query;
 export type UseCollectionSnapshotOptions = UseObservableOptions;
-export type UseCollectionSnapshotResult = UseObservableResult<firebase.firestore.QuerySnapshot>;
+export type UseCollectionSnapshotResult =
+  UseObservableResult<firebase.firestore.QuerySnapshot>;
 
 export function useCollectionSnapshot(
   keys: unknown[],

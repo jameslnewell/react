@@ -27,7 +27,7 @@ import {cache} from './cache';
 
 function renderUseDeferredPromiseHook<
   Parameters extends unknown[] = [],
-  Value = unknown
+  Value = unknown,
 >(
   keys: unknown[],
   factory: Factory<Parameters, Value>,

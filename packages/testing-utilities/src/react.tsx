@@ -5,35 +5,39 @@ export const SuspenseFallback: React.FC = () => {
   return <p>Loading...</p>;
 };
 
-export const withSuspense = (fallback?: React.ReactNode) => (
-  Component: React.ComponentType,
-): React.FC => {
-  return function WithSuspense() {
-    return (
-      <React.Suspense fallback={fallback || <SuspenseFallback />}>
-        <Component />
-      </React.Suspense>
-    );
+export function withSuspense(fallback?: React.ReactNode) {
+  return function <Props>(
+    Component: React.ComponentType<Props>,
+  ): React.FC<Props> {
+    return function WithSuspense(props) {
+      return (
+        <React.Suspense fallback={fallback || <SuspenseFallback />}>
+          <Component {...props} />
+        </React.Suspense>
+      );
+    };
   };
-};
+}
 
 export const ErrorBoundaryFallback: React.FC = () => {
   return <p>Error!</p>;
 };
 
-export const withErrorBoundary = (fallback?: React.ReactNode) => (
-  Component: React.ComponentType,
-): React.FC => {
-  return function WithErrorBoundary() {
-    return (
-      <ErrorBoundary
-        fallback={fallback ? <>{fallback}</> : <ErrorBoundaryFallback />}
-      >
-        <Component />
-      </ErrorBoundary>
-    );
+export function withErrorBoundary(fallback?: React.ReactNode) {
+  return function <Props>(
+    Component: React.ComponentType<Props>,
+  ): React.FC<Props> {
+    return function WithErrorBoundary(props) {
+      return (
+        <ErrorBoundary
+          fallback={fallback ? <>{fallback}</> : <ErrorBoundaryFallback />}
+        >
+          <Component {...props} />
+        </ErrorBoundary>
+      );
+    };
   };
-};
+}
 
 export interface RenderJSONProps {
   value: unknown;

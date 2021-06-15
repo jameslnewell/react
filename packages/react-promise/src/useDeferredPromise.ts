@@ -5,7 +5,7 @@ export interface UseDeferredPromiseOptions extends UseInvokableOptions {}
 
 export type UseDeferredPromiseResult<
   Parameters extends unknown[],
-  Value
+  Value,
 > = State<Value> & {
   invoke(...parameters: Parameters): Promise<Value>;
 };

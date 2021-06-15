@@ -1,109 +1,43 @@
-import {fromArray} from '@jameslnewell/observable';
-import {fromError} from '@jameslnewell/observable';
-import {create, delay, Observable} from '@jameslnewell/observable';
-import {
-  CompletedState,
-  WaitingState,
-  ReceivedState,
-  ErroredState,
-  Status,
-  UnknownState,
-} from '../types';
+/* eslint-disable @typescript-eslint/ban-types */
+import * as rxjs from 'rxjs';
+import {delay, materialize, dematerialize} from 'rxjs/operators';
 
 export const value = 'Hello World!';
 export const error = 'Uh oh!';
-
-export const unknownState: UnknownState = {
-  status: undefined,
-  value: undefined,
-  error: undefined,
-  isWaiting: false,
-  isReceived: false,
-  isCompleted: false,
-  isErrored: false,
-};
-
-export const waitingState: WaitingState = {
-  status: Status.Waiting,
-  value: undefined,
-  error: undefined,
-  isWaiting: true,
-  isReceived: false,
-  isCompleted: false,
-  isErrored: false,
-};
-
-export const receivedState: ReceivedState<typeof value> = {
-  status: Status.Received,
-  value,
-  error: undefined,
-  isWaiting: false,
-  isReceived: true,
-  isCompleted: false,
-  isErrored: false,
-};
-
-export const completedState: CompletedState<typeof value> = {
-  status: Status.Completed,
-  value,
-  error: undefined,
-  isWaiting: false,
-  isReceived: false,
-  isCompleted: true,
-  isErrored: false,
-};
-
-export const erroredState: ErroredState = {
-  status: Status.Errored,
-  value: undefined,
-  error,
-  isWaiting: false,
-  isReceived: false,
-  isCompleted: false,
-  isErrored: true,
-};
 
 export const noop = (): void => {
   /* do nothing */
 };
 
-export function createWaitingObservable(): Observable<unknown> {
-  return create(noop);
-}
-
-export function createReceivedObservable(): Observable<unknown> {
-  return create((observer) => observer.next(value));
-}
-
-export function createCompletedObservable(): Observable<unknown> {
-  return create((observer) => {
-    observer.next(value);
-    observer.complete();
+export function createWaitingObservable(): rxjs.Observable<never> {
+  return new rxjs.Observable(() => {
+    /* do nothing */
   });
 }
 
-export function createErroredObservable(): Observable<unknown> {
-  return create((observer) => observer.error(error));
+export function createReceivedObservable(): rxjs.Observable<string> {
+  return rxjs.of(value);
 }
 
-export function createEventuallyCompletedObservable(): Observable<
-  unknown,
-  unknown
-> {
-  return delay(3000)(fromArray([value]));
+export function createCompletedObservable(): rxjs.Observable<string> {
+  return rxjs.of(value);
 }
 
-export function createEventuallyErroredObservable(): Observable<
-  unknown,
-  unknown
-> {
-  return delay(3000)(fromError(error));
+export function createErroredObservable(): rxjs.Observable<never> {
+  return rxjs.throwError(() => error);
 }
 
-export function createReceivingObservable(): Observable<unknown, unknown> {
-  return create((observer) => {
-    let count = 0;
-    const interval = setInterval(() => observer.next(count++), 500);
-    return () => clearInterval(interval);
-  });
+export function createEventuallyCompletedObservable(): rxjs.Observable<string> {
+  return rxjs.of(value).pipe(delay(3000));
+}
+
+export function createEventuallyErroredObservable(): rxjs.Observable<unknown> {
+  return rxjs
+    .throwError(() => error)
+    .pipe(materialize(), delay(3000), dematerialize());
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function createReceivingObservable(): rxjs.Observable<number> {
+  return rxjs.interval(500);
 }

@@ -1,3 +1,3 @@
-export * from './types';
-export * from './useDeferredObservable';
+export * from './resource';
 export * from './useObservable';
+export * from './useInvokableObservable';

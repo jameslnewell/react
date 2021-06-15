@@ -21,7 +21,7 @@ export interface Invokable<Parameters extends unknown[], Value> {
 
 export function createInvokable<
   Parameters extends unknown[],
-  Value
+  Value,
 >(): Invokable<Parameters, Value> {
   const subscribers: Set<SubscriberFunction<Value>> = new Set();
 

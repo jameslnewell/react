@@ -3,6 +3,7 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "noEmit": true,
+    "keyofStringsOnly": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "jsx": "react",

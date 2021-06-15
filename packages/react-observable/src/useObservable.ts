@@ -1,40 +1,36 @@
-import {Observable} from '@jameslnewell/observable';
-import {Factory, State, Status} from './types';
-import {useInvokable, UseInvokableOptions} from './useInvokable';
+import {useEffect, useCallback} from 'react';
+import {ErroredState, LoadedState, LoadingState} from './types';
+import {createLoadingState} from './state';
+import {Observable} from 'rxjs';
+import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
+import {useInvokableObservable} from './useInvokableObservable';
 
-export interface UseObservableOptions extends UseInvokableOptions {
-  invokeWhenMounted?: boolean;
-}
-
-export type UseObservableResult<Value> = State<Value> & {
-  invoke(): Observable<Value>;
-};
+export type UseObservableResult<Value> =
+  | LoadingState
+  | LoadedState<Value>
+  | ErroredState;
 
 export function useObservable<Value>(
-  keys: unknown[],
-  factory: Factory<[], Value> | undefined,
-  options?: UseObservableOptions,
+  observable: Observable<Value>,
 ): UseObservableResult<Value> {
-  const {invokeWhenMounted = true, ...otherOptions} = options ?? {};
-  const [state, invoke, suspender] = useInvokable(keys, factory, otherOptions);
-
-  if (invokeWhenMounted && state.status === undefined && factory) {
-    if (otherOptions.suspendWhenWaiting) {
-      invoke();
-      throw suspender;
-    } else {
-      invoke();
-      return {
-        ...state,
-        invoke,
-        status: Status.Waiting,
-        isWaiting: true,
-      };
-    }
+  if (process.env.NODE_ENV === 'development') {
+    useWarnIfValueChangesFrequently(
+      observable,
+      'It seems like you might be creating and passing a new observable on each render. ' +
+        'Create the observable outside of the render function or wrap it with React.useMemo()',
+    );
   }
 
-  return {
-    ...state,
-    invoke,
-  };
+  const factory = useCallback(() => observable, [observable]);
+  const {invoke, ...state} = useInvokableObservable(factory);
+
+  useEffect(() => {
+    invoke();
+  }, [invoke]);
+
+  if (state.status === undefined) {
+    return createLoadingState();
+  } else {
+    return state;
+  }
 }

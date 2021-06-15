@@ -47,9 +47,10 @@ export function useDocument<Data = unknown>(
     );
   }, [result.invoke]);
 
-  const value = useMemo(() => result.value && result.value.data(), [
-    result.value,
-  ]);
+  const value = useMemo(
+    () => result.value && result.value.data(),
+    [result.value],
+  );
 
   if (result.status === Status.Received || result.status === Status.Completed) {
     return {
