@@ -10,7 +10,7 @@ import {
 } from './__fixtures__';
 import {waitForExpect} from 'testing-utilities';
 import {renderHook} from '@testing-library/react-hooks';
-import {Status} from './types';
+import {Status} from './status';
 
 describe('createResource()', () => {
   test('read() should throw a promise when the observable is yet to emit a value', () => {

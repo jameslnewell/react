@@ -20,7 +20,7 @@ const ReadObservable: React.FC<{
   factory: () => Observable<unknown>;
 }> = withSuspense()(
   withErrorBoundary()(({factory}) => {
-    const [invoke, state] = useInvokableObservable(factory);
+    const {invoke, ...state} = useInvokableObservable(factory);
     return (
       <>
         <button onClick={invoke}>Invoke</button>

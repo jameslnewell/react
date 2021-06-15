@@ -17,7 +17,7 @@ import {
   createLoadedState,
   createLoadingState,
 } from './state';
-import {Status} from './types';
+import {Status} from './status';
 import {delay} from 'rxjs/operators';
 
 function renderUseObservable(

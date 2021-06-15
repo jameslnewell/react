@@ -1,6 +1,9 @@
 import {useRef, useState, useEffect, useCallback, useMemo} from 'react';
-import {EmptyState, LoadingState, LoadedState, ErroredState} from './types';
 import {
+  EmptyState,
+  LoadingState,
+  LoadedState,
+  ErroredState,
   createEmptyState,
   createErroredState,
   createLoadedState,

@@ -1,7 +1,10 @@
 import {Observable, Subject, firstValueFrom} from 'rxjs';
 import {useState, useEffect} from 'react';
-import {ErroredState, LoadedState, LoadingState, Status} from './types';
+import {Status} from './status';
 import {
+  ErroredState,
+  LoadedState,
+  LoadingState,
   createErroredState,
   createLoadedState,
   createLoadingState,
