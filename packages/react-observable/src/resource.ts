@@ -21,7 +21,6 @@ export interface ResourceObserver<Value = unknown> {
 }
 
 export interface Resource<Value = unknown> {
-  state(): ResourceState<Value>;
   read(): Value;
   subscribe(observer: ResourceObserver<Value>): () => void;
 }
@@ -60,10 +59,6 @@ export function createResource<Value = unknown>(
   });
 
   return {
-    state() {
-      return state;
-    },
-
     read() {
       switch (state.status) {
         case Status.Loading:
@@ -102,21 +97,10 @@ export function createResource<Value = unknown>(
 }
 
 export function useResource<Value>(resource: Resource<Value>): Value {
-  const [, setState] = useState<ResourceState<Value>>(() => resource.state());
+  const [, setState] = useState<ResourceState<Value> | undefined>(undefined);
   useEffect(
     () => resource.subscribe((state) => setState(state)),
     [resource, setState],
   );
   return resource.read();
-}
-
-export function useResourceState<Value>(
-  resource: Resource<Value>,
-): ResourceState<Value> {
-  const [, setState] = useState<ResourceState<Value>>(() => resource?.state());
-  useEffect(
-    () => resource.subscribe((state) => setState(state)),
-    [resource, setState],
-  );
-  return resource.state();
 }

@@ -54,15 +54,15 @@ export const ErriredWhenErrored: React.FC = () => (
   <ReadObservable factory={erroredWhenErroredObservable} />
 );
 
-const eventuallyLoadedObservable = (): Observable<unknown> =>
+const eventuallyLoadedWhenReceivedObservable = (): Observable<unknown> =>
   createEventuallyCompletedObservable();
-export const EventuallyLoaded: React.FC = () => (
-  <ReadObservable factory={eventuallyLoadedObservable} />
+export const EventuallyLoadedWhenReceived: React.FC = () => (
+  <ReadObservable factory={eventuallyLoadedWhenReceivedObservable} />
 );
 
 const eventuallyErroredObservable = (): Observable<unknown> =>
   createEventuallyErroredObservable();
-export const EventuallyErrored: React.FC = () => (
+export const EventuallyErroredWhenErrored: React.FC = () => (
   <ReadObservable factory={eventuallyErroredObservable} />
 );
 

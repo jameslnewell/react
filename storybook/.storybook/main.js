@@ -1,4 +1,4 @@
 /* eslint-env node */
 module.exports = {
-  stories: ['../../packages/*/src/**/*.stories.@(ts|tsx)'],
+  stories: ['../../packages/react-promise/src/**/*.stories.@(ts|tsx)'],
 };

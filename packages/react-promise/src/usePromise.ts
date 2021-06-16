@@ -1,39 +1,39 @@
-import {Factory, State, Status} from './types';
-import {useInvokable, UseInvokableOptions} from './useInvokable';
+import {useEffect, useCallback} from 'react';
+import {
+  ErroredState,
+  LoadedState,
+  LoadingState,
+  createLoadingState,
+} from './state';
+import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
+import {useInvokablePromise} from './useInvokablePromise';
 
-export interface UsePromiseOptions extends UseInvokableOptions {
-  invokeWhenMounted?: boolean;
-}
-
-export type UsePromiseResult<Value> = State<Value> & {
-  invoke(): Promise<Value>;
-};
+export type UsePromiseResult<Value> =
+  | LoadingState
+  | LoadedState<Value>
+  | ErroredState;
 
 export function usePromise<Value>(
-  keys: unknown[],
-  factory: Factory<[], Value> | undefined,
-  options?: UsePromiseOptions,
+  promise: Promise<Value>,
 ): UsePromiseResult<Value> {
-  const {invokeWhenMounted = true, ...otherOptions} = options ?? {};
-  const [state, invoke, suspender] = useInvokable(keys, factory, otherOptions);
-
-  if (invokeWhenMounted && state.status === undefined && factory) {
-    if (otherOptions.suspendWhenPending) {
-      invoke();
-      throw suspender;
-    } else {
-      invoke();
-      return {
-        ...state,
-        invoke,
-        status: Status.Pending,
-        isPending: true,
-      };
-    }
+  if (process.env.NODE_ENV === 'development') {
+    useWarnIfValueChangesFrequently(
+      promise,
+      'It seems like you might be creating and passing a new promise on each render. ' +
+        'Create the promise outside of the render function or wrap it with React.useMemo()',
+    );
   }
 
-  return {
-    ...state,
-    invoke,
-  };
+  const factory = useCallback(() => promise, [promise]);
+  const {invoke, ...state} = useInvokablePromise(factory);
+
+  useEffect(() => {
+    invoke();
+  }, [invoke]);
+
+  if (state.status === undefined) {
+    return createLoadingState();
+  } else {
+    return state;
+  }
 }

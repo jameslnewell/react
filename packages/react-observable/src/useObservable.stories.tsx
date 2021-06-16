@@ -45,14 +45,16 @@ export const ErroredWhenErrored: React.FC = () => (
   <ReadObservable observable={erroredWhenErroredObservable} />
 );
 
-const eventuallyLoadedObservable = createEventuallyCompletedObservable();
-export const EventuallyLoaded: React.FC = () => (
-  <ReadObservable observable={eventuallyLoadedObservable} />
+const eventuallyLoadedWhenReceivedObservable =
+  createEventuallyCompletedObservable();
+export const EventuallyLoadedWhenRecieved: React.FC = () => (
+  <ReadObservable observable={eventuallyLoadedWhenReceivedObservable} />
 );
 
-const eventuallyErroredObservable = createEventuallyErroredObservable();
-export const EventuallyErrored: React.FC = () => (
-  <ReadObservable observable={eventuallyErroredObservable} />
+const eventuallyErroredWhenErroredObservable =
+  createEventuallyErroredObservable();
+export const EventuallyErroredWhenErrored: React.FC = () => (
+  <ReadObservable observable={eventuallyErroredWhenErroredObservable} />
 );
 
 const subscribedObservable = createReceivingObservable();

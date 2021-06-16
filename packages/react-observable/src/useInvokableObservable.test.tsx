@@ -1,4 +1,4 @@
-import {renderHook} from '@testing-library/react-hooks';
+import {renderHook, act} from '@testing-library/react-hooks';
 import {useInvokableObservable} from './useInvokableObservable';
 import {
   createCompletedObservable,
@@ -18,7 +18,6 @@ import {
   createLoadedState,
   createLoadingState,
 } from './state';
-import {act} from 'react-dom/test-utils';
 import {delay} from 'rxjs/operators';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -26,7 +25,7 @@ function renderUseInvokableObservable(factory: () => Observable<unknown>) {
   return renderHook(() => useInvokableObservable(factory));
 }
 
-describe('useObservable()', () => {
+describe('useInvokableObservable()', () => {
   test('is undefined when not invoked', () => {
     const {result} = renderUseInvokableObservable(createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));

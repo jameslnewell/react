@@ -4,7 +4,7 @@
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-promise)](https://bundlephobia.com/result?p=@jameslnewell/react-promise)
 [![Actions Status](https://github.com/jameslnewell/react/workflows/main/badge.svg)](https://github.com/jameslnewell/react-promise/actions)
 
-🎣 React hooks and resources for working with promises.
+🎣 React utilities for working with promises.
 
 > If you need to work with observables, try [`@jameslnewell/react-observable`](https://github.com/jameslnewell/react-observable).
 
@@ -24,27 +24,52 @@ yarn add @jameslnewell/react-promise
 
 ## Usage
 
-> [You'll find a working example of `react-promise` in CodeSandbox](https://codesandbox.io/s/jameslnewellreactpromise-xe0om).
+### createResource(observable)
 
-### usePromise
+Creates a resource to manage the state of a promise.
 
-Start resolving a promise as soon as the component mounts.
+> For use with `<React.Suspense/>`
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the promise.Keys should be serializable and shallow-equal.
-- `factory` - A function which creates the promise.
-- `options` - Options to configure the behaviour of the hook.
+- `promise: Promise` - The promise.
 
 #### Returns:
 
-- `.status` - Whether the promise is pending, fulfilled or rejected.
-- `.value` - The value of the promise after it is fulfilled.
-- `.error` - The value of the promise after it is rejected.
-- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
-- `.isFulfilled` - Whether the promise has been fulfilled.
-- `.isRejected`- Whether the promise has rejected.
-- `.invoke`- A function to invoke the promise again.
+The resource.
+
+#### Usage
+
+```js
+const {createResource} from '@jameslnewell/react-promise';
+
+const observable = new Promise((resolve) => setTimeout(() => resolve({name: 'John Smith'}), 1000));
+
+const resource = createResource(observable);
+
+const Component = () => {
+  const profile = resource.read();
+  return (
+    <>
+      Hello {profile.name}.
+    </>
+  );
+}
+```
+
+### usePromise
+
+Manage the state of a promise.
+
+#### Parameters:
+
+- `promise: Promise` - The promise.
+
+#### Returns:
+
+- `.status: loading|loaded|errored` - The status of the promise.
+- `.value` - The value resolved from the promise.
+- `.error` - The error rejected from the promise.
 
 ```jsx
 import React from 'react';
@@ -71,31 +96,50 @@ const UserProfile = ({id}) => {
       return <p>Loading...</p>;
   }
 };
+
+import React from 'react';
+import {useObservable} from '@jameslnewell/react-promise';
+
+const getUser = async (id) => {
+  const res = await fetch(`/user/${id}`, {method: 'GET'});
+  const data = await res.json();
+  return data;
+};
+
+const UserProfile = ({id}) => {
+  const {value, error} = usePromise(React.useMemo(() => getUser(id), [id]));
+  if (error) {
+    return <p>Sorry, something went wrong.</p>;
+  }
+  if (value) {
+    return (
+      <p>
+        Hello <strong>{user.name}</strong>!
+      </p>
+    );
+  }
+  return <p>Loading...</p>;
+};
 ```
 
-### useDeferredPromise
+### useInvokableObservable
 
-Start resolving a promise when invoked manually.
+Manage the state of an observable, creating the promise when called.
 
 #### Parameters:
 
-- `keys` - A unique set of keys for the promise. Keys should be serializable and shallow-equal.
-- `factory` - A function which creates the promise.
-- `options` - Options to configure the behaviour of the hook.
+- `factory: Function` - The promise factory.
 
 #### Returns:
 
-- `.status` - Whether the promise is pending, fulfilled or rejected.
-- `.value` - The value of the promise after it is fulfilled.
-- `.error` - The value of the promise after it is rejected.
-- `.isPending` - Whether we're waiting for the promise to be fulfilled or rejected.
-- `.isFulfilled` - Whether the promise has been fulfilled.
-- `.isRejected`- Whether the promise has rejected.
-- `.invoke`- A function to invoke the promise again.
+- `.invoke` - A function to invoke the promise.
+- `.status: loading|loaded|errored` - The status of the promise.
+- `.value` - The value resolved from the promise.
+- `.error` - The error rejected from the promise.
 
 ```jsx
-import React, {useState, useEffect} from 'react';
-import {useDeferredPromise} from '@jameslnewell/react-promise';
+import * as React from 'react';
+import {useInvokablePromise} from '@jameslnewell/react-promise';
 
 const putUser = async (id, data) => {
   await fetch(`/user/${id}`, {
@@ -106,17 +150,17 @@ const putUser = async (id, data) => {
 
 const EditUserProfile = ({id}) => {
   const input = React.useRef(null);
-  const {isPending, invoke: save} = useDeferredPromise([id], (data) =>
-    putUser(id, data),
+  const {loading, invoke: save} = useInvokablePromise(
+    React.useCallback((data) => putUser(id, data), [id]),
   );
   const handleSubmit = async (event) => {
     event.preventDefault();
-    save({name: input.current.value});
+    await save({name: input.current.value});
   };
   return (
     <form onSubmit={handleSubmit}>
       <input ref={input} />
-      <button disabled={isPending}>Save</button>
+      <button disabled={status === 'loading'}>Save</button>
     </form>
   );
 };

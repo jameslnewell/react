@@ -24,8 +24,6 @@ yarn add @jameslnewell/react-observable rxjs@^7
 
 ## Usage
 
-> [You'll find a working example of `react-observable` in CodeSandbox](https://codesandbox.io/s/jameslnewellreact-observable-sup96).
-
 ### createResource(observable)
 
 Creates a resource to manage the state of an observable.
@@ -34,7 +32,7 @@ Creates a resource to manage the state of an observable.
 
 #### Parameters:
 
-- `observable: Observable` - The observable
+- `observable: Observable` - The observable.
 
 #### Returns:
 
@@ -65,7 +63,7 @@ Subscribes to a resource, updating the parent component whenever a new value is 
 
 #### Parameters:
 
-- `resource: Resource` - The resource
+- `resource: Resource` - The resource.
 
 #### Returns:
 
@@ -96,7 +94,7 @@ Manage the state of an observable, subscribing to the observable when mounted.
 
 #### Parameters:
 
-- `observable: Observable` - The observable
+- `observable: Observable` - The observable.
 
 #### Returns:
 
@@ -135,11 +133,11 @@ const UserProfile = ({id}) => {
 
 ### useInvokableObservable()
 
-Manage the state of an observable, subscribing to the observable when called.
+Manage the state of an observable, creating the observable when called.
 
 #### Parameters:
 
-- `observable: Observable` - The observable
+- `factory: Function` - The observable factory.
 
 #### Returns:
 
@@ -167,7 +165,7 @@ const EditUserProfile = ({id}) => {
   );
   const handleSubmit = async (event) => {
     event.preventDefault();
-    save({name: input.current.value});
+    await save({name: input.current.value});
   };
   return (
     <form onSubmit={handleSubmit}>

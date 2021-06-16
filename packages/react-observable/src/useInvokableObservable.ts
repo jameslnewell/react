@@ -18,14 +18,24 @@ type UseInvokableObservableState<Value> =
   | LoadedState<Value>
   | ErroredState;
 
-export type UseInvokableObservableResult<Value> =
-  UseInvokableObservableState<Value> & {
-    invoke: () => Observable<Value>;
-  };
+export type UseInvokableObservableResult<
+  Params extends [],
+  Value,
+> = UseInvokableObservableState<Value> & {
+  invoke: (...parans: Params) => Observable<Value>;
+};
 
 export function useInvokableObservable<Params extends [], Value>(
   factory: (...params: Params) => Observable<Value>,
-): UseInvokableObservableResult<Value> {
+): UseInvokableObservableResult<Params, Value> {
+  if (process.env.NODE_ENV === 'development') {
+    useWarnIfValueChangesFrequently(
+      factory,
+      'It seems like you might be creating and passing a new factory function on each render. ' +
+        'Create the factory function outside of the render function or wrap it with React.useCallback()',
+    );
+  }
+
   const subscriptionRef = useRef<Subscription | undefined>(undefined);
   const [state, setState] =
     useState<UseInvokableObservableState<Value>>(createEmptyState);
@@ -70,14 +80,6 @@ export function useInvokableObservable<Params extends [], Value>(
       setState(createEmptyState());
     };
   }, [factory]);
-
-  if (process.env.NODE_ENV === 'development') {
-    useWarnIfValueChangesFrequently(
-      factory,
-      'It seems like you might be creating and passing a new factory function on each render. ' +
-        'Create the factory function outside of the render function or wrap it with React.useCallback()',
-    );
-  }
 
   return useMemo(
     () => ({

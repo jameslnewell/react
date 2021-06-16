@@ -10,9 +10,15 @@
     "react-hooks",
     "observable",
     "observables",
-    "jameslnewell"
+    "jameslnewell",
+    "resource",
+    "react-cache"
   ],
-  "repository": "jameslnewell/react",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jameslnewell/react.git",
+    "directory": "packages/react-observable"
+  },
   "files": [
     "dist"
   ],
