@@ -18,13 +18,13 @@ type UseInvokablePromiseState<Value> =
   | ErroredState;
 
 export type UseInvokablePromiseResult<
-  Params extends [],
+  Params extends any[],
   Value,
 > = UseInvokablePromiseState<Value> & {
   invoke: (...params: Params) => Promise<Value>;
 };
 
-export function useInvokablePromise<Params extends [], Value>(
+export function useInvokablePromise<Params extends any[], Value>(
   factory: (...params: Params) => Promise<Value>,
 ): UseInvokablePromiseResult<Params, Value> {
   if (process.env.NODE_ENV === 'development') {

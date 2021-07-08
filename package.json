@@ -40,7 +40,7 @@
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
     "@manypkg/cli": "^0.17.0",
-    "@preconstruct/cli": "^2.0.1",
+    "@preconstruct/cli": "^2.1.0",
     "@types/jest": "^26.0.20",
     "babel-loader": "^8.2.2",
     "eslint": "^7.20.0",

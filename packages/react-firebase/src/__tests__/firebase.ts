@@ -1,8 +1,6 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import {initializeApp} from 'firebase/app';
 
-export const app = firebase.initializeApp({
+export const app = initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
   databaseURL: process.env.FIREBASE_DATABASE_URL,

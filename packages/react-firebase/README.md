@@ -4,7 +4,7 @@
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-firebase)](https://bundlephobia.com/result?p=@jameslnewell/react-firebase)
 [![Actions Status](https://github.com/jameslnewell/react/workflows/main/badge.svg)](https://github.com/jameslnewell/react/actions)
 
-🎣 React hooks for working with firebase.
+🎣 React utilities for working with firebase.
 
 ## Installation
 

@@ -1,7 +1,7 @@
 {
   "name": "@jameslnewell/react-firebase",
-  "version": "0.12.0-preview.16",
-  "description": "🎣 React hooks for working with firebase.",
+  "version": "0.13.0-preview.1",
+  "description": "🎣 React utilities for working with firebase.",
   "main": "dist/react-firebase.cjs.js",
   "module": "dist/react-firebase.esm.js",
   "keywords": [
@@ -13,7 +13,11 @@
     "storage",
     "google"
   ],
-  "repository": "jameslnewell/react",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jameslnewell/react.git",
+    "directory": "packages/react-firebase"
+  },
   "sideEffects": false,
   "files": [
     "dist",
@@ -24,22 +28,20 @@
     "storage"
   ],
   "dependencies": {
-    "@jameslnewell/observable": "^1.5.0",
-    "@jameslnewell/react-observable": "^3.0.0-preview.12",
-    "@jameslnewell/react-promise": "^4.0.0-preview.11"
+    "@jameslnewell/react-observable": "^4.0.0-preview.1",
+    "@jameslnewell/react-promise": "^5.0.0-preview.1"
   },
   "peerDependencies": {
     "@types/react": ">=16.8.0",
-    "firebase": ">=8.2.6",
-    "react": ">=16.8.0"
+    "firebase": "^9.0.0-beta.4",
+    "react": ">=16.8.0",
+    "rxjs": "^7.0.0"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
     "@testing-library/react-hooks": "^7.0.0",
-    "@types/dotenv": "^8.2.0",
     "@types/react": "^17.0.2",
-    "dotenv": "^8.2.0",
-    "firebase": "^8.6.4",
+    "firebase": "^9.0.0-beta.4",
     "firebase-tools": "^9.12.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
