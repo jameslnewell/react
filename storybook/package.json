@@ -13,5 +13,8 @@
     "develop": "start-storybook -p 1234",
     "build": "build-storybook"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@storybook/builder-webpack5": "^6.3.4"
+  }
 }
