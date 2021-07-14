@@ -7,6 +7,16 @@ ui-debug.log
 firebase-debug.log
 firestore-debug.log
 
+# ignore yarn
+# @see https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
 # ignore distributable directories
 /packages/*/dist/
 /packages/*/*/dist/
