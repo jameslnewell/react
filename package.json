@@ -59,7 +59,7 @@
   },
   "scripts": {
     "postinstall": "preconstruct dev",
-    "setup": "yarn workspaces run setup",
+    "setup": "yarn workspaces foreach run setup",
     "clean": "rm -rf packages/*/node_modules packages/*/dist packages/*/*/dist",
     "clean:node_modules": "rm -rf node_modules/ packages/*/node_modules",
     "format": "prettier --write '**/*.{js,json,md,ts,tsx}'",

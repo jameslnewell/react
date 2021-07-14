@@ -30,7 +30,6 @@
   "main": "dist/jameslnewell-react-promise.cjs.js",
   "module": "dist/jameslnewell-react-promise.esm.js",
   "sideEffects": false,
-  "dependencies": {},
   "peerDependencies": {
     "@types/react": ">=16.8.0",
     "react": ">=16.8.0"
