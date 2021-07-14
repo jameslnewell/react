@@ -25,13 +25,13 @@
   "main": "dist/jameslnewell-react-observable.cjs.js",
   "module": "dist/jameslnewell-react-observable.esm.js",
   "sideEffects": false,
-  "dependencies": {},
   "peerDependencies": {
     "@types/react": ">=16.8.0",
     "react": ">=16.8.0",
     "rxjs": ">=7.0.0"
   },
   "devDependencies": {
+    "@jameslnewell/package-scripts": "^1.0.0",
     "@testing-library/react-hooks": "^7.0.0",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
@@ -39,9 +39,12 @@
     "react-dom": "^17.0.1",
     "rxjs": "^7.1.0"
   },
-  "jest": {
-    "displayName": "react-observable",
-    "preset": "@jameslnewell/jest-preset"
+  "scripts": {
+    "clean": "package-scripts clean",
+    "setup": "package-scripts setup",
+    "check": "package-scripts check",
+    "build": "package-scripts build",
+    "test": "package-scripts test"
   },
   "license": "MIT"
 }

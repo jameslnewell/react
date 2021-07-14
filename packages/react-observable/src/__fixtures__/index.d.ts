@@ -1,0 +1,11 @@
+import * as rxjs from 'rxjs';
+export declare const value = "Hello World!";
+export declare const error = "Uh oh!";
+export declare const noop: () => void;
+export declare function createWaitingObservable(): rxjs.Observable<never>;
+export declare function createReceivedObservable(): rxjs.Observable<string>;
+export declare function createCompletedObservable(): rxjs.Observable<string>;
+export declare function createErroredObservable(): rxjs.Observable<never>;
+export declare function createEventuallyCompletedObservable(): rxjs.Observable<string>;
+export declare function createEventuallyErroredObservable(): rxjs.Observable<unknown>;
+export declare function createReceivingObservable(): rxjs.Observable<number>;
