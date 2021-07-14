@@ -1,6 +1,6 @@
 import * as rxjs from 'rxjs';
-export declare const value = "Hello World!";
-export declare const error = "Uh oh!";
+export declare const value = 'Hello World!';
+export declare const error = 'Uh oh!';
 export declare const noop: () => void;
 export declare function createWaitingObservable(): rxjs.Observable<never>;
 export declare function createReceivedObservable(): rxjs.Observable<string>;

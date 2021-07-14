@@ -1,5 +1,4 @@
 import {InputOptions, OutputOptions, Plugin} from 'rollup';
-import * as path from 'path';
 import * as child_process from 'child_process';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';

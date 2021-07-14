@@ -18,12 +18,14 @@ type UseInvokablePromiseState<Value> =
   | ErroredState;
 
 export type UseInvokablePromiseResult<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Params extends any[],
   Value,
 > = UseInvokablePromiseState<Value> & {
   invoke: (...params: Params) => Promise<Value>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokablePromise<Params extends any[], Value>(
   factory: (...params: Params) => Promise<Value>,
 ): UseInvokablePromiseResult<Params, Value> {
