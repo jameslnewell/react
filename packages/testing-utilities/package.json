@@ -4,15 +4,15 @@
   "main": "dist/testing-utilities.cjs.js",
   "private": true,
   "dependencies": {
-    "react-error-boundary": "^3.1.0"
+    "react-error-boundary": "^3.1.3"
   },
   "peerDependencies": {
-    "@types/react": ">=16.9.0",
-    "react": ">=16.9.0"
+    "@types/react": ">=16.8.0 <18",
+    "react": ">=16.8.0 <18"
   },
   "devDependencies": {
-    "@types/react": "^17.0.2",
-    "react": "^17.0.1"
+    "@types/react": "^17.0.14",
+    "react": "^17.0.2"
   },
   "jest": {
     "displayName": "testing-utilities"

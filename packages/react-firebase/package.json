@@ -28,23 +28,24 @@
     "storage"
   ],
   "dependencies": {
-    "@jameslnewell/react-observable": "^4.0.0-preview.1",
-    "@jameslnewell/react-promise": "^5.0.0-preview.1"
+    "@jameslnewell/react-observable": "workspace:*",
+    "@jameslnewell/react-promise": "workspace:*"
   },
   "peerDependencies": {
-    "@types/react": ">=16.8.0",
+    "@types/react": ">=16.8.0 <18",
     "firebase": "^9.0.0-beta.4",
-    "react": ">=16.8.0",
-    "rxjs": "^7.0.0"
+    "react": ">=16.8.0 <18",
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
     "@testing-library/react-hooks": "^7.0.0",
-    "@types/react": "^17.0.2",
+    "@types/react": "^17.0.14",
     "firebase": "^9.0.0-beta.4",
     "firebase-tools": "^9.12.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "rxjs": "^7.2.0"
   },
   "jest": {
     "displayName": "react-firebase",
