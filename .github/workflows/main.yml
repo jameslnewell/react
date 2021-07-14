@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  check_dependencies:
+  check_constraints:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -25,9 +25,9 @@ jobs:
       - run: |
           yarn install --frozen-lockfile
 
-      - name: check dependencies
+      - name: check constraints
         run: |
-          yarn run check:dependencies
+          yarn run check:constraints
 
   check_typing:
     runs-on: ubuntu-latest
@@ -151,7 +151,7 @@ jobs:
 
     if: github.ref == 'refs/heads/main'
     needs:
-      - check_dependencies
+      - check_constraints
       - check_typing
       - check_linting
       - check_formatting
