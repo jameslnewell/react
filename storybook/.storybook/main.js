@@ -2,6 +2,7 @@
 module.exports = {
   stories: ['../../packages/*/src/**/*.stories.@(ts|tsx)'],
   core: {
-    builder: 'webpack5',
+    // FIXME:
+    // builder: 'webpack5',
   },
 };

@@ -11,10 +11,15 @@
     "react": ">=16.8.0 <18"
   },
   "devDependencies": {
+    "@jameslnewell/package-scripts": "workspace:*",
     "@types/react": "^17.0.14",
     "react": "^17.0.2"
   },
-  "jest": {
-    "displayName": "testing-utilities"
+  "scripts": {
+    "clean": "package-scripts clean",
+    "setup": "package-scripts setup",
+    "check": "package-scripts check",
+    "build": "package-scripts build",
+    "test": "package-scripts test"
   }
 }

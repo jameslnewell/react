@@ -69,7 +69,7 @@
     "check:typing": "tsc --noEmit --project tsconfig.json",
     "build": "yarn workspaces foreach run build",
     "test": "jest",
-    "develop": "yarn workspace storybook run start",
+    "develop": "yarn workspace storybook run develop",
     "prepare-release": "yarn run build && yarn run test && yarn run check:*"
   }
 }
