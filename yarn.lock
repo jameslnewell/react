@@ -3812,6 +3812,7 @@ __metadata:
   resolution: "@jameslnewell/react-firebase@workspace:packages/react-firebase"
   dependencies:
     "@firebase/testing": ^0.20.11
+    "@jameslnewell/package-scripts": "workspace:*"
     "@jameslnewell/react-observable": "workspace:*"
     "@jameslnewell/react-promise": "workspace:*"
     "@testing-library/react-hooks": ^7.0.0
@@ -3851,6 +3852,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jameslnewell/react-promise@workspace:packages/react-promise"
   dependencies:
+    "@jameslnewell/package-scripts": "workspace:*"
     "@testing-library/react-hooks": ^7.0.0
     "@types/react": ^17.0.14
     "@types/react-dom": ^17.0.9

@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
+    "@jameslnewell/package-scripts": "workspace:*",
     "@testing-library/react-hooks": "^7.0.0",
     "@types/react": "^17.0.14",
     "firebase": "^9.0.0-beta.4",
@@ -46,10 +47,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rxjs": "^7.2.0"
-  },
-  "jest": {
-    "displayName": "react-firebase",
-    "preset": "@jameslnewell/jest-preset"
   },
   "preconstruct": {
     "entrypoints": [
@@ -60,7 +57,11 @@
     ]
   },
   "scripts": {
-    "emulate": "firebase emulators:start --only firestore"
+    "clean": "package-scripts clean",
+    "setup": "package-scripts setup",
+    "check": "package-scripts check",
+    "build": "package-scripts build",
+    "test": "package-scripts test"
   },
   "license": "MIT"
 }
