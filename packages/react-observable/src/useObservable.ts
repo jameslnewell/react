@@ -1,40 +1,36 @@
-import {useEffect, useCallback} from 'react';
-import {
-  ErroredState,
-  LoadedState,
-  LoadingState,
-  createLoadingState,
-} from './state';
+import {useEffect} from 'react';
+import {createLoadingState} from './state';
 import {Observable} from 'rxjs';
-import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
-import {useInvokableObservable} from './useInvokableObservable';
+import {
+  useInvokableObservable,
+  UseInvokableObservableResult,
+} from './useInvokableObservable';
 
-export type UseObservableResult<Value> =
-  | LoadingState
-  | LoadedState<Value>
-  | ErroredState;
+export type UseObservableResult<Value> = Omit<
+  UseInvokableObservableResult<[], Value>,
+  'invoke'
+>;
 
 export function useObservable<Value>(
-  observable: Observable<Value>,
+  observable: Observable<Value> | undefined,
 ): UseObservableResult<Value> {
-  if (process.env.NODE_ENV === 'development') {
-    useWarnIfValueChangesFrequently(
-      observable,
-      'It seems like you might be creating and passing a new observable on each render. ' +
-        'Create the observable outside of the render function or wrap it with React.useMemo()',
-    );
-  }
-
-  const factory = useCallback(() => observable, [observable]);
-  const {invoke, ...state} = useInvokableObservable(factory);
+  const {invoke, ...result} = useInvokableObservable(
+    observable ? () => observable : undefined,
+    [observable],
+  );
 
   useEffect(() => {
     invoke();
   }, [invoke]);
 
-  if (state.status === undefined) {
-    return createLoadingState();
+  if (result.status === undefined) {
+    return {
+      ...createLoadingState(),
+      isLoading: true,
+      isLoaded: false,
+      isErrored: false,
+    };
   } else {
-    return state;
+    return result;
   }
 }

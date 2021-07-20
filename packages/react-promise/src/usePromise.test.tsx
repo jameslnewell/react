@@ -25,36 +25,48 @@ function renderUsePromise(
 describe('usePromise()', () => {
   test('is loading when waiting', () => {
     const {result} = renderUsePromise(createPendingPromise());
-    expect(result.current).toEqual(createLoadingState());
+    expect(result.current).toEqual(
+      expect.objectContaining(createLoadingState()),
+    );
   });
   test('is loaded when fulfilled', async () => {
     const {result, waitForValueToChange} = renderUsePromise(
       createFulfilledPromise(),
     );
     await waitForValueToChange(() => result.current);
-    expect(result.current).toEqual(createLoadedState(value));
+    expect(result.current).toEqual(
+      expect.objectContaining(createLoadedState(value)),
+    );
   });
   test('is errored when rejected', async () => {
     const {result, waitForValueToChange} = renderUsePromise(
       createRejectedPromise(),
     );
     await waitForValueToChange(() => result.current);
-    expect(result.current).toEqual(createErroredState(error));
+    expect(result.current).toEqual(
+      expect.objectContaining(createErroredState(error)),
+    );
   });
   test('eventually loads', async () => {
     const {result, waitForValueToChange} = renderUsePromise(
       createEventuallyFulfilledPromise(),
     );
     await waitForValueToChange(() => result.current, {timeout: 4000});
-    expect(result.current).toEqual(createLoadedState(value));
+    expect(result.current).toEqual(
+      expect.objectContaining(createLoadedState(value)),
+    );
   });
   test('eventually errors', async () => {
     const {result, waitForValueToChange} = renderUsePromise(
       createEventuallyRejectedPromise(),
     );
-    expect(result.current).toEqual(createLoadingState());
+    expect(result.current).toEqual(
+      expect.objectContaining(createLoadingState()),
+    );
     await waitForValueToChange(() => result.current, {timeout: 4000});
-    expect(result.current).toEqual(createErroredState(error));
+    expect(result.current).toEqual(
+      expect.objectContaining(createErroredState(error)),
+    );
   });
   test('rendered with a new promise', async () => {
     const promise1 = new Promise<string>((resolve) =>
@@ -67,28 +79,36 @@ describe('usePromise()', () => {
       ({promise}: {promise: Promise<string>}) => usePromise(promise),
       {initialProps: {promise: promise1}},
     );
-    expect(result.current).toEqual({
-      status: Status.Loading,
-      value: undefined,
-      error: undefined,
-    });
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        status: Status.Loading,
+        value: undefined,
+        error: undefined,
+      }),
+    );
     await waitForValueToChange(() => result.current);
-    expect(result.current).toEqual({
-      status: Status.Loaded,
-      value: 'foo',
-      error: undefined,
-    });
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        status: Status.Loaded,
+        value: 'foo',
+        error: undefined,
+      }),
+    );
     rerender({promise: promise2});
-    expect(result.current).toEqual({
-      status: Status.Loading,
-      value: undefined,
-      error: undefined,
-    });
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        status: Status.Loading,
+        value: undefined,
+        error: undefined,
+      }),
+    );
     await waitForValueToChange(() => result.current);
-    expect(result.current).toEqual({
-      status: Status.Loaded,
-      value: 'bar',
-      error: undefined,
-    });
+    expect(result.current).toEqual(
+      expect.objectContaining({
+        status: Status.Loaded,
+        value: 'bar',
+        error: undefined,
+      }),
+    );
   });
 });

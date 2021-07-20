@@ -1,4 +1,4 @@
 {
-  "main": "dist/jameslnewell-react-firebase-functions.cjs.js",
-  "module": "dist/jameslnewell-react-firebase-functions.esm.js"
+  "main": "../dist/functions.cjs",
+  "module": "../dist/functions.mjs"
 }

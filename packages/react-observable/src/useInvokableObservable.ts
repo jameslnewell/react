@@ -8,9 +8,13 @@ import {
   createErroredState,
   createLoadedState,
   createLoadingState,
+  EmptyStateResult,
+  LoadingStateResult,
+  LoadedStateResult,
+  ErroredStateResult,
 } from './state';
 import {Observable, Subscription} from 'rxjs';
-import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
+import {Status} from './status';
 
 type UseInvokableObservableState<Value> =
   | EmptyState
@@ -18,24 +22,19 @@ type UseInvokableObservableState<Value> =
   | LoadedState<Value>
   | ErroredState;
 
-export type UseInvokableObservableResult<
-  Params extends [],
-  Value,
-> = UseInvokableObservableState<Value> & {
+export type UseInvokableObservableResult<Params extends [], Value> = (
+  | EmptyStateResult
+  | LoadingStateResult
+  | LoadedStateResult<Value>
+  | ErroredStateResult
+) & {
   invoke: (...parans: Params) => Observable<Value>;
 };
 
 export function useInvokableObservable<Params extends [], Value>(
-  factory: (...params: Params) => Observable<Value>,
+  factory: ((...params: Params) => Observable<Value>) | undefined,
+  deps: unknown[],
 ): UseInvokableObservableResult<Params, Value> {
-  if (process.env.NODE_ENV === 'development') {
-    useWarnIfValueChangesFrequently(
-      factory,
-      'It seems like you might be creating and passing a new factory function on each render. ' +
-        'Create the factory function outside of the render function or wrap it with React.useCallback()',
-    );
-  }
-
   const subscriptionRef = useRef<Subscription | undefined>(undefined);
   const [state, setState] =
     useState<UseInvokableObservableState<Value>>(createEmptyState);
@@ -47,30 +46,34 @@ export function useInvokableObservable<Params extends [], Value>(
 
       // subscribe to next subscription
       setState(createLoadingState());
-      let hasReceivedAValue = false;
-      const observable = factory(...params);
-      subscriptionRef.current = observable.subscribe({
-        next(value) {
-          hasReceivedAValue = true;
-          setState(createLoadedState(value));
-        },
-        complete() {
-          if (!hasReceivedAValue) {
-            setState(
-              createErroredState(
-                new Error('Observable completed without a value.'),
-              ),
-            );
-          }
-        },
-        error(error) {
-          setState(createErroredState(error));
-        },
-      });
-      // TODO: replay events for the returned stream?
-      return observable;
+      if (factory) {
+        let hasReceivedAValue = false;
+        const observable = factory(...params);
+        subscriptionRef.current = observable.subscribe({
+          next(value) {
+            hasReceivedAValue = true;
+            setState(createLoadedState(value));
+          },
+          complete() {
+            if (!hasReceivedAValue) {
+              setState(
+                createErroredState(
+                  new Error('Observable completed without a value.'),
+                ),
+              );
+            }
+          },
+          error(error) {
+            setState(createErroredState(error));
+          },
+        });
+        // TODO: replay events for the returned stream?
+        return observable;
+      } else {
+        throw new Error('No factory to invoke.');
+      }
     },
-    [factory, setState],
+    [setState, ...deps],
   );
 
   // unsubscribe and reset state when the observable factory changes
@@ -79,13 +82,15 @@ export function useInvokableObservable<Params extends [], Value>(
       subscriptionRef.current?.unsubscribe();
       setState(createEmptyState());
     };
-  }, [factory]);
+  }, deps);
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    return {
       ...state,
       invoke,
-    }),
-    [state, invoke],
-  );
+      isLoading: state.status === Status.Loading,
+      isLoaded: state.status === Status.Loaded,
+      isErrored: state.status === Status.Errored,
+    } as UseInvokableObservableResult<Params, Value>;
+  }, [state, invoke]);
 }

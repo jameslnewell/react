@@ -8,8 +8,12 @@ import {
   createErroredState,
   createLoadedState,
   createLoadingState,
+  EmptyStateResult,
+  LoadedStateResult,
+  LoadingStateResult,
+  ErroredStateResult,
 } from './state';
-import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
+import {Status} from './status';
 
 type UseInvokablePromiseState<Value> =
   | EmptyState
@@ -21,22 +25,20 @@ export type UseInvokablePromiseResult<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Params extends any[],
   Value,
-> = UseInvokablePromiseState<Value> & {
+> = (
+  | EmptyStateResult
+  | LoadingStateResult
+  | LoadedStateResult<Value>
+  | ErroredStateResult
+) & {
   invoke: (...params: Params) => Promise<Value>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokablePromise<Params extends any[], Value>(
-  factory: (...params: Params) => Promise<Value>,
+  factory: ((...params: Params) => Promise<Value>) | undefined,
+  deps: unknown[],
 ): UseInvokablePromiseResult<Params, Value> {
-  if (process.env.NODE_ENV === 'development') {
-    useWarnIfValueChangesFrequently(
-      factory,
-      'It seems like you might be creating and passing a new factory function on each render. ' +
-        'Create the factory function outside of the render function or wrap it with React.useCallback()',
-    );
-  }
-
   const current = useRef<Promise<Value> | undefined>(undefined);
   const [state, setState] =
     useState<UseInvokablePromiseState<Value>>(createEmptyState);
@@ -44,23 +46,27 @@ export function useInvokablePromise<Params extends any[], Value>(
   const invoke = useCallback(
     (...params: Params) => {
       setState(createLoadingState());
-      const promise = factory(...params);
-      current.current = promise;
-      promise.then(
-        (value) => {
-          if (current.current) {
-            setState(createLoadedState(value));
-          }
-        },
-        (error) => {
-          if (current.current) {
-            setState(createErroredState(error));
-          }
-        },
-      );
-      return promise;
+      if (factory) {
+        const promise = factory(...params);
+        current.current = promise;
+        promise.then(
+          (value) => {
+            if (current.current) {
+              setState(createLoadedState(value));
+            }
+          },
+          (error) => {
+            if (current.current) {
+              setState(createErroredState(error));
+            }
+          },
+        );
+        return promise;
+      } else {
+        throw new Error('No factory to invoke.');
+      }
     },
-    [factory, setState],
+    [setState, ...deps],
   );
 
   // unsubscribe and reset state when the promise factory changes
@@ -69,13 +75,15 @@ export function useInvokablePromise<Params extends any[], Value>(
       current.current = undefined;
       setState(createEmptyState());
     };
-  }, [factory]);
+  }, deps);
 
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    return {
       ...state,
       invoke,
-    }),
-    [state, invoke],
-  );
+      isLoading: state.status === Status.Loading,
+      isLoaded: state.status === Status.Loaded,
+      isErrored: state.status === Status.Errored,
+    } as UseInvokablePromiseResult<Params, Value>;
+  }, [state, invoke]);
 }

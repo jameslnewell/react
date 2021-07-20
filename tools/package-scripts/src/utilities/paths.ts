@@ -1,19 +1,13 @@
 import * as path from 'path';
-import {readJSONFile} from './readJSONFile';
+import resolve from 'resolve';
 
 export const toolDirectory = path.resolve(__dirname, '../..');
 export const rootDirectory = path.resolve('.');
 export const srcDirectory = path.resolve('src');
 export const outDirectory = path.resolve('dist');
 
-/**
- * Gets the source file path for the entrypoint
- * @param entrypoint
- * @returns
- */
-export function getSourceFile(entrypoint: string): string {
-  // TODO: use resolve lib with TS extensions
-  return path.join(srcDirectory, entrypoint);
+export function removeExtension(file: string): string {
+  return path.join(path.dirname(file), path.basename(file, path.extname(file)));
 }
 
 /**
@@ -26,63 +20,72 @@ export function getSourceFile(entrypoint: string): string {
  * @example auth/index.ts => auth
  * @example auth/auth.ts => auth/auth
  */
-export function getPackageDirectory(entrypoint: string): string {
-  let directory = path.join(
-    path.dirname(entrypoint),
-    path.basename(entrypoint, path.extname(entrypoint)),
-  );
-  if (path.basename(directory) === 'index') {
-    directory = path.dirname(directory);
+function getRelativePackageDirectory(entrypoint: string): string {
+  let relativeDirectory = removeExtension(entrypoint);
+  if (path.basename(relativeDirectory) === 'index') {
+    relativeDirectory = path.dirname(relativeDirectory);
   }
-  return directory;
+  return relativeDirectory;
+}
+
+/**
+ * Gets the source file path for the entrypoint
+ * @param entrypoint
+ * @returns
+ */
+export function getSourceFile(entrypoint: string): string {
+  return resolve.sync(`./${entrypoint}`, {
+    basedir: srcDirectory,
+    extensions: ['.ts', '.tsx', '.js'],
+  });
 }
 
 /**
  * Get the "main" file path for entrypoint's package
  * @param entrypoint
  */
-export async function getMainFile(
-  entrypoint: string,
-): Promise<string | undefined> {
-  const directory = getPackageDirectory(entrypoint);
-  const pkg = await readJSONFile(path.join(directory, 'package.json'));
-  return pkg.main;
-}
-
-export async function getMainTypeFile(
-  entrypoint: string,
-): Promise<string | undefined> {
-  const mainFile = await getMainFile(entrypoint);
-  if (!mainFile) {
-    return undefined;
+export function getMainFile(entrypoint: string): string {
+  let relativeMainFile = getRelativePackageDirectory(entrypoint);
+  if (relativeMainFile === '.') {
+    relativeMainFile = 'index';
   }
   return path.join(
-    path.dirname(mainFile),
-    `${path.basename(mainFile, path.extname(mainFile))}.d.ts`,
+    outDirectory,
+    `${relativeMainFile.replace(/\/|\\/g, '-')}.cjs`,
   );
 }
 
 /**
- * Get the "main" file path for entrypoint's package
+ * Get the "module" file path for entrypoint's package
  * @param entrypoint
  */
-export async function getModuleFile(
-  entrypoint: string,
-): Promise<string | undefined> {
-  const directory = getPackageDirectory(entrypoint);
-  const pkg = await readJSONFile(path.join(directory, 'package.json'));
-  return pkg.module;
-}
-
-export async function getModuleTypeFile(
-  entrypoint: string,
-): Promise<string | undefined> {
-  const moduleFile = await getModuleFile(entrypoint);
-  if (!moduleFile) {
-    return undefined;
+export function getModuleFile(entrypoint: string): string {
+  let relativeModuleFile = getRelativePackageDirectory(entrypoint);
+  if (relativeModuleFile === '.') {
+    relativeModuleFile = 'index';
   }
   return path.join(
-    path.dirname(moduleFile),
-    `${path.basename(moduleFile, path.extname(moduleFile))}.d.ts`,
+    outDirectory,
+    `${relativeModuleFile.replace(/\/|\\/g, '-')}.mjs`,
   );
+}
+
+/**
+ * Gets the .d.ts file path for the entrypoint
+ * @param entrypoint
+ * @returns
+ */
+export function getTypeFile(entrypoint: string): string {
+  const mainFile = getMainFile(entrypoint);
+  return mainFile.replace(/\.cjs$/, '.d.ts');
+}
+
+/**
+ * Gets the package.json file path for the entrypoint
+ * @param entrypoint
+ * @returns
+ */
+export function getPackageFile(entrypoint: string): string {
+  const relativePackageDirectory = getRelativePackageDirectory(entrypoint);
+  return path.join(rootDirectory, relativePackageDirectory, 'package.json');
 }

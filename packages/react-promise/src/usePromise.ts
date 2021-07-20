@@ -1,39 +1,35 @@
-import {useEffect, useCallback} from 'react';
+import {useEffect} from 'react';
+import {createLoadingState} from './state';
 import {
-  ErroredState,
-  LoadedState,
-  LoadingState,
-  createLoadingState,
-} from './state';
-import {useWarnIfValueChangesFrequently} from './useWarnIfValueChangesFrequently';
-import {useInvokablePromise} from './useInvokablePromise';
+  useInvokablePromise,
+  UseInvokablePromiseResult,
+} from './useInvokablePromise';
 
-export type UsePromiseResult<Value> =
-  | LoadingState
-  | LoadedState<Value>
-  | ErroredState;
+export type UsePromiseResult<Value> = Omit<
+  UseInvokablePromiseResult<[], Value>,
+  'invoke'
+>;
 
 export function usePromise<Value>(
-  promise: Promise<Value>,
+  promise: Promise<Value> | undefined,
 ): UsePromiseResult<Value> {
-  if (process.env.NODE_ENV === 'development') {
-    useWarnIfValueChangesFrequently(
-      promise,
-      'It seems like you might be creating and passing a new promise on each render. ' +
-        'Create the promise outside of the render function or wrap it with React.useMemo()',
-    );
-  }
-
-  const factory = useCallback(() => promise, [promise]);
-  const {invoke, ...state} = useInvokablePromise(factory);
+  const {invoke, ...result} = useInvokablePromise(
+    promise ? () => promise : undefined,
+    [promise],
+  );
 
   useEffect(() => {
     invoke();
   }, [invoke]);
 
-  if (state.status === undefined) {
-    return createLoadingState();
+  if (result.status === undefined) {
+    return {
+      ...createLoadingState(),
+      isLoading: true,
+      isLoaded: false,
+      isErrored: false,
+    };
   } else {
-    return state;
+    return result;
   }
 }

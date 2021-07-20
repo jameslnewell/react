@@ -17,17 +17,20 @@ import {
 } from './state';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function renderuseInvokablePromise(factory: () => Promise<unknown>) {
-  return renderHook(() => useInvokablePromise(factory));
+function renderuseInvokablePromise(
+  factory: (() => Promise<unknown>) | undefined,
+  deps: unknown[],
+) {
+  return renderHook(() => useInvokablePromise(factory, deps));
 }
 
 describe('useInvokablePromise()', () => {
   test('is undefined when not invoked', () => {
-    const {result} = renderuseInvokablePromise(createPendingPromise);
+    const {result} = renderuseInvokablePromise(createPendingPromise, []);
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
   });
   test('is loading when pending', () => {
-    const {result} = renderuseInvokablePromise(createPendingPromise);
+    const {result} = renderuseInvokablePromise(createPendingPromise, []);
     act(() => {
       result.current.invoke();
     });
@@ -38,6 +41,7 @@ describe('useInvokablePromise()', () => {
   test('is loaded when fulfilled', async () => {
     const {result, waitForValueToChange} = renderuseInvokablePromise(
       createFulfilledPromise,
+      [],
     );
     act(() => {
       result.current.invoke();
@@ -50,6 +54,7 @@ describe('useInvokablePromise()', () => {
   test('is errored when rejected', async () => {
     const {result, waitForValueToChange} = renderuseInvokablePromise(
       createRejectedPromise,
+      [],
     );
     act(() => {
       result.current.invoke();
@@ -62,6 +67,7 @@ describe('useInvokablePromise()', () => {
   test('eventually loads', async () => {
     const {result, waitForValueToChange} = renderuseInvokablePromise(
       createEventuallyFulfilledPromise,
+      [],
     );
     act(() => {
       result.current.invoke();
@@ -74,6 +80,7 @@ describe('useInvokablePromise()', () => {
   test('eventually errors', async () => {
     const {result, waitForValueToChange} = renderuseInvokablePromise(
       createEventuallyRejectedPromise,
+      [],
     );
     act(() => {
       result.current.invoke();
@@ -92,9 +99,14 @@ describe('useInvokablePromise()', () => {
     const factory2 = (): Promise<string> =>
       new Promise((resolve) => setTimeout(() => resolve('bar'), 500));
     const {result, rerender, waitForValueToChange} = renderHook(
-      ({factory}: {factory: () => Promise<string>}) =>
-        useInvokablePromise(factory),
-      {initialProps: {factory: factory1}},
+      ({
+        factory,
+        deps,
+      }: {
+        factory: (() => Promise<string>) | undefined;
+        deps: unknown[];
+      }) => useInvokablePromise(factory, deps),
+      {initialProps: {factory: factory1, deps: [factory1]}},
     );
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
     act(() => {
@@ -107,7 +119,7 @@ describe('useInvokablePromise()', () => {
     expect(result.current).toEqual(
       expect.objectContaining(createLoadedState('foo')),
     );
-    rerender({factory: factory2});
+    rerender({factory: factory2, deps: [factory2]});
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
     act(() => {
       result.current.invoke();

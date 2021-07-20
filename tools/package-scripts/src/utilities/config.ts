@@ -1,4 +1,4 @@
-import {readJSONFile} from './readJSONFile';
+import {readJSON} from 'fs-extra';
 
 interface Config {
   entrypoints: string[];
@@ -9,7 +9,7 @@ const defaultConfig = {
 };
 
 export async function readConfigFile(): Promise<Config> {
-  const pkg = await readJSONFile('package.json');
+  const pkg = await readJSON('package.json');
   return {
     ...defaultConfig,
     ...pkg['package-scripts'],

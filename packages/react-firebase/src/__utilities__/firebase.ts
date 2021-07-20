@@ -1,4 +1,5 @@
 import {initializeApp} from 'firebase/app';
+import {getFirestore} from 'firebase/firestore';
 
 export const app = initializeApp({
   apiKey: process.env.STORYBOOK_FIREBASE_API_KEY,
@@ -8,3 +9,5 @@ export const app = initializeApp({
   storageBucket: process.env.STORYBOOK_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.STORYBOOK_FIREBASE_MESSAGING_SENDER_ID,
 });
+
+export const firestore = getFirestore(app);

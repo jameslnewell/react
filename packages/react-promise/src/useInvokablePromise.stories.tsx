@@ -14,10 +14,11 @@ export default {
 };
 
 const ReadPromise: React.FC<{
-  factory: () => Promise<unknown>;
+  factory: (() => Promise<unknown>) | undefined;
+  deps: unknown[];
 }> = withSuspense()(
-  withErrorBoundary()(({factory}) => {
-    const {invoke, ...state} = useInvokablePromise(factory);
+  withErrorBoundary()(({factory, deps}) => {
+    const {invoke, ...state} = useInvokablePromise(factory, deps);
     return (
       <>
         <button onClick={invoke}>Invoke</button>
@@ -30,29 +31,29 @@ const ReadPromise: React.FC<{
 const loadingWhenPendingPromise = (): Promise<unknown> =>
   createPendingPromise();
 export const LoadingWhenPending: React.FC = () => (
-  <ReadPromise factory={loadingWhenPendingPromise} />
+  <ReadPromise factory={loadingWhenPendingPromise} deps={[]} />
 );
 
 const loadedWhenFulfilledPromise = (): Promise<unknown> =>
   createFulfilledPromise();
 export const LoadedWhenFulfilled: React.FC = () => (
-  <ReadPromise factory={loadedWhenFulfilledPromise} />
+  <ReadPromise factory={loadedWhenFulfilledPromise} deps={[]} />
 );
 
 const erroredWhenRejectedPromise = (): Promise<unknown> =>
   createRejectedPromise();
 export const ErroredWhenRejected: React.FC = () => (
-  <ReadPromise factory={erroredWhenRejectedPromise} />
+  <ReadPromise factory={erroredWhenRejectedPromise} deps={[]} />
 );
 
 const eventuallyFulfilledPromise = (): Promise<unknown> =>
   createEventuallyFulfilledPromise();
 export const EventuallyLoadedWhenFulfilled: React.FC = () => (
-  <ReadPromise factory={eventuallyFulfilledPromise} />
+  <ReadPromise factory={eventuallyFulfilledPromise} deps={[]} />
 );
 
 const eventuallyErroredPromise = (): Promise<unknown> =>
   createEventuallyRejectedPromise();
 export const EventuallyErroredWhenRejected: React.FC = () => (
-  <ReadPromise factory={eventuallyErroredPromise} />
+  <ReadPromise factory={eventuallyErroredPromise} deps={[]} />
 );

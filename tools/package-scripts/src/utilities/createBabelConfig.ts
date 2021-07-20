@@ -10,7 +10,10 @@ const commonPlugins = [
   require.resolve('@babel/plugin-proposal-object-rest-spread'),
 ];
 
-export function createBabelConfigForRollup(): TransformOptions {
+export function createBabelConfigForRollup(): Omit<
+  TransformOptions,
+  'include' | 'exclude'
+> {
   return {
     presets: [
       [

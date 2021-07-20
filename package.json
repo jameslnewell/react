@@ -23,6 +23,9 @@
     }
   },
   "jest": {
+    "testMatch": [
+      "<rootDir>/src/**/*.test.ts?(x)"
+    ],
     "projects": [
       "<rootDir>/packages/*",
       "<rootDir>/tools/*"
@@ -57,7 +60,7 @@
     "rxjs": "^7.1.0"
   },
   "scripts": {
-    "setup": "yarn workspaces foreach run setup",
+    "setup": "yarn workspaces foreach -v run setup",
     "fix": "run-s fix:*",
     "fix:constraints": "yarn constraints --fix",
     "fix:formatting": "prettier --write '**/*.{md,json,yml,js,ts,tsx}'",

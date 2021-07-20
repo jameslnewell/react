@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react';
+import {useMemo} from 'react';
 import {
   onAuthStateChanged,
   onIdTokenChanged,
@@ -32,11 +32,7 @@ export enum Status {
 /**
  * @see https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth.AuthStateListener
  */
-export function getStatus({
-  auth = getAuth(),
-}: {
-  auth?: Auth;
-} = {}): Observable<Status> {
+export function getStatus({auth}: {auth: Auth}): Observable<Status> {
   return new Observable<User | null>((subscriber) =>
     onAuthStateChanged(auth, subscriber),
   ).pipe(
@@ -48,11 +44,7 @@ export function getStatus({
 /**
  * @see https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseAuth.IdTokenListener
  */
-export function getUser({
-  auth = getAuth(),
-}: {
-  auth?: Auth;
-} = {}): Observable<User | undefined> {
+export function getUser({auth}: {auth: Auth}): Observable<User | undefined> {
   return new Observable<User | null>((subscriber) =>
     onIdTokenChanged(auth, subscriber),
   ).pipe(
@@ -61,13 +53,11 @@ export function getUser({
   );
 }
 
-export function createStatusResource(auth: Auth = getAuth()): Resource<Status> {
+export function createStatusResource(auth: Auth): Resource<Status> {
   return createResource(getStatus({auth}));
 }
 
-export function createUserResource(
-  auth: Auth = getAuth(),
-): Resource<User | undefined> {
+export function createUserResource(auth: Auth): Resource<User | undefined> {
   return createResource(getUser({auth}));
 }
 
@@ -90,15 +80,13 @@ export function useSignInWithPopup(): UseInvokablePromiseResult<
   UserCredential
 > {
   const auth = useAuth();
-  const factory = useCallback(
+  return useInvokablePromise(
     (provider: AuthProvider) => signInWithPopup(auth, provider),
     [auth],
   );
-  return useInvokablePromise(factory);
 }
 
 export function useSignOut(): UseInvokablePromiseResult<[], void> {
   const auth = useAuth();
-  const factory = useCallback(() => signOut(auth), [auth]);
-  return useInvokablePromise(factory);
+  return useInvokablePromise(() => signOut(auth), [auth]);
 }

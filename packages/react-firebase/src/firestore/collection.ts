@@ -1,34 +1,28 @@
 import {
-  collection,
   onSnapshot,
-  FirebaseFirestore,
   DocumentData,
-  getFirestore,
   QuerySnapshot,
+  CollectionReference,
 } from 'firebase/firestore';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
-type GetCollectionSnapshotOptions = {
-  path: string;
-  firestore?: FirebaseFirestore;
-};
-
-export function getCollectionSnapshot({
-  firestore = getFirestore(),
-  path,
-}: GetCollectionSnapshotOptions): Observable<QuerySnapshot<DocumentData>> {
+export function getCollectionSnapshot(
+  reference: CollectionReference,
+): Observable<QuerySnapshot<DocumentData>> {
   return new Observable<QuerySnapshot<DocumentData>>((subscriber) =>
-    onSnapshot(collection(firestore, path), subscriber),
+    onSnapshot(reference, subscriber),
   ).pipe(shareReplay(1));
 }
 
-type GetCollectionOptions = GetCollectionSnapshotOptions;
-
 export function getCollection(
-  options: GetCollectionOptions,
+  reference: CollectionReference,
 ): Observable<[string, DocumentData][]> {
-  return getCollectionSnapshot(options).pipe(
+  return getCollectionSnapshot(reference).pipe(
     map((snapshot) => snapshot.docs.map((doc) => [doc.id, doc.data()])),
   );
 }
+
+// TODO: add createCollectionResource() and createCollectionSnapshotResource() methods
+// but they'll probably only be used in simple use-cases - createObservableResource()
+// will be used in more complex cases

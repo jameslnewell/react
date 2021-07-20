@@ -3787,8 +3787,10 @@ __metadata:
     "@rollup/plugin-node-resolve": ^13.0.0
     "@types/fs-extra": ^9.0.12
     "@types/resolve-bin": ^0.4.1
+    "@types/yargs": ^17.0.2
     fs-extra: ^10.0.0
     pirates: ^4.0.1
+    resolve: ^1.20.0
     resolve-bin: ^0.4.1
     rollup: ^2.53.1
     rollup-plugin-node-externals: ^2.2.0
@@ -3841,6 +3843,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     rxjs: ^7.2.0
+    testing-utilities: "workspace:*"
   peerDependencies:
     "@types/react": ">=16.8.0 <18"
     react: ">=16.8.0 <18"
@@ -3858,6 +3861,7 @@ __metadata:
     "@types/react-dom": ^17.0.9
     react: ^17.0.2
     react-dom: ^17.0.2
+    testing-utilities: "workspace:*"
   peerDependencies:
     "@types/react": ">=16.8.0 <18"
     react: ">=16.8.0 <18"
@@ -5850,6 +5854,15 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: fa1a5b0a07dbbff1657a27d1191d586632412d170321000f6f417f279547a8c191d7058dbf4d4187c188a5a1aeb2473ddb25fe316b206fccdfe1de6fad976619
+  languageName: node
+  linkType: hard
+
+"@types/yargs@npm:^17.0.2":
+  version: 17.0.2
+  resolution: "@types/yargs@npm:17.0.2"
+  dependencies:
+    "@types/yargs-parser": "*"
+  checksum: b3dec3703ad5b9d3e8d5f485abf89bbdc601ec0dd2a1156176ffbe9212a1b693c22e7a29430de0e33aac15e71afefa36846f5ad9976a957006e275335a79d2a6
   languageName: node
   linkType: hard
 
@@ -19947,7 +19960,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"testing-utilities@workspace:packages/testing-utilities":
+"testing-utilities@workspace:*, testing-utilities@workspace:packages/testing-utilities":
   version: 0.0.0-use.local
   resolution: "testing-utilities@workspace:packages/testing-utilities"
   dependencies:

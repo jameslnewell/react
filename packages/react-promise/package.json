@@ -27,8 +27,8 @@
   "files": [
     "dist"
   ],
-  "main": "dist/jameslnewell-react-promise.cjs.js",
-  "module": "dist/jameslnewell-react-promise.esm.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "sideEffects": false,
   "peerDependencies": {
     "@types/react": ">=16.8.0 <18",
@@ -40,7 +40,8 @@
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "testing-utilities": "workspace:*"
   },
   "scripts": {
     "clean": "package-scripts clean",

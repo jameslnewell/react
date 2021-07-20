@@ -4,11 +4,11 @@ import {CommandModule} from 'yargs';
 import {readConfigFile} from '../utilities/config';
 import {
   getMainFile,
-  getMainTypeFile,
+  getTypeFile,
   getModuleFile,
-  getModuleTypeFile,
   getSourceFile,
   outDirectory,
+  removeExtension,
 } from '../utilities/paths';
 
 const command: CommandModule = {
@@ -26,25 +26,9 @@ const command: CommandModule = {
           await fs.writeFile(
             mainFile,
             // TODO: named or default?
-            `
-const register = require("@babel/register");
-const revert = register({extensions: ['.ts', '.tsx']});
-module.exports = require('${path.relative(
-              path.dirname(mainFile),
-              getSourceFile(entrypoint),
-            )}');
-revert()
-`,
-          );
-        }
-        const mainTypeFile = await getMainTypeFile(entrypoint);
-        if (mainTypeFile) {
-          await fs.writeFile(
-            mainTypeFile,
-            // TODO: named or default?
             `export * from "${path.relative(
-              path.dirname(mainTypeFile),
-              getSourceFile(entrypoint),
+              path.dirname(mainFile),
+              removeExtension(getSourceFile(entrypoint)),
             )}";`,
           );
         }
@@ -56,18 +40,19 @@ revert()
             // TODO: named or default?
             `export * from "${path.relative(
               path.dirname(moduleFile),
-              getSourceFile(entrypoint),
+              removeExtension(getSourceFile(entrypoint)),
             )}";`,
           );
         }
-        const moduleTypeFile = await getModuleTypeFile(entrypoint);
-        if (moduleTypeFile) {
+
+        const typeFile = await getTypeFile(entrypoint);
+        if (typeFile) {
           await fs.writeFile(
-            moduleTypeFile,
+            typeFile,
             // TODO: named or default?
             `export * from "${path.relative(
-              path.dirname(moduleTypeFile),
-              getSourceFile(entrypoint),
+              path.dirname(typeFile),
+              removeExtension(getSourceFile(entrypoint)),
             )}";`,
           );
         }

@@ -1,10 +1,10 @@
 {
   "extends": "@jameslnewell/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "node",
     "noEmitOnError": false,
     "jsx": "react",
     "skipLibCheck": true
   },
-  "include": ["src", "types"]
+  "include": ["src", "types"],
+  "files": ["types/yargs/helpers.d.ts"]
 }
