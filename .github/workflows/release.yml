@@ -11,7 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          yarn version apply
+          yarn version apply --all
+
+      - run: |
+          yarn workspaces foreach run npm publish
+
+      - run: |
+          git config --global user.name 'jameslnewell-bot'
+          git config --global user.email 'jameslnewell-bot@users.noreply.github.com'
+          git commit -am "versioning"
+          git push
+
   # - uses: actions/download-artifact@v2
   #   with:
   #     name: dist
