@@ -24,6 +24,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: check constraints
         run: |
@@ -46,6 +47,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: check typing
         run: |
@@ -68,6 +70,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: check linting
         run: |
@@ -90,6 +93,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: check formatting
         run: |
@@ -112,6 +116,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: test
         run: |
@@ -136,6 +141,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+          yarn run setup
 
       - name: version
         run: |
