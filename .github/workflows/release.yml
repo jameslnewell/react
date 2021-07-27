@@ -7,8 +7,9 @@ on:
 
 jobs:
   version:
-    run: |
-      yarn version apply
+    steps:
+      - run: |
+          yarn version apply
   # - uses: actions/download-artifact@v2
   #   with:
   #     name: dist
