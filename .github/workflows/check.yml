@@ -10,7 +10,7 @@ jobs:
   check_constraints:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -32,7 +32,7 @@ jobs:
   check_typing:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -54,7 +54,7 @@ jobs:
   check_linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -76,7 +76,7 @@ jobs:
   check_formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -95,39 +95,10 @@ jobs:
         run: |
           yarn run check:formatting
 
-  build:
+  check_testing:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-
-      - name: build
-        run: |
-          yarn run build
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: |
-            packages/*/dist
-            packages/*/*/dist
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -146,22 +117,12 @@ jobs:
         run: |
           yarn run test
 
-  publish:
+  check_versioning:
     runs-on: ubuntu-latest
-
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - check_constraints
-      - check_typing
-      - check_linting
-      - check_formatting
-      - build
-      - test
-    env:
-      DEBUG: '*'
-
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
@@ -175,3 +136,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: |
           yarn install --immutable
+
+      - name: version
+        run: |
+          yarn version check

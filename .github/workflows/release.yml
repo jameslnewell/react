@@ -9,7 +9,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: |
           yarn version apply
   # - uses: actions/download-artifact@v2
