@@ -23,3 +23,33 @@ jobs:
   #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
   #   run: |
   #     yarn workspaces run -- publish-if-not-published -- -- --registry=https://registry.npmjs.org/ --tag next
+
+  # publish:
+  #   runs-on: ubuntu-latest
+
+  #   if: github.ref == 'refs/heads/main'
+  #   needs:
+  #     - check_constraints
+  #     - check_typing
+  #     - check_linting
+  #     - check_formatting
+  #     - build
+  #     - test
+  #   env:
+  #     DEBUG: '*'
+
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - shell: bash -l {0}
+  #       run: nvm install
+  #     - id: yarn-cache-dir
+  #       run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+  #     - uses: actions/cache@v1
+  #       id: yarn-cache
+  #       with:
+  #         path: ${{ steps.yarn-cache-dir.outputs.dir }}
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-
+  #     - run: |
+  #         yarn install --immutable
