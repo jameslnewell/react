@@ -1,9 +1,6 @@
-name: main
+name: check
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
 
 jobs:
@@ -14,7 +11,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -23,7 +20,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check constraints
         run: |
@@ -36,7 +33,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -45,7 +42,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check typing
         run: |
@@ -58,7 +55,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -67,7 +64,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check linting
         run: |
@@ -80,7 +77,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -89,7 +86,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: check formatting
         run: |
@@ -102,7 +99,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -111,7 +108,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: build
         run: |
@@ -131,7 +128,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -140,7 +137,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
 
       - name: test
         run: |
@@ -165,7 +162,7 @@ jobs:
       - shell: bash -l {0}
         run: nvm install
       - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - uses: actions/cache@v1
         id: yarn-cache
         with:
@@ -174,17 +171,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: |
-          yarn install --frozen-lockfile
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: dist
-          path: packages
-
-      - run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
-
-      - name: publish
-        env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-        run: |
-          yarn workspaces run -- publish-if-not-published -- -- --registry=https://registry.npmjs.org/ --tag next
+          yarn install --immutable

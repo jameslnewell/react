@@ -1,0 +1,21 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  # - uses: actions/download-artifact@v2
+  #   with:
+  #     name: dist
+  #     path: packages
+
+  # - run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+
+  # - name: publish
+  #   env:
+  #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+  #   run: |
+  #     yarn workspaces run -- publish-if-not-published -- -- --registry=https://registry.npmjs.org/ --tag next
