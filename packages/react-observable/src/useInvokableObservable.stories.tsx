@@ -17,11 +17,10 @@ export default {
 };
 
 const ReadObservable: React.FC<{
-  factory: (() => Observable<unknown>) | undefined;
-  deps: unknown[];
+  factory: () => Observable<unknown> | undefined;
 }> = withSuspense()(
-  withErrorBoundary()(({factory, deps}) => {
-    const {invoke, ...state} = useInvokableObservable(factory, deps);
+  withErrorBoundary()(({factory}) => {
+    const {invoke, ...state} = useInvokableObservable(factory);
     return (
       <>
         <button onClick={invoke}>Invoke</button>
@@ -34,41 +33,41 @@ const ReadObservable: React.FC<{
 const loadingWhenWaitingObservable = (): Observable<unknown> =>
   createWaitingObservable();
 export const LoadingWhenWaiting: React.FC = () => (
-  <ReadObservable factory={loadingWhenWaitingObservable} deps={[]} />
+  <ReadObservable factory={loadingWhenWaitingObservable} />
 );
 
 const loadedWhenReceivedObservable = (): Observable<unknown> =>
   createReceivedObservable();
 export const LoadedWhenReceived: React.FC = () => (
-  <ReadObservable factory={loadedWhenReceivedObservable} deps={[]} />
+  <ReadObservable factory={loadedWhenReceivedObservable} />
 );
 
 const loadedWhenCompletedObservable = (): Observable<unknown> =>
   createCompletedObservable();
 export const LoadedWhenCompleted: React.FC = () => (
-  <ReadObservable factory={loadedWhenCompletedObservable} deps={[]} />
+  <ReadObservable factory={loadedWhenCompletedObservable} />
 );
 
 const erroredWhenErroredObservable = (): Observable<unknown> =>
   createErroredObservable();
-export const ErriredWhenErrored: React.FC = () => (
-  <ReadObservable factory={erroredWhenErroredObservable} deps={[]} />
+export const ErroredWhenErrored: React.FC = () => (
+  <ReadObservable factory={erroredWhenErroredObservable} />
 );
 
 const eventuallyLoadedWhenReceivedObservable = (): Observable<unknown> =>
   createEventuallyCompletedObservable();
 export const EventuallyLoadedWhenReceived: React.FC = () => (
-  <ReadObservable factory={eventuallyLoadedWhenReceivedObservable} deps={[]} />
+  <ReadObservable factory={eventuallyLoadedWhenReceivedObservable} />
 );
 
 const eventuallyErroredObservable = (): Observable<unknown> =>
   createEventuallyErroredObservable();
 export const EventuallyErroredWhenErrored: React.FC = () => (
-  <ReadObservable factory={eventuallyErroredObservable} deps={[]} />
+  <ReadObservable factory={eventuallyErroredObservable} />
 );
 
 const subscribedObservable = (): Observable<unknown> =>
   createReceivingObservable();
 export const Subscribed: React.FC = () => (
-  <ReadObservable factory={subscribedObservable} deps={[]} />
+  <ReadObservable factory={subscribedObservable} />
 );

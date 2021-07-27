@@ -1,4 +1,5 @@
 {
-  "main": "../dist/app.cjs",
-  "module": "../dist/app.mjs"
+  "main": "../dist/app.cjs.js",
+  "module": "../dist/app.esm.js",
+  "types": "../dist/app.d.ts"
 }

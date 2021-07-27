@@ -1,4 +1,5 @@
 {
-  "main": "dist/jameslnewell-react-firebase-storage.cjs.js",
-  "module": "dist/jameslnewell-react-firebase-storage.esm.js"
+  "main": "dist/storage.cjs.js",
+  "module": "dist/storage.esm.js",
+  "types": "../dist/storage.d.ts"
 }

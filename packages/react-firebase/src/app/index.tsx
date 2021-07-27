@@ -1,7 +1,7 @@
-import React from 'react';
-import {getApp, FirebaseApp} from 'firebase/app';
+import * as React from 'react';
+import {FirebaseApp} from 'firebase/app';
 
-const Context = React.createContext<FirebaseApp>(getApp());
+const Context = React.createContext<FirebaseApp | undefined>(undefined);
 
 export interface ProviderProps {
   app: FirebaseApp;
@@ -13,5 +13,9 @@ export const Provider = ({app, children}: ProviderProps): JSX.Element => (
 );
 
 export const useApp = (): FirebaseApp => {
-  return React.useContext(Context);
+  const app = React.useContext(Context);
+  if (!app) {
+    throw new Error('Please provide an app <Provider app={app}/>');
+  }
+  return app;
 };

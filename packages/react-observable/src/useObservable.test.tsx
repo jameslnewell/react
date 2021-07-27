@@ -13,6 +13,7 @@ import {
 } from './__fixtures__';
 import {Observable, of} from 'rxjs';
 import {
+  createEmptyState,
   createErroredState,
   createLoadedState,
   createLoadingState,
@@ -21,12 +22,16 @@ import {Status} from './status';
 import {delay} from 'rxjs/operators';
 
 function renderUseObservable(
-  observable: Observable<unknown>,
+  observable: Observable<unknown> | undefined,
 ): ReturnType<typeof renderHook> {
   return renderHook(() => useObservable(observable));
 }
 
 describe('useObservable()', () => {
+  test('is empty when an observable is not passed', () => {
+    const {result} = renderUseObservable(undefined);
+    expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
+  });
   test('is loading when waiting', () => {
     const {result} = renderUseObservable(createWaitingObservable());
     expect(result.current).toEqual(

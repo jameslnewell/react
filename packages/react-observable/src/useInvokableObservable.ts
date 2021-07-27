@@ -32,8 +32,7 @@ export type UseInvokableObservableResult<Params extends [], Value> = (
 };
 
 export function useInvokableObservable<Params extends [], Value>(
-  factory: ((...params: Params) => Observable<Value>) | undefined,
-  deps: unknown[],
+  factory: (...params: Params) => Observable<Value> | undefined,
 ): UseInvokableObservableResult<Params, Value> {
   const subscriptionRef = useRef<Subscription | undefined>(undefined);
   const [state, setState] =
@@ -46,9 +45,9 @@ export function useInvokableObservable<Params extends [], Value>(
 
       // subscribe to next subscription
       setState(createLoadingState());
-      if (factory) {
-        let hasReceivedAValue = false;
-        const observable = factory(...params);
+      let hasReceivedAValue = false;
+      const observable = factory(...params);
+      if (observable) {
         subscriptionRef.current = observable.subscribe({
           next(value) {
             hasReceivedAValue = true;
@@ -70,10 +69,10 @@ export function useInvokableObservable<Params extends [], Value>(
         // TODO: replay events for the returned stream?
         return observable;
       } else {
-        throw new Error('No factory to invoke.');
+        throw new Error('Factory did not return a promise.');
       }
     },
-    [setState, ...deps],
+    [setState, factory],
   );
 
   // unsubscribe and reset state when the observable factory changes
@@ -82,7 +81,7 @@ export function useInvokableObservable<Params extends [], Value>(
       subscriptionRef.current?.unsubscribe();
       setState(createEmptyState());
     };
-  }, deps);
+  }, [factory]);
 
   return useMemo(() => {
     return {

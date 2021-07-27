@@ -1,4 +1,5 @@
 {
-  "main": "../dist/firestore.cjs",
-  "module": "../dist/firestore.mjs"
+  "main": "../dist/firestore.cjs.js",
+  "module": "../dist/firestore.esm.js",
+  "types": "../dist/firestore.d.ts"
 }

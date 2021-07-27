@@ -36,8 +36,7 @@ export type UseInvokablePromiseResult<
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useInvokablePromise<Params extends any[], Value>(
-  factory: ((...params: Params) => Promise<Value>) | undefined,
-  deps: unknown[],
+  factory: (...params: Params) => Promise<Value> | undefined,
 ): UseInvokablePromiseResult<Params, Value> {
   const current = useRef<Promise<Value> | undefined>(undefined);
   const [state, setState] =
@@ -46,9 +45,9 @@ export function useInvokablePromise<Params extends any[], Value>(
   const invoke = useCallback(
     (...params: Params) => {
       setState(createLoadingState());
-      if (factory) {
-        const promise = factory(...params);
-        current.current = promise;
+      const promise = factory(...params);
+      current.current = promise;
+      if (promise) {
         promise.then(
           (value) => {
             if (current.current) {
@@ -63,10 +62,10 @@ export function useInvokablePromise<Params extends any[], Value>(
         );
         return promise;
       } else {
-        throw new Error('No factory to invoke.');
+        throw new Error('Factory did not return a promise.');
       }
     },
-    [setState, ...deps],
+    [setState, factory],
   );
 
   // unsubscribe and reset state when the promise factory changes
@@ -75,7 +74,7 @@ export function useInvokablePromise<Params extends any[], Value>(
       current.current = undefined;
       setState(createEmptyState());
     };
-  }, deps);
+  }, [factory]);
 
   return useMemo(() => {
     return {

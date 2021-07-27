@@ -12,6 +12,11 @@ const command: CommandModule = {
         boolean: true,
         description: 'Start the debugger',
       },
+      watch: {
+        default: true,
+        boolean: true,
+        description: 'Rerun tests when files change',
+      },
     }),
   handler: async (argv) => {
     const args = [
@@ -20,7 +25,7 @@ const command: CommandModule = {
       JSON.stringify(createJestConfig()),
     ];
 
-    if (!process.env.CI) {
+    if (!process.env.CI && argv.watch) {
       args.push('--watch');
     }
 

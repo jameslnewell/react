@@ -12,3 +12,9 @@ yarn run setup
 ```bash
 yarn run develop
 ```
+
+## Versioning
+
+```bash
+yarn version <major|minor|patch> --deferred
+```

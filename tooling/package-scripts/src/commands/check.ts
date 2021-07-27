@@ -7,6 +7,7 @@ import {
   getMainFile,
   getModuleFile,
   getPackageFile,
+  getTypeFile,
   rootDirectory,
 } from '../utilities/paths';
 import {resolveBin} from '../utilities/resolveBin';
@@ -28,6 +29,10 @@ const command: CommandModule = {
     await Promise.all(
       config.entrypoints.map(async (entrypoint) => {
         const packageFile = getPackageFile(entrypoint);
+        const relativePackageFile = `./${path.relative(
+          rootDirectory,
+          packageFile,
+        )}`;
         const mainFile = path.relative(
           path.dirname(packageFile),
           getMainFile(entrypoint),
@@ -36,35 +41,35 @@ const command: CommandModule = {
           path.dirname(packageFile),
           getModuleFile(entrypoint),
         );
+        const typeFile = path.relative(
+          path.dirname(packageFile),
+          getTypeFile(entrypoint),
+        );
         const pkg = await readJSON(packageFile);
         if (pkg.main !== mainFile) {
           throw new Error(
-            `${path.relative(
-              rootDirectory,
-              packageFile,
-            )}'s "main" field should be "${mainFile}"`,
+            `${relativePackageFile}'s "main" field should be "${mainFile}"`,
           );
         }
         if (pkg.module !== moduleFile) {
           throw new Error(
-            `${path.relative(
-              rootDirectory,
-              packageFile,
-            )}'s "main" field should be "${moduleFile}"`,
+            `${relativePackageFile}'s "main" field should be "${moduleFile}"`,
           );
         }
-        if (pkg.types !== undefined || pkg.typings !== undefined) {
+        if (pkg.types !== typeFile && pkg.typings !== typeFile) {
           throw new Error(
-            `${path.relative(
-              rootDirectory,
-              packageFile,
-            )}'s "types" and "typings" fields should not be specified`,
+            `${relativePackageFile}'s "types" field should be "${typeFile}"`,
           );
         }
       }),
     );
 
-    const args: string[] = ['--noEmit', '--project', 'tsconfig.json'];
+    const args: string[] = [
+      '--noEmit',
+      '--project',
+      'tsconfig.json',
+      '--pretty',
+    ];
     if (argv.watch) {
       args.push('--watch');
     }

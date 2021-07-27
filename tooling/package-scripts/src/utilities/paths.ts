@@ -51,7 +51,7 @@ export function getMainFile(entrypoint: string): string {
   }
   return path.join(
     outDirectory,
-    `${relativeMainFile.replace(/\/|\\/g, '-')}.cjs`,
+    `${relativeMainFile.replace(/\/|\\/g, '-')}.cjs.js`,
   );
 }
 
@@ -66,7 +66,7 @@ export function getModuleFile(entrypoint: string): string {
   }
   return path.join(
     outDirectory,
-    `${relativeModuleFile.replace(/\/|\\/g, '-')}.mjs`,
+    `${relativeModuleFile.replace(/\/|\\/g, '-')}.esm.js`,
   );
 }
 
@@ -77,7 +77,7 @@ export function getModuleFile(entrypoint: string): string {
  */
 export function getTypeFile(entrypoint: string): string {
   const mainFile = getMainFile(entrypoint);
-  return mainFile.replace(/\.cjs$/, '.d.ts');
+  return mainFile.replace(/\.cjs.js$/, '.d.ts');
 }
 
 /**

@@ -1,0 +1,15 @@
+{
+  "extends": "@jameslnewell/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "ESNext"],
+    "target": "ESNext",
+    "module": "ESNext"
+  }
+  // child config inherits these
+  // "include": ["src", "types"],
+}

@@ -1,4 +1,5 @@
 {
-  "main": "../dist/auth.cjs",
-  "module": "../dist/auth.mjs"
+  "main": "../dist/auth.cjs.js",
+  "module": "../dist/auth.esm.js",
+  "types": "../dist/auth.d.ts"
 }

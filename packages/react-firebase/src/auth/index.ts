@@ -1,4 +1,4 @@
-import {useMemo} from 'react';
+import {useCallback, useMemo} from 'react';
 import {
   onAuthStateChanged,
   onIdTokenChanged,
@@ -81,12 +81,14 @@ export function useSignInWithPopup(): UseInvokablePromiseResult<
 > {
   const auth = useAuth();
   return useInvokablePromise(
-    (provider: AuthProvider) => signInWithPopup(auth, provider),
-    [auth],
+    useCallback(
+      (provider: AuthProvider) => signInWithPopup(auth, provider),
+      [auth],
+    ),
   );
 }
 
 export function useSignOut(): UseInvokablePromiseResult<[], void> {
   const auth = useAuth();
-  return useInvokablePromise(() => signOut(auth), [auth]);
+  return useInvokablePromise(useCallback(() => signOut(auth), [auth]));
 }

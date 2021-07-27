@@ -1,13 +1,20 @@
-import {InputOptions, OutputOptions, Plugin} from 'rollup';
+import {InputOptions, OutputOptions, Plugin, PluginContext} from 'rollup';
 import * as child_process from 'child_process';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeExternals from 'rollup-plugin-node-externals';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import {createBabelConfigForRollup} from './createBabelConfig';
-import {getMainFile, getModuleFile, getSourceFile, outDirectory} from './paths';
+import {
+  getMainFile,
+  getModuleFile,
+  getSourceFile,
+  outDirectory,
+  rootDirectory,
+} from './paths';
 import {promisify} from 'util';
 import {readConfigFile} from './config';
+import {resolveBin} from './resolveBin';
 
 const exec = promisify(child_process.exec);
 
@@ -56,7 +63,7 @@ export async function createRollupConfig(): Promise<Options[]> {
             }) as any,
             commonjs(),
             babel({
-              extensions: ['.ts'],
+              extensions,
               babelHelpers: 'runtime',
               ...createBabelConfigForRollup(),
             }),
@@ -75,16 +82,21 @@ function generateDeclarationPlugin(): Plugin {
     // TODO: bundle dts
     // https://www.npmjs.com/package/rollup-plugin-dts
     name: 'generate-declarations',
-    buildEnd: async (error) => {
+    async buildEnd(this: PluginContext, error) {
       if (error) {
         return;
       }
       try {
+        const tsc = await resolveBin('typescript', {executable: 'tsc'});
         await exec(
-          `tsc --emitDeclarationOnly --declaration --outDir ${outDirectory}`,
+          `${tsc} --emitDeclarationOnly --declaration --outDir ${outDirectory} --project ${rootDirectory}/tsconfig.json --pretty`,
+          {cwd: rootDirectory},
         );
       } catch (error) {
-        console.error(error);
+        console.log(error.stdout);
+        // this.error({
+        //   message: 'The generation of type declarations failed.',
+        // });
       }
     },
   };

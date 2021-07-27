@@ -10,5 +10,6 @@ export function createJestConfig() {
         createBabelConfigForJest(),
       ],
     },
+    testEnvironment: 'jsdom',
   };
 }

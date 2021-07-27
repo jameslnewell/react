@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "@storybook/builder-webpack5": "^6.3.4",
-    "@storybook/manager-webpack5": "^6.3.4",
     "@storybook/react": "^6.3.4",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",

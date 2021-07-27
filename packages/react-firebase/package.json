@@ -2,8 +2,6 @@
   "name": "@jameslnewell/react-firebase",
   "version": "0.13.0-preview.1",
   "description": "🎣 React utilities for working with firebase.",
-  "main": "dist/react-firebase.cjs.js",
-  "module": "dist/react-firebase.esm.js",
   "keywords": [
     "firebase",
     "react",
@@ -32,21 +30,22 @@
     "@jameslnewell/react-promise": "workspace:*"
   },
   "peerDependencies": {
-    "@types/react": ">=16.8.0 <18",
-    "firebase": "^9.0.0-beta.4",
-    "react": ">=16.8.0 <18",
-    "rxjs": "^7.2.0"
+    "@types/react": "^16.8.0 || ^17",
+    "firebase": "^9.0.0-beta.7",
+    "react": "^16.8.0 || ^17",
+    "rxjs": "^7.0.0"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
     "@jameslnewell/package-scripts": "workspace:*",
     "@testing-library/react-hooks": "^7.0.0",
     "@types/react": "^17.0.14",
-    "firebase": "^9.0.0-beta.4",
+    "firebase": "^9.0.0-beta.7",
     "firebase-tools": "^9.12.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "testing-utilities": "workspace:*"
   },
   "package-scripts": {
     "entrypoints": [

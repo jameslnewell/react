@@ -26,10 +26,10 @@ const command: CommandModule = {
           await fs.writeFile(
             mainFile,
             // TODO: named or default?
-            `export * from "${path.relative(
+            `module.exports = require("${path.relative(
               path.dirname(mainFile),
               removeExtension(getSourceFile(entrypoint)),
-            )}";`,
+            )}");`,
           );
         }
 

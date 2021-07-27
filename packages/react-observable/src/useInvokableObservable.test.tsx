@@ -22,19 +22,26 @@ import {delay} from 'rxjs/operators';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function renderUseInvokableObservable(
-  factory: (() => Observable<unknown>) | undefined,
-  deps: unknown[],
+  factory: () => Observable<unknown> | undefined,
 ) {
-  return renderHook(() => useInvokableObservable(factory, deps));
+  return renderHook(() => useInvokableObservable(factory));
 }
 
 describe('useInvokableObservable()', () => {
   test('is undefined when not invoked', () => {
-    const {result} = renderUseInvokableObservable(createWaitingObservable, []);
+    const {result} = renderUseInvokableObservable(createWaitingObservable);
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
   });
+  test('throws an error when invoked and the factory does not return an observable', () => {
+    const {result} = renderUseInvokableObservable(() => undefined);
+    act(() => {
+      expect(() => result.current.invoke()).toThrowError(
+        'Factory did not return a promise.',
+      );
+    });
+  });
   test('is loading when waiting', () => {
-    const {result} = renderUseInvokableObservable(createWaitingObservable, []);
+    const {result} = renderUseInvokableObservable(createWaitingObservable);
     act(() => {
       result.current.invoke();
     });
@@ -43,7 +50,7 @@ describe('useInvokableObservable()', () => {
     );
   });
   test('is loaded when received', () => {
-    const {result} = renderUseInvokableObservable(createReceivedObservable, []);
+    const {result} = renderUseInvokableObservable(createReceivedObservable);
     act(() => {
       result.current.invoke();
     });
@@ -52,10 +59,7 @@ describe('useInvokableObservable()', () => {
     );
   });
   test('is loaded when completed', () => {
-    const {result} = renderUseInvokableObservable(
-      createCompletedObservable,
-      [],
-    );
+    const {result} = renderUseInvokableObservable(createCompletedObservable);
     act(() => {
       result.current.invoke();
     });
@@ -64,7 +68,7 @@ describe('useInvokableObservable()', () => {
     );
   });
   test('is errored when errored', () => {
-    const {result} = renderUseInvokableObservable(createErroredObservable, []);
+    const {result} = renderUseInvokableObservable(createErroredObservable);
     act(() => {
       result.current.invoke();
     });
@@ -75,7 +79,6 @@ describe('useInvokableObservable()', () => {
   test('eventually loads', async () => {
     const {result, waitForValueToChange} = renderUseInvokableObservable(
       createEventuallyCompletedObservable,
-      [],
     );
     act(() => {
       result.current.invoke();
@@ -88,7 +91,6 @@ describe('useInvokableObservable()', () => {
   test('eventually errors', async () => {
     const {result, waitForValueToChange} = renderUseInvokableObservable(
       createEventuallyErroredObservable,
-      [],
     );
     act(() => {
       result.current.invoke();
@@ -104,7 +106,6 @@ describe('useInvokableObservable()', () => {
   test('subscribed', async () => {
     const {result, waitForValueToChange} = renderUseInvokableObservable(
       createReceivingObservable,
-      [],
     );
     act(() => {
       result.current.invoke();
@@ -131,11 +132,10 @@ describe('useInvokableObservable()', () => {
     const {result, rerender, waitForValueToChange} = renderHook(
       ({
         factory,
-        deps,
       }: {
-        factory: (() => Observable<string>) | undefined;
+        factory: () => Observable<string> | undefined;
         deps: unknown[];
-      }) => useInvokableObservable(factory, deps),
+      }) => useInvokableObservable(factory),
       {initialProps: {factory: factory1, deps: [factory1]}},
     );
     expect(result.current).toEqual(expect.objectContaining(createEmptyState()));

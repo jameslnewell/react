@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {createLoadingState} from './state';
 import {Observable} from 'rxjs';
 import {
@@ -15,15 +15,14 @@ export function useObservable<Value>(
   observable: Observable<Value> | undefined,
 ): UseObservableResult<Value> {
   const {invoke, ...result} = useInvokableObservable(
-    observable ? () => observable : undefined,
-    [observable],
+    useCallback(() => (observable ? observable : undefined), [observable]),
   );
 
   useEffect(() => {
-    invoke();
-  }, [invoke]);
+    observable && invoke();
+  }, [observable, invoke]);
 
-  if (result.status === undefined) {
+  if (observable && result.status === undefined) {
     return {
       ...createLoadingState(),
       isLoading: true,

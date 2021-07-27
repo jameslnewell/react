@@ -5,7 +5,7 @@ export async function passthru(
   args: string[],
   options: {debug?: boolean} = {},
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const child = child_process.fork(command, args, {
       execArgv: options.debug ? ['--inspect-brk'] : [],
       cwd: process.cwd(),
@@ -19,7 +19,8 @@ export async function passthru(
       if (code === 0) {
         resolve();
       } else {
-        reject(code);
+        resolve();
+        process.exitCode = code ?? -1;
       }
     });
   });

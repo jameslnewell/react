@@ -6,6 +6,7 @@ import {
 } from 'firebase/firestore';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
+import {Resource, createResource} from '@jameslnewell/react-observable';
 
 export function getCollectionSnapshot(
   reference: CollectionReference,
@@ -23,6 +24,14 @@ export function getCollection(
   );
 }
 
-// TODO: add createCollectionResource() and createCollectionSnapshotResource() methods
-// but they'll probably only be used in simple use-cases - createObservableResource()
-// will be used in more complex cases
+export function createCollectionSnapshotResource<Data>(
+  collectionReference: CollectionReference<Data>,
+): Resource<QuerySnapshot<DocumentData>> {
+  return createResource(getCollectionSnapshot(collectionReference));
+}
+
+export function createCollectionResource<Data>(
+  collectionReference: CollectionReference<Data>,
+): Resource<[string, DocumentData][]> {
+  return createResource(getCollection(collectionReference));
+}

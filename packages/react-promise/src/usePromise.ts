@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {createLoadingState} from './state';
 import {
   useInvokablePromise,
@@ -14,15 +14,14 @@ export function usePromise<Value>(
   promise: Promise<Value> | undefined,
 ): UsePromiseResult<Value> {
   const {invoke, ...result} = useInvokablePromise(
-    promise ? () => promise : undefined,
-    [promise],
+    useCallback(() => (promise ? promise : undefined), [promise]),
   );
 
   useEffect(() => {
-    invoke();
-  }, [invoke]);
+    promise && invoke();
+  }, [promise, invoke]);
 
-  if (result.status === undefined) {
+  if (promise && result.status === undefined) {
     return {
       ...createLoadingState(),
       isLoading: true,

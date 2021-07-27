@@ -20,3 +20,5 @@ firestore-debug.log
 # ignore distributable directories
 /packages/*/dist/
 /packages/*/*/dist/
+
+/storybook/storybook-static

@@ -5,7 +5,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "tools/*",
+      "tooling/*",
       "storybook"
     ]
   },
@@ -28,51 +28,45 @@
     ],
     "projects": [
       "<rootDir>/packages/*",
-      "<rootDir>/tools/*"
+      "<rootDir>/tooling/*"
     ]
   },
   "prettier": "@jameslnewell/prettier-config",
-  "preconstruct": {
-    "packages": [
-      "packages/*"
-    ]
-  },
   "dependencies": {
     "@babel/core": "^7.14.6",
-    "@jameslnewell/babel-preset": "^2.2.0",
+    "@jameslnewell/babel-preset": "workspace:*",
     "@jameslnewell/eslint-config": "^0.17.2",
     "@jameslnewell/jest-preset": "^2.1.0",
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.24",
     "babel-loader": "^8.2.2",
     "eslint": "^7.20.0",
     "husky": "^4.3.7",
-    "jest": "^26.6.3",
+    "jest": "^27.0.6",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
-    "publish-if-not-published": "^2.2.0",
-    "typescript": "^4.3.5",
-    "yarn-deduplicate": "^3.1.0"
+    "publish-if-not-published": "^2.2.0"
   },
   "resolutions": {
-    "rxjs": "^7.1.0"
+    "rxjs": "^7.2.0",
+    "@types/react": "^17.0.14"
   },
   "scripts": {
-    "setup": "yarn workspaces foreach -v run setup",
+    "setup": "yarn workspaces foreach -vt run setup",
     "fix": "run-s fix:*",
     "fix:constraints": "yarn constraints --fix",
     "fix:formatting": "prettier --write '**/*.{md,json,yml,js,ts,tsx}'",
     "fix:linting": "eslint --ext .js,.ts,.tsx .",
-    "check": "run-s check:*",
+    "check": "run-s 'check:*'",
     "check:constraints": "yarn constraints",
     "check:formatting": "prettier --check '**/*.{md,json,yml,js,ts,tsx}'",
     "check:linting": "eslint --ext .ts,.tsx .",
-    "check:typing": "tsc --noEmit --project tsconfig.json",
-    "build": "yarn workspaces foreach run build",
-    "test": "jest",
+    "check:typing": "yarn workspaces foreach -v --exclude monorepo run check",
+    "build": "yarn workspaces foreach -vt run build",
+    "test": "yarn workspaces foreach -vp run test --watch=false",
     "develop": "yarn workspace storybook run develop",
-    "prepare-release": "yarn run build && yarn run test && yarn run check:*"
+    "prepare-release": "yarn run build && yarn run test && yarn run check"
   }
 }

@@ -22,13 +22,14 @@
   "files": [
     "dist"
   ],
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "sideEffects": false,
   "peerDependencies": {
-    "@types/react": ">=16.8.0 <18",
-    "react": ">=16.8.0 <18",
-    "rxjs": ">=7.0.0"
+    "@types/react": "^16.8.0 || ^17",
+    "react": "^16.8.0 || ^17",
+    "rxjs": "^7.0.0"
   },
   "devDependencies": {
     "@jameslnewell/package-scripts": "workspace:*",

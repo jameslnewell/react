@@ -14,11 +14,11 @@ export default {
 };
 
 const ReadPromise: React.FC<{
-  factory: (() => Promise<unknown>) | undefined;
+  factory: () => Promise<unknown> | undefined;
   deps: unknown[];
 }> = withSuspense()(
-  withErrorBoundary()(({factory, deps}) => {
-    const {invoke, ...state} = useInvokablePromise(factory, deps);
+  withErrorBoundary()(({factory}) => {
+    const {invoke, ...state} = useInvokablePromise(factory);
     return (
       <>
         <button onClick={invoke}>Invoke</button>

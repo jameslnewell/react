@@ -10,6 +10,7 @@ import {
   value,
 } from './__fixtures__';
 import {
+  createEmptyState,
   createErroredState,
   createLoadedState,
   createLoadingState,
@@ -17,12 +18,16 @@ import {
 import {Status} from './status';
 
 function renderUsePromise(
-  promise: Promise<unknown>,
+  promise: Promise<unknown> | undefined,
 ): ReturnType<typeof renderHook> {
   return renderHook(() => usePromise(promise));
 }
 
 describe('usePromise()', () => {
+  test('is empty when a promise is not passed', () => {
+    const {result} = renderUsePromise(undefined);
+    expect(result.current).toEqual(expect.objectContaining(createEmptyState()));
+  });
   test('is loading when waiting', () => {
     const {result} = renderUsePromise(createPendingPromise());
     expect(result.current).toEqual(
