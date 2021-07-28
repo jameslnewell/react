@@ -87,6 +87,8 @@ function generateDeclarationPlugin(): Plugin {
         return;
       }
       try {
+        // TODO: ignore test files
+        // TODO: look into why folders are being nested
         const tsc = await resolveBin('typescript', {executable: 'tsc'});
         await exec(
           `${tsc} --emitDeclarationOnly --declaration --outDir ${outDirectory} --project ${rootDirectory}/tsconfig.json --pretty`,

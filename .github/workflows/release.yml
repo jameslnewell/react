@@ -52,4 +52,4 @@ jobs:
 
       - name: publish changed packages
         run: |
-          yarn workspaces foreach exec yarn npm publish
+          yarn workspaces foreach --no-private exec yarn npm publish --tag next --access public
