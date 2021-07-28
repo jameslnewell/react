@@ -6,14 +6,35 @@ on:
       - main
 
 jobs:
-  version:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: nvm install
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - run: |
+          yarn install --immutable
+          yarn run setup
+
+      - name: build packages
+        run: |
+          yarn run build
+
+      - name: version packages
+        run: |
           yarn version apply --all --prerelease
 
-      - id: is-repository-dirty
+      - name: check if any packages have been versioned
+        id: is-repository-dirty
         run: |
           if output=$(git status --porcelain) && [ -z "$output" ]; then
             echo "::set-output name=dirty::false"
@@ -21,56 +42,14 @@ jobs:
             echo "::set-output name=dirty::true"
           fi
 
-      # only commit when changes
-      - if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
+      - name: commit and push changed packages
+        if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
         run: |
           git config --global user.name 'jameslnewell-bot'
           git config --global user.email 'jameslnewell-bot@users.noreply.github.com'
           git commit -am "versioning"
           git push
 
-      - run: |
-          yarn workspaces foreach run npm publish
-
-  # - uses: actions/download-artifact@v2
-  #   with:
-  #     name: dist
-  #     path: packages
-
-  # - run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
-
-  # - name: publish
-  #   env:
-  #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-  #   run: |
-  #     yarn workspaces run -- publish-if-not-published -- -- --registry=https://registry.npmjs.org/ --tag next
-
-  # publish:
-  #   runs-on: ubuntu-latest
-
-  #   if: github.ref == 'refs/heads/main'
-  #   needs:
-  #     - check_constraints
-  #     - check_typing
-  #     - check_linting
-  #     - check_formatting
-  #     - build
-  #     - test
-  #   env:
-  #     DEBUG: '*'
-
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - shell: bash -l {0}
-  #       run: nvm install
-  #     - id: yarn-cache-dir
-  #       run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-  #     - uses: actions/cache@v1
-  #       id: yarn-cache
-  #       with:
-  #         path: ${{ steps.yarn-cache-dir.outputs.dir }}
-  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-yarn-
-  #     - run: |
-  #         yarn install --immutable
+      - name: publish changed packages
+        run: |
+          yarn workspaces foreach exec yarn npm publish

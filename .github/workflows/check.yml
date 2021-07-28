@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  check_constraints:
+  check-constraints:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,99 +30,7 @@ jobs:
         run: |
           yarn run check:constraints
 
-  check_typing:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-          yarn run setup
-
-      - name: check typing
-        run: |
-          yarn run check:typing
-
-  check_linting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-          yarn run setup
-
-      - name: check linting
-        run: |
-          yarn run check:linting
-
-  check_formatting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-          yarn run setup
-
-      - name: check formatting
-        run: |
-          yarn run check:formatting
-
-  check_testing:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-          yarn run setup
-
-      - name: check testing
-        run: |
-          yarn run test
-
-  check_versioning:
+  check-versioning:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -146,3 +54,95 @@ jobs:
       - name: check versioning
         run: |
           yarn version check
+
+  check-typing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: nvm install
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: |
+          yarn install --immutable
+          yarn run setup
+
+      - name: check typing
+        run: |
+          yarn run check:typing
+
+  check-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: nvm install
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: |
+          yarn install --immutable
+          yarn run setup
+
+      - name: check linting
+        run: |
+          yarn run check:linting
+
+  check-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: nvm install
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: |
+          yarn install --immutable
+          yarn run setup
+
+      - name: check formatting
+        run: |
+          yarn run check:formatting
+
+  check-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash -l {0}
+        run: nvm install
+      - id: yarn-cache-dir
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: |
+          yarn install --immutable
+          yarn run setup
+
+      - name: check testing
+        run: |
+          yarn run test
