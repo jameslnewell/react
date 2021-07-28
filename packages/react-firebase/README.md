@@ -2,7 +2,7 @@
 
 ![npm (scoped)](https://img.shields.io/npm/v/@jameslnewell/react-firebase.svg)
 [![Bundle Size](https://badgen.net/bundlephobia/minzip/@jameslnewell/react-firebase)](https://bundlephobia.com/result?p=@jameslnewell/react-firebase)
-[![Actions Status](https://github.com/jameslnewell/react/workflows/main/badge.svg)](https://github.com/jameslnewell/react/actions)
+[![Actions Status](https://github.com/jameslnewell/react/workflows/release/badge.svg)](https://github.com/jameslnewell/react/actions)
 
 🎣 React utilities for working with firebase.
 
