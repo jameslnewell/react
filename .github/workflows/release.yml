@@ -54,4 +54,5 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          yarn workspaces foreach --no-private exec yarn npm publish --tag next --access public
+          yarn workspaces foreach --no-private exec \
+            yarn npm publish --tag next --access public --tolerate-republish
