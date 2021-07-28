@@ -118,7 +118,7 @@ jobs:
           yarn install --immutable
           yarn run setup
 
-      - name: test
+      - name: check testing
         run: |
           yarn run test
 
@@ -143,6 +143,6 @@ jobs:
           yarn install --immutable
           yarn run setup
 
-      - name: version
+      - name: check versioning
         run: |
           yarn version check

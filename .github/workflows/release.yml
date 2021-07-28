@@ -11,16 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          yarn version apply --all
+          yarn version apply --all --prerelease
 
-      - run: |
-          yarn workspaces foreach run npm publish
+      - id: is-repository-dirty
+        run: |
+          if output=$(git status --porcelain) && [ -z "$output" ]; then
+            echo "::set-output name=dirty::false"
+          else 
+            echo "::set-output name=dirty::true"
+          fi
 
-      - run: |
+      # only commit when changes
+      - if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
+        run: |
           git config --global user.name 'jameslnewell-bot'
           git config --global user.email 'jameslnewell-bot@users.noreply.github.com'
           git commit -am "versioning"
           git push
+
+      - run: |
+          yarn workspaces foreach run npm publish
 
   # - uses: actions/download-artifact@v2
   #   with:
