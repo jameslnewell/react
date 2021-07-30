@@ -1,0 +1,10 @@
+releases:
+  monorepo: prerelease
+
+undecided:
+  - "@jameslnewell/react-firebase"
+  - "@jameslnewell/react-observable"
+  - "@jameslnewell/react-promise"
+  - storybook
+  - "@jameslnewell/babel-preset"
+  - "@jameslnewell/package-scripts"

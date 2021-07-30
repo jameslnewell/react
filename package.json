@@ -60,5 +60,6 @@
     "build": "yarn workspaces foreach -vt run build",
     "test": "yarn workspaces foreach -vp run test --watch=false",
     "develop": "yarn workspace storybook run develop"
-  }
+  },
+  "packageManager": "yarn@3.0.0"
 }

@@ -34,7 +34,6 @@ jobs:
           yarn version apply --prerelease
 
       - name: push versioned packages
-        if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
         run: |
           git config --global user.name 'jameslnewell-bot'
           git config --global user.email 'jameslnewell-bot@users.noreply.github.com'
