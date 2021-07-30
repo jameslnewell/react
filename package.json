@@ -33,25 +33,18 @@
   },
   "prettier": "@jameslnewell/prettier-config",
   "dependencies": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.14.8",
     "@jameslnewell/babel-preset": "workspace:*",
     "@jameslnewell/eslint-config": "^0.17.2",
-    "@jameslnewell/jest-preset": "^2.1.0",
     "@jameslnewell/prettier-config": "^1.0.1",
     "@jameslnewell/typescript-config": "^3.0.0",
     "@types/jest": "^26.0.24",
-    "babel-loader": "^8.2.2",
     "eslint": "^7.20.0",
     "husky": "^4.3.7",
     "jest": "^27.0.6",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
-    "pretty-quick": "^3.1.0",
-    "publish-if-not-published": "^2.2.0"
-  },
-  "resolutions": {
-    "rxjs": "^7.2.0",
-    "@types/react": "^17.0.14"
+    "pretty-quick": "^3.1.0"
   },
   "scripts": {
     "setup": "yarn workspaces foreach -vt run setup",
