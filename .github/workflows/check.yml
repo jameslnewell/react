@@ -52,7 +52,7 @@ jobs:
         run: |
           yarn version check
 
-  check-typing:
+  check-packages:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -73,7 +73,7 @@ jobs:
 
       - name: check typing
         run: |
-          yarn run check:typing
+          yarn run check:packages
 
   check-linting:
     runs-on: ubuntu-latest

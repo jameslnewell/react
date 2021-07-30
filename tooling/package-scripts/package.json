@@ -32,6 +32,6 @@
     "yargs": "^17.0.1"
   },
   "scripts": {
-    "check:typing": "tsc --noEmit"
+    "check": "tsc --noEmit"
   }
 }

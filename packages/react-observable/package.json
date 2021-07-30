@@ -42,8 +42,8 @@
     "testing-utilities": "workspace:*"
   },
   "scripts": {
-    "clean": "package-scripts clean",
     "setup": "package-scripts setup",
+    "clean": "package-scripts clean",
     "check": "package-scripts check",
     "build": "package-scripts build",
     "test": "package-scripts test"
