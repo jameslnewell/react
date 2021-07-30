@@ -31,24 +31,14 @@ jobs:
 
       - name: version packages
         run: |
-          yarn version apply --all --prerelease
+          yarn workspaces foreach -vt run yarn version apply --all --prerelease
 
-      - name: check if any packages have been versioned
-        id: is-repository-dirty
-        run: |
-          if output=$(git status --porcelain) && [ -z "$output" ]; then
-            echo "::set-output name=dirty::false"
-          else 
-            echo "::set-output name=dirty::true"
-          fi
-
-      - name: commit and push changed packages
+      - name: push versioned packages
         if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
         run: |
           git config --global user.name 'jameslnewell-bot'
           git config --global user.email 'jameslnewell-bot@users.noreply.github.com'
-          git commit -am "versioning"
-          git push
+          git push --tags
 
       - name: publish changed packages
         env:
