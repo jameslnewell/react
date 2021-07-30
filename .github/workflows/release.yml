@@ -31,7 +31,7 @@ jobs:
 
       - name: version packages
         run: |
-          yarn workspaces foreach -vt run yarn version apply --all --prerelease
+          yarn version apply --prerelease
 
       - name: push versioned packages
         if: ${{ steps.is-repository-dirty.outputs.dirty == 'true' }}
