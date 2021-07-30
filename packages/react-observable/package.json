@@ -1,6 +1,6 @@
 {
   "name": "@jameslnewell/react-observable",
-  "version": "4.0.0-preview.1",
+  "version": "4.0.0-preview.2",
   "description": "🎣 React utilities for working with observables.",
   "keywords": [
     "react",
@@ -38,12 +38,12 @@
     "@types/react-dom": "^17.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "rxjs": "^7.2.0",
+    "rxjs": "^7.0.0",
     "testing-utilities": "workspace:*"
   },
   "scripts": {
-    "clean": "package-scripts clean",
     "setup": "package-scripts setup",
+    "clean": "package-scripts clean",
     "check": "package-scripts check",
     "build": "package-scripts build",
     "test": "package-scripts test"

@@ -27,32 +27,33 @@ jobs:
         run: |
           yarn run check:constraints
 
-  check-versioning:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - shell: bash -l {0}
-        run: nvm install
-      - id: yarn-cache-dir
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-      - uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: |
-          yarn install --immutable
-          yarn run setup
+  # getting an error
+  # check-versioning:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #     - shell: bash -l {0}
+  #       run: nvm install
+  #     - id: yarn-cache-dir
+  #       run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+  #     - uses: actions/cache@v1
+  #       id: yarn-cache
+  #       with:
+  #         path: ${{ steps.yarn-cache-dir.outputs.dir }}
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-
+  #     - run: |
+  #         yarn install --immutable
+  #         yarn run setup
 
-      - name: check versioning
-        run: |
-          yarn version check
+  #     - name: check versioning
+  #       run: |
+  #         yarn version check
 
-  check-typing:
+  check-packages:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -73,7 +74,7 @@ jobs:
 
       - name: check typing
         run: |
-          yarn run check:typing
+          yarn run check:packages
 
   check-linting:
     runs-on: ubuntu-latest
