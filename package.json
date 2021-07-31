@@ -58,7 +58,7 @@
     "check:formatting": "prettier --check '**/*.{md,json,yml,js,ts,tsx}'",
     "check:linting": "eslint --ext .ts,.tsx .",
     "check:packages": "yarn workspaces foreach --verbose --exclude monorepo run check",
-    "build": "yarn workspaces foreach --verbose --topological-dev run build",
+    "build": "yarn workspaces foreach --verbose --topological-dev --exclude storybook run build",
     "test": "yarn workspaces foreach --verbose --parallel run test --watch=false",
     "develop": "yarn workspace storybook run develop"
   },
