@@ -6,7 +6,7 @@ const command: CommandModule = {
   command: 'clean',
   builder: (argv) => argv.strict(),
   handler: async () => {
-    await fs.rmdir(outDirectory);
+    await fs.remove(outDirectory);
   },
 };
 

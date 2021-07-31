@@ -47,7 +47,8 @@
     "pretty-quick": "^3.1.0"
   },
   "scripts": {
-    "setup": "yarn workspaces foreach -v run setup",
+    "clean": "yarn workspaces foreach --verbose run clean",
+    "setup": "yarn workspaces foreach --verbose run setup",
     "fix": "run-s fix:*",
     "fix:constraints": "yarn constraints --fix",
     "fix:formatting": "prettier --write '**/*.{md,json,yml,js,ts,tsx}'",
@@ -56,9 +57,9 @@
     "check:constraints": "yarn constraints",
     "check:formatting": "prettier --check '**/*.{md,json,yml,js,ts,tsx}'",
     "check:linting": "eslint --ext .ts,.tsx .",
-    "check:packages": "yarn workspaces foreach -v --exclude monorepo run check",
-    "build": "yarn workspaces foreach -vt run build",
-    "test": "yarn workspaces foreach -vp run test --watch=false",
+    "check:packages": "yarn workspaces foreach --verbose --exclude monorepo run check",
+    "build": "yarn workspaces foreach --verbose --topological-dev run build",
+    "test": "yarn workspaces foreach --verbose --parallel run test --watch=false",
     "develop": "yarn workspace storybook run develop"
   },
   "packageManager": "yarn@3.0.0"

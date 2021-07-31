@@ -11,6 +11,7 @@ import {
   getSourceFile,
   outDirectory,
   rootDirectory,
+  srcDirectory,
 } from './paths';
 import {promisify} from 'util';
 import {readConfigFile} from './config';
@@ -91,7 +92,7 @@ function generateDeclarationPlugin(): Plugin {
         // TODO: look into why folders are being nested
         const tsc = await resolveBin('typescript', {executable: 'tsc'});
         await exec(
-          `${tsc} --emitDeclarationOnly --declaration --outDir ${outDirectory} --project ${rootDirectory}/tsconfig.json --pretty`,
+          `${tsc} --emitDeclarationOnly --declaration --outDir ${outDirectory} --project ${rootDirectory}/tsconfig.json --pretty --rootdir ${srcDirectory}`,
           {cwd: rootDirectory},
         );
       } catch (error) {

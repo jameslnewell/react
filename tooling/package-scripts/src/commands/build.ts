@@ -9,7 +9,6 @@ const command: CommandModule = {
   handler: async () => {
     // cleanup first
     await fs.emptyDir(outDirectory);
-    await fs.ensureDir(outDirectory);
 
     const rollupConfigs = await createRollupConfig();
     await Promise.all(

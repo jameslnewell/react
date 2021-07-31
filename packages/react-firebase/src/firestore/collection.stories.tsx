@@ -3,7 +3,7 @@ import {collection} from '@firebase/firestore';
 import {decorator} from '../__utilities__/decorator';
 import {createCollectionResource} from '.';
 import {firestore} from '../__utilities__/firebase';
-import {withSuspense} from '../../../testing-utilities/src';
+import {withSuspense} from 'testing-utilities';
 
 export default {
   title: 'react-firebase/firestore/collection',
