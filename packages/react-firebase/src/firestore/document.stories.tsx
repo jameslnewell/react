@@ -1,6 +1,6 @@
 import {collection, doc} from '@firebase/firestore';
 import React from 'react';
-import {withSuspense} from '../../../testing-utilities/src';
+import {withSuspense} from 'testing-utilities';
 import {decorator} from '../__utilities__/decorator';
 import {firestore} from '../__utilities__/firebase';
 import {
